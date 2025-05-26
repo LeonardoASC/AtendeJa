@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Cache;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
-
+use App\Models\TipoAtendimento;
 
 
 class SenhaController extends Controller
@@ -22,12 +22,13 @@ class SenhaController extends Controller
      * Display a listing of the resource.
      */
 
-        public function index()
+    public function index()
     {
-        $senhas = Senha::orderBy('created_at', 'desc')->get();
-
+        $tipoAtendimentos = TipoAtendimento::all();
+        $senha = session('senha');
         return Inertia::render('Senha/Index', [
-            'senhas' => $senhas,
+            'tipoAtendimentos' => $tipoAtendimentos,
+             'senha'           => $senha,
         ]);
     }
 
@@ -42,22 +43,12 @@ class SenhaController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-  public function store(StoreSenhaRequest $request): RedirectResponse
+    public function store(StoreSenhaRequest $request)
     {
-        $validated = $request->validated();
+        $data = $request->validated();
+        $tipo = $data['tipo'];
+        $prefix = Senha::gerarPrefixo($tipo);
 
-        $prefixMap = [
-            'prova_de_vida'           => 'PV',
-            'processo_administrativo' => 'PA',
-            'adiantamento_13'         => 'AD',
-            'info_aposentadoria'      => 'IA',
-            'info_contribuicao'       => 'CP',
-        ];
-
-        $tipo   = $validated['tipo'];
-        $prefix = $prefixMap[$tipo] ?? 'XX';
-
-        // Pega o último do mesmo tipo gerado no dia de HOJE
         $ultimo = Senha::where('tipo', $tipo)
             ->whereDate('created_at', Carbon::today())
             ->orderBy('id', 'desc')
@@ -72,20 +63,26 @@ class SenhaController extends Controller
             $next = 1;
         }
 
-        // formata 01, 02, ..., 10, 11...
+        // formata 001, 002, ..., 010, 011...
         $seq    = str_pad($next, 3, '00', STR_PAD_LEFT);
         $codigo = "{$prefix}-{$seq}";
 
         // cria a senha
         $senha = Senha::create([
             'tipo'       => $tipo,
-            'cpf'        => $validated['cpf'],
+            'cpf'        => $data['cpf'],
             'codigo'     => $codigo,
             'prioridade' => 'baixa',
             'status'     => 'aguardando',
         ]);
 
-        return back()->with('success', "Senha {$codigo} criada com sucesso!");
+        return redirect()
+        ->route('senhas.index')
+        ->with('senha', [
+            'tipo'   => $senha->tipo,
+            'cpf'    => $senha->cpf,
+            'codigo' => $senha->codigo,
+        ]);
     }
 
     /**
@@ -119,4 +116,5 @@ class SenhaController extends Controller
     {
         //
     }
+   
 }
