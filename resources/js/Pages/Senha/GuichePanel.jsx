@@ -83,13 +83,6 @@ export default function GuichePanel({ guiche, initialSenha = null, queue = [], a
                                 >
                                     <CheckCircleIcon className="w-6 h-6" /> Finalizar atendimento
                                 </button>
-                                <button
-                                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-xl flex items-center gap-3 transition disabled:opacity-60"
-                                    onClick={chamar}
-                                    disabled={loading}
-                                >
-                                    <PlayIcon className="w-6 h-6" /> Próxima senha
-                                </button>
                             </div>
                         </>
                     ) : (
