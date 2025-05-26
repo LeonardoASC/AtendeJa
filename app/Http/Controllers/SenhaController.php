@@ -119,7 +119,8 @@ class SenhaController extends Controller
 
     public function telao()
     {
-        $senhasAtendidas = Senha::where('status', 'atendida')
+        $senhasAtendidas = Senha::with('tipoAtendimento')
+            ->where('status', 'atendida')
             ->orderBy('updated_at', 'desc')
             ->take(3)
             ->get();
