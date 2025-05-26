@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Cache;
 
 Route::get('/', [SiteController::class, 'index'])->name('site.index');
 Route::resource('senhas', SenhaController::class);
+Route::get('/telao', [SenhaController::class, 'telao'])->name('senhas.telao');
 
 Route::controller(CounterController::class)->group(function () {
     Route::get('/counter', 'index')->name('counter.index');
