@@ -66,7 +66,7 @@ export default function Index({ tipoAtendimentos }) {
                                 <h3 className="text-xl md:text-2xl font-medium">Selecione o serviço</h3>
                                 <div className="grid grid-cols-2 gap-4 flex-1">
                                     {tipoAtendimentos.map(tipo => (
-                                        <button key={tipo.id} onClick={() => { setData('tipo', tipo.nome); setStep(2); }} className="py-8 md:py-10 bg-gray-100 rounded-xl hover:bg-blue-50 active:bg-blue-100 transition text-base md:text-lg font-medium">{tipo.nome}</button>
+                                        <button key={tipo.id} onClick={() => { setData('tipo_atendimento_id', tipo.id); setStep(2); }} className="py-8 md:py-10 bg-gray-100 rounded-xl hover:bg-blue-50 active:bg-blue-100 transition text-base md:text-lg font-medium">{tipo.nome}</button>
                                     ))}
                                 </div>
                                 <button onClick={() => setStep(0)} className="py-3 md:py-4 px-4 md:px-6 border rounded-lg text-base md:text-lg">Voltar</button>

@@ -46,14 +46,14 @@ class SenhaController extends Controller
     public function store(StoreSenhaRequest $request)
     {
         $data = $request->validated();
-        $tipo = $data['tipo'];
-        $prefix = Senha::gerarPrefixo($tipo);
-
-        $ultimo = Senha::where('tipo', $tipo)
+        $tipo  = TipoAtendimento::findOrFail($data['tipo_atendimento_id']);
+        
+        $prefix = Senha::gerarPrefixo($tipo->nome);
+        
+        $ultimo = Senha::where('tipo_atendimento_id', $tipo->id)
             ->whereDate('created_at', Carbon::today())
             ->orderBy('id', 'desc')
             ->first();
-        
         if ($ultimo) {
             // se tiver senha, pega o número dela e incrementa mais 1
             $numero = intval(substr($ultimo->codigo, strpos($ultimo->codigo, '-') + 1));
@@ -69,11 +69,11 @@ class SenhaController extends Controller
 
         // cria a senha
         $senha = Senha::create([
-            'tipo'       => $tipo,
             'cpf'        => $data['cpf'],
             'codigo'     => $codigo,
             'prioridade' => 'baixa',
             'status'     => 'aguardando',
+            'tipo_atendimento_id' => $tipo->id,
         ]);
 
         return redirect()
@@ -127,6 +127,67 @@ class SenhaController extends Controller
         return Inertia::render('Senha/Telao', [
             'senhasAtendidas' => $senhasAtendidas,
         ]);
+    }
+
+    public function guichePanel(string $guiche)
+    {
+        $tipo = TipoAtendimento::where('guiche', $guiche)->firstOrFail();
+
+        $current = $tipo->senhas()
+            ->where('status', 'atendendo')
+            ->latest('updated_at')
+            ->first();
+
+        $queue = $tipo->senhas()
+            ->where('status', 'aguardando')
+            ->orderBy('created_at')
+            ->take(5)
+            ->pluck('codigo');
+
+        $attended = $tipo->senhas()
+            ->where('status', 'atendida')
+            ->latest('updated_at')
+            ->take(5)
+            ->pluck('codigo');
+
+        return Inertia::render('Senha/GuichePanel', [
+            'guiche'       => $guiche,
+            'initialSenha' => $current,
+            'queue'        => $queue,
+            'attended'     => $attended,
+        ]);
+    }
+
+    public function chamar(Request $request)
+    {
+        $guiche = (int) $request->input('guiche');
+
+        return DB::transaction(function () use ($guiche) {
+            $senha = Senha::where('status', 'aguardando')
+                ->orderBy('created_at')
+                ->lockForUpdate()
+                ->first();
+
+            if (!$senha) {
+                return response()->json(['message' => 'Fila vazia'], 404);
+            }
+
+            $senha->update([
+                'status'  => 'atendendo',
+                'guiche'  => $guiche,
+            ]);
+
+            event(new \App\Events\SenhaAtualizada($senha));
+            return $senha;
+        });
+    }
+
+    public function finalizar(Senha $senha)
+    {
+        $senha->update(['status' => 'atendida']);
+        event(new \App\Events\SenhaAtualizada($senha));
+
+        return response()->json(['message' => 'OK']);
     }
    
 }

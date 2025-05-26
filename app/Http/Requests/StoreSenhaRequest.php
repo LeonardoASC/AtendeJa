@@ -23,8 +23,7 @@ class StoreSenhaRequest extends FormRequest
     {
         return [
             'cpf' => 'required|string|size:11',
-            'tipo' => 'required',
-
+            'tipo_atendimento_id' => ['required', 'exists:tipo_atendimentos,id'],
         ];
     }
 }

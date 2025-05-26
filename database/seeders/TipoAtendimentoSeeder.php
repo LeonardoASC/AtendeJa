@@ -13,17 +13,35 @@ class TipoAtendimentoSeeder extends Seeder
      */
     public function run(): void
     {
-        $tipos = [
-            'Prova de Vida',
-            'Processo Administrativo',
-            'Adiantamento 13º',
-            'Informações sobre Aposentadoria',
-            'Informações sobre Contribuição',
-            'Outros',
-        ];
+       $tipos = [
+            [
+                'nome' => 'Prova de Vida',
+                'guiche' => '1'
+            ],
+            [
+                'nome' => 'Processo Administrativo',
+                'guiche' => '1'
+            ],
+            [
+                'nome' => 'Adiantamento 13°',
+                'guiche' => '2'
+            ],
+            [
+                'nome' => 'Informações Aposentadoria', 
+                'guiche' => '2'
+            ],
+            [
+                'nome' => 'Contribuição Previdenciária',
+                'guiche' => '3'
+            ],
+            [
+                'nome' => 'Atendimento Interno',
+                'guiche' => '3'
+            ]
+       ];
 
         foreach ($tipos as $tipo) {
-            TipoAtendimento::create(['nome' => $tipo]);
+            TipoAtendimento::create($tipo);
         }
 
     }

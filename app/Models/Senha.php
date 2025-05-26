@@ -13,11 +13,16 @@ class Senha extends Model
     use HasFactory, SoftDeletes;
     protected $fillable = [
         'cpf',
-        'tipo',
         'codigo',
         'prioridade',
         'status',
+        'tipo_atendimento_id'
     ];
+
+    public function tipoAtendimento()
+    {
+        return $this->belongsTo(TipoAtendimento::class);
+    }
 
     public static function gerarPrefixo(string $tipo)
     {

@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('senhas', function (Blueprint $table) {
             $table->id();
             $table->string('cpf', 11)->nullable();
-            $table->string('tipo')->nullable();
             $table->string('codigo', 10)->nullable();
             $table->string('prioridade')->nullable();
             $table->string('status')->nullable();
+            $table->foreignId('tipo_atendimento_id')->constrained('tipo_atendimentos')->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
         });
