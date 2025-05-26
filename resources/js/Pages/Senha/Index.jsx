@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Head, useForm } from '@inertiajs/react';
+import React, { useEffect } from 'react';
+import { Head, useForm, Link } from '@inertiajs/react';
+import GuestLayout from '@/Layouts/GuestLayout';
 
 const tipos = [
     { label: 'Prova de Vida', value: 'prova_de_vida', prefix: 'PV' },
@@ -10,103 +11,72 @@ const tipos = [
 ];
 
 export default function Index() {
-    const [step, setStep] = useState(1);
-    const [cpf, setCpf] = useState('');
-    const [selectedTipo, setSelectedTipo] = useState(null);
-    const form = useForm({
+    const { data, setData, post, processing, errors, reset } = useForm({
         tipo: '',
         cpf: '',
+
     });
 
-    function handleTipoSelect(tipo) {
-        setSelectedTipo(tipo);
-        form.setData('tipo', tipo.value);
-        setStep(2);
-    }
-
-    function handleKeyPress(digit) {
-        if (cpf.length < 11) setCpf(c => c + digit);
-    }
-
-    function handleBackspace() {
-        setCpf(c => c.slice(0, -1));
-    }
-
-    function submit() {
-        form.setData('cpf', cpf);
-        form.post(route('senhas.store'), {
-            onSuccess: () => {
-                setCpf('');
-                setStep(1);
-                setSelectedTipo(null);
-            }
+    function submit(e) {
+        e.preventDefault();
+        post(route('senhas.store'), {
+            onSuccess: () => reset(),
         });
     }
 
     return (
-        <>
-            <Head title="Gerar Senha" />
-            <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
-                <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-6">
-                    {step === 1 && (
-                        <>
-                            <h2 className="text-xl font-semibold mb-4 text-center">Selecione o tipo de atendimento</h2>
-                            <div className="grid grid-cols-1 gap-3">
-                                {tipos.map(t => (
-                                    <button
-                                        key={t.value}
-                                        onClick={() => handleTipoSelect(t)}
-                                        className="py-3 px-4 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition"
-                                    >
-                                        {t.label}
-                                    </button>
-                                ))}
-                            </div>
-                        </>
-                    )}
+        <GuestLayout
+            header={<h2 className="text-xl font-semibold leading-tight text-gray-800">Criar Senha</h2>}
+        >
+            <Head title="Criar Senha" />
 
-                    {step === 2 && (
-                        <>
-                            <button
-                                onClick={() => { setStep(1); setCpf(''); }}
-                                className="text-sm text-teal-600 hover:underline mb-2"
-                            >
-                                ← Voltar
-                            </button>
-                            <h2 className="text-xl font-semibold mb-2 text-center">
-                                {selectedTipo.label}
-                            </h2>
-                            <div className="bg-gray-200 rounded-lg p-4 mb-4 text-center font-mono text-2xl tracking-widest">
-                                {cpf.padEnd(11, '•')}
-                            </div>
-                            <div className="grid grid-cols-3 gap-2 mb-4">
-                                {['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'].map(d => (
-                                    <button
-                                        key={d}
-                                        onClick={() => handleKeyPress(d)}
-                                        className="py-4 bg-white rounded-lg shadow hover:bg-gray-50 transition text-xl"
-                                    >
-                                        {d}
-                                    </button>
-                                ))}
-                                <button
-                                    onClick={handleBackspace}
-                                    className="col-span-3 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition"
-                                >
-                                    Apagar
-                                </button>
-                            </div>
-                            <button
-                                onClick={submit}
-                                disabled={cpf.length !== 11 || form.processing}
-                                className="w-full py-3 bg-teal-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-teal-700 transition"
-                            >
-                                {form.processing ? 'Gerando...' : 'Confirmar'}
-                            </button>
-                        </>
-                    )}
+            <form onSubmit={submit} className="max-w-md mx-auto space-y-6 bg-white p-6 rounded shadow">
+                <div>
+                    <label htmlFor="tipo" className="block font-medium text-gray-700">Tipo de Atendimento</label>
+                    <select
+                        id="tipo"
+                        value={data.tipo}
+                        onChange={e => setData('tipo', e.target.value)}
+                        className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-200"
+                    >
+                        <option value="">Selecione...</option>
+                        {tipos.map(t => (
+                            <option key={t.value} value={t.value}>{t.label}</option>
+                        ))}
+                    </select>
+                    {errors.tipo && <div className="text-red-600 text-sm mt-1">{errors.tipo}</div>}
                 </div>
-            </div>
-        </>
+
+                <div>
+                    <label htmlFor="cpf" className="block font-medium text-gray-700">CPF</label>
+                    <input
+                        type="text"
+                        id="cpf"
+                        maxLength={11}
+                        value={data.cpf}
+                        onChange={e => setData('cpf', e.target.value.replace(/\D/g, ''))}
+                        className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-200"
+                        placeholder="Somente números"
+                    />
+                    {errors.cpf && <div className="text-red-600 text-sm mt-1">{errors.cpf}</div>}
+                </div>
+
+                <div className="flex items-center gap-4">
+                    <button
+                        type="submit"
+                        disabled={processing}
+                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                    >
+                        {processing ? 'Enviando...' : 'Salvar'}
+                    </button>
+                    <Link
+                        href={route('senhas.index')}
+                        className="px-4 py-2 border rounded text-gray-700 hover:bg-gray-100 transition-colors"
+                    >
+                        Cancelar
+                    </Link>
+                </div>
+            </form>
+        </GuestLayout>
     );
 }

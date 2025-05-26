@@ -12,6 +12,7 @@ class Senha extends Model
     use HasFactory, SoftDeletes;
     protected $fillable = [
         'cpf',
+        'tipo',
         'codigo',
         'prioridade',
         'status',

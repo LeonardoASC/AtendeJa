@@ -23,10 +23,8 @@ class StoreSenhaRequest extends FormRequest
     {
         return [
             'cpf' => 'required|string|size:11',
-            'codigo' => 'required|string|unique:senhas,codigo',
             'tipo' => 'required',
-            'prioridade' => 'required|in:alta,media,baixa',
-            'status' => 'required|in:aguardando,atendido',
+
         ];
     }
 }

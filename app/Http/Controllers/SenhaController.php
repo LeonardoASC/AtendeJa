@@ -6,6 +6,14 @@ use App\Models\Senha;
 use App\Http\Requests\StoreSenhaRequest;
 use App\Http\Requests\UpdateSenhaRequest;
 use Inertia\Inertia;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+
 
 
 class SenhaController extends Controller
@@ -13,9 +21,14 @@ class SenhaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+
+        public function index()
     {
-        return Inertia::render('Senha/Index');
+        $senhas = Senha::orderBy('created_at', 'desc')->get();
+
+        return Inertia::render('Senha/Index', [
+            'senhas' => $senhas,
+        ]);
     }
 
     /**
@@ -29,33 +42,50 @@ class SenhaController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreSenhaRequest $request)
+  public function store(StoreSenhaRequest $request): RedirectResponse
     {
-        $data = $request->validated();
+        $validated = $request->validated();
 
-        // Mapear prefixo conforme tipo
         $prefixMap = [
-            'prova_de_vida'             => 'PV',
-            'processo_administrativo'   => 'PA',
-            'adiantamento_13'           => 'AD',
-            'info_aposentadoria'        => 'IA',
-            'info_contribuicao'         => 'CP',
+            'prova_de_vida'           => 'PV',
+            'processo_administrativo' => 'PA',
+            'adiantamento_13'         => 'AD',
+            'info_aposentadoria'      => 'IA',
+            'info_contribuicao'       => 'CP',
         ];
-        $prefix = $prefixMap[$data['tipo']] ?? 'XX';
 
-        // Contar antes de inserir
-        $count = Senha::where('tipo', $data['tipo'])->count() + 1;
+        $tipo   = $validated['tipo'];
+        $prefix = $prefixMap[$tipo] ?? 'XX';
 
-        // Formatar código, ex: PV-01, PA-02...
-        $data['codigo'] = sprintf('%s-%02d', $prefix, $count);
+        // Pega o último do mesmo tipo gerado no dia de HOJE
+        $ultimo = Senha::where('tipo', $tipo)
+            ->whereDate('created_at', Carbon::today())
+            ->orderBy('id', 'desc')
+            ->first();
+        
+        if ($ultimo) {
+            // se tiver senha, pega o número dela e incrementa mais 1
+            $numero = intval(substr($ultimo->codigo, strpos($ultimo->codigo, '-') + 1));
+            $next   = $numero + 1;
+        } else {
+            // se não tiver senha, começa do 1
+            $next = 1;
+        }
 
-        // Criar registro
-        $senha = Senha::create($data);
+        // formata 01, 02, ..., 10, 11...
+        $seq    = str_pad($next, 3, '00', STR_PAD_LEFT);
+        $codigo = "{$prefix}-{$seq}";
 
-        return response()->json([
-            'message' => 'Senha criada com sucesso',
-            'data'    => $senha,
-        ], 201);
+        // cria a senha
+        $senha = Senha::create([
+            'tipo'       => $tipo,
+            'cpf'        => $validated['cpf'],
+            'codigo'     => $codigo,
+            'prioridade' => 'baixa',
+            'status'     => 'aguardando',
+        ]);
+
+        return back()->with('success', "Senha {$codigo} criada com sucesso!");
     }
 
     /**

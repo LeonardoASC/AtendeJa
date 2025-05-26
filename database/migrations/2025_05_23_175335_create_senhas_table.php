@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('senhas', function (Blueprint $table) {
             $table->id();
-            $table->string('cpf', 11);
-            $table->string('codigo', 10)->unique();
-            $table->string('tipo')->default('Informacao');
-            $table->enum('prioridade', ['alta', 'media', 'baixa'])->default('baixa');
-            $table->enum('status', ['aguardando', 'atendido'])->default('aguardando');
+            $table->string('cpf', 11)->nullable();
+            $table->string('tipo')->nullable();
+            $table->string('codigo', 10)->nullable();
+            $table->string('prioridade')->nullable();
+            $table->string('status')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
