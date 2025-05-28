@@ -25,12 +25,34 @@ export default function GuichePanel({ guiche, initialSenha = null, queue = [], a
         return () => clearInterval(int);
     }, [current]);
 
+
+    useEffect(() => {
+        if (window.Echo) {
+            console.log('Subscribing to senhas.novas channel...');
+            const channel = window.Echo.channel('senhas.novas');
+
+            channel.listen('.SenhaCriada', (event) => {
+                console.log('SenhaCriada event received:', event);
+                router.reload();
+            });
+
+            return () => {
+                console.log('Leaving senhas.novas channel...');
+                window.Echo.leave('senhas.novas');
+            };
+        } else {
+            console.error('Laravel Echo not found. Make sure it is initialized.');
+        }
+    }, []);
+
     const chamar = () => {
         setLoading(true);
         router.post(
             route('senhas.chamar'),
             { guiche },
             {
+                preserveState: true,
+                preserveScroll: true,
                 onSuccess: (page) => setCurrent(page.props.senha),
                 onFinish: () => setLoading(false),
             },
@@ -44,7 +66,12 @@ export default function GuichePanel({ guiche, initialSenha = null, queue = [], a
             route('senhas.finalizar', current.id),
             {},
             {
-                onSuccess: () => setCurrent(null),
+                preserveState: true,
+                preserveScroll: true,
+                onSuccess: () => {
+                    setCurrent(null);
+                    router.reload({ only: ['attended'] });
+                },
                 onFinish: () => setLoading(false),
             },
         );
@@ -89,7 +116,7 @@ export default function GuichePanel({ guiche, initialSenha = null, queue = [], a
                         <button
                             className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-3xl px-12 py-6 rounded-2xl flex items-center gap-4 transition disabled:opacity-60"
                             onClick={chamar}
-                            disabled={loading}
+                            disabled={loading || queue.length === 0}
                         >
                             <PlayIcon className="w-10 h-10" /> Chamar próxima senha
                         </button>

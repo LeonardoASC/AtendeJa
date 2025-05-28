@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use App\Models\TipoAtendimento;
+use App\Events\SenhaCriada;
 
 
 class SenhaController extends Controller
@@ -75,14 +76,10 @@ class SenhaController extends Controller
             'status'     => 'aguardando',
             'tipo_atendimento_id' => $tipo->id,
         ]);
+   
+        SenhaCriada::dispatch($senha);
 
-        return redirect()
-        ->route('senhas.index')
-        ->with('senha', [
-            'tipo'   => $senha->tipo,
-            'cpf'    => $senha->cpf,
-            'codigo' => $senha->codigo,
-        ]);
+        return redirect()->route('senhas.index');
     }
 
     /**
@@ -178,7 +175,7 @@ class SenhaController extends Controller
                 'guiche'  => $guiche,
             ]);
 
-            event(new \App\Events\SenhaAtualizada($senha));
+            // event(new \App\Events\SenhaAtualizada($senha));
             return $senha;
         });
     }
@@ -186,7 +183,7 @@ class SenhaController extends Controller
     public function finalizar(Senha $senha)
     {
         $senha->update(['status' => 'atendida']);
-        event(new \App\Events\SenhaAtualizada($senha));
+        // event(new \App\Events\SenhaAtualizada($senha));
 
         return response()->json(['message' => 'OK']);
     }

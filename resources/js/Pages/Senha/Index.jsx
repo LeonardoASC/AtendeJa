@@ -1,10 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Head, useForm } from '@inertiajs/react';
 
 export default function Index({ tipoAtendimentos }) {
     const [step, setStep] = useState(0);
     const [senhaGerada, setSenhaGerada] = useState(null);
-    const { data, setData, post, processing, errors, reset } = useForm({ tipo: '', cpf: '' });
+    const { data, setData, post, processing, errors, reset } = useForm({ tipo_atendimento_id: '', cpf: '' });
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && window.Echo) {
+            const channel = window.Echo.channel('senhas.novas');
+            channel.listen('.SenhaCriada', (event) => {
+                if (event.senha && event.senha.codigo && step === 2) {
+                    setSenhaGerada({
+                        tipo: tipoAtendimentos.find(t => t.id === event.senha.tipo_atendimento_id)?.nome || 'Desconhecido',
+                        cpf: event.senha.cpf,
+                        codigo: event.senha.codigo,
+                    });
+                    setStep(3);
+                }
+            });
+            return () => {
+                window.Echo.leave('senhas.novas');
+            };
+        } else {
+            console.error('Index.jsx: Laravel Echo not found or not running in browser.');
+        }
+    }, [step, tipoAtendimentos]);
 
     function handleDigit(d) {
         if (data.cpf.length < 11) setData('cpf', data.cpf + d);
@@ -19,11 +40,10 @@ export default function Index({ tipoAtendimentos }) {
     function submit(e) {
         e.preventDefault();
         post(route('senhas.store'), {
-            onSuccess: (page) => {
-                const senha = page.props.senha;
-                setSenhaGerada(senha);
-                setStep(3);
-            },
+            onError: (pageErrors) => {
+                console.error("Erro ao gerar senha:", pageErrors);
+                
+            }
         });
     }
 
