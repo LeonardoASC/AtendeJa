@@ -129,20 +129,20 @@ class SenhaController extends Controller
 
     public function guichePanel(string $guiche)
     {
-        $tipo = TipoAtendimento::where('guiche', $guiche)->firstOrFail();
+        $tipoIds = TipoAtendimento::where('guiche', $guiche)->pluck('id');
 
-        $current = $tipo->senhas()
+        $current = Senha::whereIn('tipo_atendimento_id', $tipoIds)
             ->where('status', 'atendendo')
             ->latest('updated_at')
             ->first();
 
-        $queue = $tipo->senhas()
+        $queue = Senha::whereIn('tipo_atendimento_id', $tipoIds)
             ->where('status', 'aguardando')
             ->orderBy('created_at')
             ->take(5)
             ->pluck('codigo');
 
-        $attended = $tipo->senhas()
+        $attended = Senha::whereIn('tipo_atendimento_id', $tipoIds)
             ->where('status', 'atendida')
             ->latest('updated_at')
             ->take(5)
@@ -160,32 +160,36 @@ class SenhaController extends Controller
     {
         $guiche = (int) $request->input('guiche');
 
-        return DB::transaction(function () use ($guiche) {
-            $senha = Senha::where('status', 'aguardando')
+        DB::transaction(function () use ($guiche) {
+            $tipoIds = TipoAtendimento::where('guiche', $guiche)->pluck('id');
+            $senha = Senha::whereIn('tipo_atendimento_id', $tipoIds)
+                ->where('status', 'aguardando')
                 ->orderBy('created_at')
                 ->lockForUpdate()
-                ->first();
-
-            if (!$senha) {
-                return response()->json(['message' => 'Fila vazia'], 404);
-            }
+                ->firstOrFail();
 
             $senha->update([
-                'status'  => 'atendendo',
-                'guiche'  => $guiche,
+                'status'     => 'atendendo',
             ]);
-
-            // event(new \App\Events\SenhaAtualizada($senha));
-            return $senha;
         });
+
+        return redirect()->route('guiche.panel', ['guiche' => $guiche]);
     }
 
-    public function finalizar(Senha $senha)
+    public function finalizar(Request $request, Senha $senha)
     {
-        $senha->update(['status' => 'atendida']);
-        // event(new \App\Events\SenhaAtualizada($senha));
+        $senha->update([
+            'status'      => 'atendida',
+        ]);
 
-        return response()->json(['message' => 'OK']);
+        $guiche = $request->input('guiche');
+
+        if (!$guiche) {
+            $senha->load('tipoAtendimento');
+            $guiche = $senha->tipoAtendimento->guiche;
+        }
+
+        return redirect()->route('guiche.panel', ['guiche' => $guiche]);
     }
    
 }

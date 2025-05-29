@@ -25,6 +25,9 @@ export default function GuichePanel({ guiche, initialSenha = null, queue = [], a
         return () => clearInterval(int);
     }, [current]);
 
+    useEffect(() => {
+        setCurrent(initialSenha);
+    }, [initialSenha]);
 
     useEffect(() => {
         if (window.Echo) {
@@ -51,29 +54,23 @@ export default function GuichePanel({ guiche, initialSenha = null, queue = [], a
             route('senhas.chamar'),
             { guiche },
             {
-                preserveState: true,
                 preserveScroll: true,
-                onSuccess: (page) => setCurrent(page.props.senha),
                 onFinish: () => setLoading(false),
-            },
+            }
         );
     };
 
     const finalizar = () => {
         if (!current) return;
         setLoading(true);
+
         router.post(
             route('senhas.finalizar', current.id),
-            {},
+            { guiche },
             {
-                preserveState: true,
                 preserveScroll: true,
-                onSuccess: () => {
-                    setCurrent(null);
-                    router.reload({ only: ['attended'] });
-                },
                 onFinish: () => setLoading(false),
-            },
+            }
         );
     };
 
