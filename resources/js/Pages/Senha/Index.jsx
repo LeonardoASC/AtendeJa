@@ -58,7 +58,7 @@ export default function Index({ tipoAtendimentos }) {
     return (
         <>
             <Head title="Criar Senha" />
-            <div className="w-full h-screen flex flex-col items-center justify-center bg-gray-100 p-4 md:p-8 overflow-hidden">
+            <div className="w-full h-screen flex flex-col items-center justify-center bg-[#004B6E] p-4 md:p-8 overflow-hidden">
 
                 <div className="w-full h-full bg-white rounded-2xl shadow-lg flex flex-col overflow-hidden">
 

@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 
 export default function Telao({ senhasAtendidas = [] }) {
     const lastCalled = senhasAtendidas[0] ?? null;
     const recent = senhasAtendidas.slice(0, 6);
-
-    console.log('senhasAtendidas', senhasAtendidas);
-
 
     const [now, setNow] = useState(new Date());
     useEffect(() => {
@@ -16,6 +13,34 @@ export default function Telao({ senhasAtendidas = [] }) {
 
     const dateStr = now.toLocaleDateString('pt-BR');
     const timeStr = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+    //  useEffect(() => {
+    //         if (window.Echo) {
+    //             const channel = window.Echo.channel('senhas.telao');
+    //             channel.listen('.SenhaAtualizada', (event) => {
+    //                 console.log('SenhaAtualizada event received:', event);
+    //                 router.reload();
+    //             });
+
+    //             return () => {
+    //                 console.log('Leaving senhas.telao channel...');
+    //                 window.Echo.leave('senhas.telao');
+    //             };
+    //         } else {
+    //             console.error('Laravel Echo not found. Make sure it is initialized.');
+    //         }
+    //     }, []);
+
+    useEffect(() => {
+        if (window.Echo) {
+            const channel = window.Echo.channel('senhas.telao')
+                .listen('.SenhaAtualizada', () => {
+                    router.reload({ only: ['senhasAtendidas'] });
+                });
+
+            return () => window.Echo.leave('senhas.telao');
+        }
+    }, []);
 
     return (
         <>

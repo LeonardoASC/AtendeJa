@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use App\Models\TipoAtendimento;
 use App\Events\SenhaCriada;
+use App\Events\SenhaAtualizada;
 
 
 class SenhaController extends Controller
@@ -117,9 +118,10 @@ class SenhaController extends Controller
     public function telao()
     {
         $senhasAtendidas = Senha::with('tipoAtendimento')
-            ->where('status', 'atendida')
+            ->where('status', 'atendendo')
+            ->orWhere('status', 'atendida')
             ->orderBy('updated_at', 'desc')
-            ->take(3)
+            ->take(10)
             ->get();
 
         return Inertia::render('Senha/Telao', [
@@ -160,18 +162,22 @@ class SenhaController extends Controller
     {
         $guiche = (int) $request->input('guiche');
 
-        DB::transaction(function () use ($guiche) {
+        $senha = DB::transaction(function () use ($guiche) {
             $tipoIds = TipoAtendimento::where('guiche', $guiche)->pluck('id');
+
             $senha = Senha::whereIn('tipo_atendimento_id', $tipoIds)
                 ->where('status', 'aguardando')
                 ->orderBy('created_at')
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            $senha->update([
-                'status'     => 'atendendo',
-            ]);
+            $senha->update(['status' => 'atendendo']);
+
+            return $senha;
         });
+        
+        $senha->load('tipoAtendimento');
+        SenhaAtualizada::dispatch($senha);
 
         return redirect()->route('guiche.panel', ['guiche' => $guiche]);
     }
