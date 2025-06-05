@@ -10,27 +10,13 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SenhaController;
-use App\Http\Controllers\CounterController;
-use App\Events\CounterUpdated;
 use Illuminate\Support\Facades\Cache;
 
 Route::get('/', [SiteController::class, 'index'])->name('site.index');
-Route::resource('senhas', SenhaController::class);
+
 Route::get('/telao', [SenhaController::class, 'telao'])->name('senhas.telao');
-Route::post('/senhas/chamar',[SenhaController::class, 'chamar'])->name('senhas.chamar');
-Route::post('/senhas/{senha}/finalizar', [SenhaController::class, 'finalizar'])->name('senhas.finalizar');
-Route::get('/guiche/{guiche}', [SenhaController::class, 'guichePanel'])->name('guiche.panel');
 
-Route::controller(CounterController::class)->group(function () {
-    Route::get('/counter', 'index')->name('counter.index');
-    Route::post('/counter/increment', 'increment')->name('counter.increment');
-    Route::post('/counter/decrement', 'decrement')->name('counter.decrement');
-});
-
-Route::middleware(['auth:admin', 'verified'])
-    ->prefix('admin')
-    ->group(function () {
-
+Route::middleware(['auth:admin', 'verified'])->prefix('admin')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -40,6 +26,11 @@ Route::middleware(['auth:admin', 'verified'])
         Route::resource('users', UserController::class);
         Route::resource('admins', AdminController::class);
         Route::resource('roles', RoleController::class);
+
+        Route::resource('senhas', SenhaController::class);
+        Route::post('/senhas/chamar',[SenhaController::class, 'chamar'])->name('senhas.chamar');
+        Route::post('/senhas/{senha}/finalizar', [SenhaController::class, 'finalizar'])->name('senhas.finalizar');
+        Route::get('/guiche/{guiche}', [SenhaController::class, 'guichePanel'])->name('guiche.panel');
 
     });
 

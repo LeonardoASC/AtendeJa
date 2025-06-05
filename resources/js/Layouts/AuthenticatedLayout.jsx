@@ -1,9 +1,9 @@
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
-import { Link, usePage } from '@inertiajs/react';
+import { usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
-
+import { HomeIcon, NewspaperIcon, DocumentTextIcon, PhotoIcon } from '@heroicons/react/24/outline';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -11,7 +11,7 @@ export default function AuthenticatedLayout({ header, children }) {
     const { auth } = usePage().props;
     const user = auth.admin ?? auth.user;
     const flash = usePage().props.flash || {};
-
+    const [search, setSearch] = useState('');
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
     useEffect(() => {
@@ -22,6 +22,15 @@ export default function AuthenticatedLayout({ header, children }) {
             toast.error(flash.error);
         }
     }, [flash]);
+
+    const links = [
+        { route: 'dashboard', label: 'Dashboard', perm: 'ver-dashboard', icon: HomeIcon },
+        { route: 'senhas.index', label: 'Senhas', perm: 'ver-dashboard', icon: DocumentTextIcon },
+    ];
+
+    const filtered = links.filter(
+        ({ label }) => label.toLowerCase().includes(search.toLowerCase()),
+    );
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -36,17 +45,20 @@ export default function AuthenticatedLayout({ header, children }) {
                                     </div>
                                 </a>
                             </div>
-                            {auth.permissions?.includes('ver-dashboard') && (
-                                <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                    <NavLink
-                                        href={route('dashboard')}
-                                        active={route().current('dashboard')}
-                                    >
-                                        Dashboard
-                                    </NavLink>
-                                </div>
+
+                            {filtered.map(({ route: r, icon: Icon, label, perm }) =>
+                                auth.permissions?.includes(perm) && (
+                                    <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                        <NavLink
+                                            key={r}
+                                            href={route(r)}
+                                            active={route().current(r)}
+                                        >
+                                            <span>{label}</span>
+                                        </NavLink>
+                                    </div>
+                                ),
                             )}
-                            
                         </div>
 
                         <div className="hidden sm:ms-6 sm:flex sm:items-center">
@@ -101,7 +113,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                                 type="button"
                                                 className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
                                             >
-                                                {user.name} - {user.role}
+                                                {user.name}
                                                 <svg
                                                     className="-me-0.5 ms-2 h-4 w-4"
                                                     xmlns="http://www.w3.org/2000/svg"
@@ -179,20 +191,21 @@ export default function AuthenticatedLayout({ header, children }) {
                     </div>
                 </div>
 
-
-                {/* mobile */}
                 <div className={(showingNavigationDropdown ? 'block' : 'hidden') + ' sm:hidden'}>
-                    {auth.permissions?.includes('ver-dashboard') && (
-                        <div className="space-y-1 pb-3 pt-2">
-                            <ResponsiveNavLink
-                                href={route('dashboard')}
-                                active={route().current('dashboard')}
-                            >
-                                Dashboard
-                            </ResponsiveNavLink>
-                        </div>
+                    {filtered.map(({ route: r, icon: Icon, label, perm }) =>
+                        auth.permissions?.includes(perm) && (
+                            <div className="space-y-1 pb-3 pt-2">
+                                <ResponsiveNavLink
+                                    key={r}
+                                    href={route(r)}
+                                    active={route().current(r)}
+                                >
+                                    <span>{label}</span>
+                                </ResponsiveNavLink>
+                            </div>
+                        ),
                     )}
-                    
+
                     <div className="border-t border-gray-200 pb-1 pt-4">
                         <div className="px-4">
                             <div className="text-base font-medium text-gray-800">
