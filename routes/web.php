@@ -11,6 +11,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SenhaController;
 use Illuminate\Support\Facades\Cache;
+use App\Http\Controllers\GuicheController;
 
 Route::get('/', [SiteController::class, 'index'])->name('site.index');
 
@@ -30,8 +31,9 @@ Route::middleware(['auth:admin', 'verified'])->prefix('admin')->group(function (
         Route::resource('senhas', SenhaController::class);
         Route::post('/senhas/chamar',[SenhaController::class, 'chamar'])->name('senhas.chamar');
         Route::post('/senhas/{senha}/finalizar', [SenhaController::class, 'finalizar'])->name('senhas.finalizar');
-        Route::get('/guiche/{guiche}', [SenhaController::class, 'guichePanel'])->name('guiche.panel');
-
+        
+        Route::get('/guiche', [GuicheController::class, 'index'])->name('guiche.index');
+        Route::get('/guiche/{guiche}', [GuicheController::class, 'guichePanel'])->name('guiche.panel');
     });
 
 require __DIR__.'/auth.php';

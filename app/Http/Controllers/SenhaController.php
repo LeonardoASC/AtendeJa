@@ -34,17 +34,6 @@ class SenhaController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreSenhaRequest $request)
     {
         $data = $request->validated();
@@ -83,38 +72,6 @@ class SenhaController extends Controller
         return redirect()->route('senhas.index');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Senha $senha)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Senha $senha)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateSenhaRequest $request, Senha $senha)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Senha $senha)
-    {
-        //
-    }
-
     public function telao()
     {
         $senhasAtendidas = Senha::with('tipoAtendimento')
@@ -126,35 +83,6 @@ class SenhaController extends Controller
 
         return Inertia::render('Senha/Telao', [
             'senhasAtendidas' => $senhasAtendidas,
-        ]);
-    }
-
-    public function guichePanel(string $guiche)
-    {
-        $tipoIds = TipoAtendimento::where('guiche', $guiche)->pluck('id');
-
-        $current = Senha::whereIn('tipo_atendimento_id', $tipoIds)
-            ->where('status', 'atendendo')
-            ->latest('updated_at')
-            ->first();
-
-        $queue = Senha::whereIn('tipo_atendimento_id', $tipoIds)
-            ->where('status', 'aguardando')
-            ->orderBy('created_at')
-            ->take(5)
-            ->pluck('codigo');
-
-        $attended = Senha::whereIn('tipo_atendimento_id', $tipoIds)
-            ->where('status', 'atendida')
-            ->latest('updated_at')
-            ->take(5)
-            ->pluck('codigo');
-
-        return Inertia::render('Senha/GuichePanel', [
-            'guiche'       => $guiche,
-            'initialSenha' => $current,
-            'queue'        => $queue,
-            'attended'     => $attended,
         ]);
     }
 
