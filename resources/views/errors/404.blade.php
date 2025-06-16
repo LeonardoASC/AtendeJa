@@ -55,8 +55,8 @@
         <!-- Logo -->
         <div class="logo">
             <img 
-            src="/images/logoestacionamento.png" 
-            alt="Logo do Sistema de Estacionamento" 
+            src="/images/logo_atende_ai.png" 
+            alt="Logo do Sistema de Atendimento PREVMOC" 
             className="w-64 h-auto mb-6"
         />
         </div>

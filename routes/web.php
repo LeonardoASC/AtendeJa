@@ -15,10 +15,10 @@ use App\Http\Controllers\GuicheController;
 
 Route::get('/', [SiteController::class, 'index'])->name('site.index');
 
-Route::get('/telao', [SenhaController::class, 'telao'])->name('senhas.telao');
-
 Route::middleware(['auth:admin', 'verified'])->prefix('admin')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+        Route::get('/telao', [SenhaController::class, 'telao'])->name('senhas.telao');
 
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

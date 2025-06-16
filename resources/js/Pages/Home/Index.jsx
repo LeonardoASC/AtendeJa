@@ -5,17 +5,15 @@ export default function Home({ auth }) {
         <>
             <Head title="Bem vindo" />
             <div className="font-sans text-gray-800 min-h-screen flex flex-col items-center justify-center bg-gray-50">
-
                 <img
-                    src="/images/logoestacionamento.png"
-                    alt="Logo do Sistema de Estacionamento"
-                    className="w-64 h-auto mb-6"
+                    src="/images/logo_atende_ai.png"
+                    alt="Logo do Sistema de atende aí"
+                    className="w-96 h-auto mb-6"
                 />
-                <h1 className="text-2xl font-bold mb-6">Sistema de Estacionamento</h1>
                 <div className="flex space-x-4">
                     <a
                         href="/login"
-                        className="px-4 py-2 bg-green-900 text-white rounded hover:bg-green-600 transition"
+                        className="px-8 py-4 text-xl bg-gray-900 text-white rounded-2xl hover:bg-gray-600 transition"
                     >
                         Login Administrador
                     </a>
