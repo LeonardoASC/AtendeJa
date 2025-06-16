@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Head, router } from '@inertiajs/react';
 
 export default function Telao({ senhasAtendidas = [] }) {
@@ -6,6 +6,10 @@ export default function Telao({ senhasAtendidas = [] }) {
     const recent = senhasAtendidas.slice(0, 6);
 
     const [now, setNow] = useState(new Date());
+
+    const previousId = useRef(null);
+    const beepRef = useRef(null);
+
     useEffect(() => {
         const t = setInterval(() => setNow(new Date()), 1_000);
         return () => clearInterval(t);
@@ -25,10 +29,19 @@ export default function Telao({ senhasAtendidas = [] }) {
         }
     }, []);
 
+    useEffect(() => {
+        if (lastCalled && lastCalled.id !== previousId.current) {
+            previousId.current = lastCalled.id;
+            beepRef.current?.play().catch(() => {
+                console.warn('Não foi possível reproduzir o som de alerta.');
+            });
+        }
+    }, [lastCalled]);
+
     return (
         <>
             <Head title="Telão de Senhas" />
-
+            <audio ref={beepRef} src="/sounds/beep.mp3" preload="auto" />
             <div className="w-full h-screen flex flex-col bg-[#004B6E] text-white overflow-hidden font-[\'Inter\',sans-serif]">
 
                 <header className="w-full bg-white h-16 flex items-center justify-center px-4">
