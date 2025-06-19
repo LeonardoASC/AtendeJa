@@ -1,7 +1,21 @@
+// resources/js/Pages/Autenticado/Dashboard/Index.jsx
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-import { UserIcon, CalendarDaysIcon, ClockIcon, ChartBarIcon } from '@heroicons/react/24/outline';
+import {
+    BarChart,
+    Bar,
+    XAxis,
+    YAxis,
+    Tooltip,
+    ResponsiveContainer,
+    CartesianGrid,
+} from 'recharts';
+import {
+    UserIcon,
+    CalendarDaysIcon,
+    ClockIcon,
+    ChartBarIcon,
+} from '@heroicons/react/24/outline';
 import DashboardCard from './Partials/DashboardCard';
 
 function formatSeconds(total) {
@@ -19,13 +33,41 @@ export default function Dashboard({ metrics = {}, seriesHora = {} }) {
 
     return (
         <AuthenticatedLayout
-            header={<h2 className="text-xl font-semibold leading-tight text-gray-800">Dashboard</h2>}
+            header={
+                <h2 className="text-xl font-semibold leading-tight text-gray-100">
+                    Dashboard
+                </h2>
+            }
         >
             <Head title="Dashboard" />
 
-            <div className="min-h-screen bg-gradient-to-r from-blue-900 via-cyan-700 to-teal-500 py-10">
+            {/* Fundo preto fosco */}
+            <div className="min-h-screen bg-gradient-to-br from-neutral-800 via-neutral-900 to-black py-12">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {/* Introdução */}
+                    <section className="mb-10 max-w-3xl text-gray-300">
+                        <p className="text-lg">
+                            Painel gerencial em tempo real. As métricas abaixo consolidam o
+                            desempenho dos atendimentos e apontam gargalos operacionais.
+                        </p>
+                        <ul className="mt-4 list-disc list-inside space-y-1 pl-2 text-sm">
+                            <li>
+                                <strong>Volume:</strong> acompanha a quantidade de senhas
+                                concluídas em diferentes janelas de tempo.
+                            </li>
+                            <li>
+                                <strong>Produtividade:</strong> mede o tempo médio de
+                                atendimento para identificar oportunidades de otimização.
+                            </li>
+                            <li>
+                                <strong>Pico de demanda:</strong> revela o horário mais
+                                movimentado do dia para reforçar a equipe.
+                            </li>
+                        </ul>
+                    </section>
+
+                    {/* Métricas em cards */}
+                    <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
                         <DashboardCard
                             title="CPF mais frequente"
                             value={metrics.cpf_mais_frequente || '-'}
@@ -58,29 +100,13 @@ export default function Dashboard({ metrics = {}, seriesHora = {} }) {
                         />
                         <DashboardCard
                             title="Horário de pico"
-                            value={metrics.hora_pico != null ? `${metrics.hora_pico}:00` : '-'}
+                            value={
+                                metrics.hora_pico != null ? `${metrics.hora_pico}:00` : '-'
+                            }
                             icon={ChartBarIcon}
                         />
                     </div>
 
-                    <section className="mt-12 rounded-2xl bg-white/70 backdrop-blur shadow-xl p-8">
-                        <h3 className="mb-4 text-lg font-semibold text-gray-800">
-                            Atendimentos por hora (hoje)
-                        </h3>
-                        <ResponsiveContainer width="100%" height={320}>
-                            <BarChart data={chartData}>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="hora" tick={{ fontSize: 12 }} />
-                                <YAxis allowDecimals={false} />
-                                <Tooltip />
-                                <Bar
-                                    dataKey="total"
-                                    radius={[4, 4, 0, 0]}
-                                    fill="#0d9488"
-                                />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </section>
                 </div>
             </div>
         </AuthenticatedLayout>

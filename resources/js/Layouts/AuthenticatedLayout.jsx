@@ -25,8 +25,8 @@ export default function AuthenticatedLayout({ header, children }) {
 
     const links = [
         { route: 'dashboard', label: 'Dashboard', perm: 'ver-dashboard', icon: HomeIcon },
-        { route: 'senhas.index', label: 'Senhas', perm: 'ver-dashboard', icon: DocumentTextIcon },
         { route: 'guiche.index', label: 'Guichês', perm: 'ver-dashboard', icon: HomeIcon },
+        { route: 'senhas.index', label: 'Senhas', perm: 'ver-dashboard', icon: DocumentTextIcon },
         { route: 'senhas.telao', label: 'Telão', perm: 'ver-dashboard', icon: HomeIcon },
     ];
 
@@ -257,14 +257,6 @@ export default function AuthenticatedLayout({ header, children }) {
                     </div>
                 </div>
             </nav>
-
-            {header && (
-                <header className="bg-white shadow">
-                    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                        {header}
-                    </div>
-                </header>
-            )}
 
             <main>{children}</main>
             <ToastContainer

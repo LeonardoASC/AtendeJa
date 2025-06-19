@@ -33,10 +33,8 @@ export default function Index({ tipoAtendimentos }) {
 
     const steps = ['Início', 'Serviço', 'CPF', 'Concluído'];
 
-    const handleDigit = (d) =>
-        data.cpf.length < 11 && setData('cpf', data.cpf + d);
-    const handleBackspace = () =>
-        setData('cpf', data.cpf.slice(0, -1));
+    const handleDigit = (d) => data.cpf.length < 11 && setData('cpf', data.cpf + d);
+    const handleBackspace = () => setData('cpf', data.cpf.slice(0, -1));
     const handleClear = () => setData('cpf', '');
     const handleRestart = () => {
         reset();
@@ -53,7 +51,7 @@ export default function Index({ tipoAtendimentos }) {
         <>
             <Head title="Criar Senha" />
             <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-900 via-cyan-700 to-teal-500 py-10 px-4">
-                <div className="relative w-full max-w-2xl rounded-3xl bg-white/20 backdrop-blur-lg ring-1 ring-white/30 shadow-2xl overflow-hidden">
+                <div className="relative w-full max-w-2xl rounded-3xl bg-white/10 backdrop-blur-lg ring-1 ring-white/30 shadow-2xl overflow-hidden">
                     <div className="relative p-6">
                         <div className="absolute left-8 right-8 top-1/2 -z-10 h-1 mt-10 bg-white/30 rounded-full" />
                         <div className="absolute left-8 top-1/2 -translate-y-1/2 h-1 mt-10 bg-gradient-to-r from-cyan-400 to-teal-300 rounded-full transition-all duration-500"
@@ -85,8 +83,7 @@ export default function Index({ tipoAtendimentos }) {
                                     Bem-vindo!
                                 </h1>
                                 <p className="text-lg text-white/90">
-                                    Clique no botão abaixo para gerar sua
-                                    senha de atendimento.
+                                    Clique no botão abaixo para gerar sua senha de atendimento.
                                 </p>
                                 <button
                                     onClick={() => setStep(1)}
