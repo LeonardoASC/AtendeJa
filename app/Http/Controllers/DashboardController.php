@@ -44,6 +44,12 @@ class DashboardController extends Controller
             ->orderByDesc('total')
             ->first();
 
+        $seriesHora = Senha::selectRaw('HOUR(created_at) as hora, COUNT(*) as total')
+            ->whereDate('created_at', Carbon::today())
+            ->groupBy('hora')
+            ->orderBy('hora')
+            ->pluck('total', 'hora'); 
+
         return Inertia::render('Autenticado/Dashboard/Index', [
             'metrics' => [
                 'cpf_mais_frequente' => $cpfMaisFrequente,
@@ -54,6 +60,7 @@ class DashboardController extends Controller
                 'media_tempo' => $mediaTempo ? (int) round($mediaTempo) : null,
                 'hora_pico'   => $pico?->hora,
             ],
+            'seriesHora' => $seriesHora,
         ]);
     }
 }
