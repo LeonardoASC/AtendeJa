@@ -16,7 +16,13 @@ class Senha extends Model
         'codigo',
         'prioridade',
         'status',
-        'tipo_atendimento_id'
+        'tipo_atendimento_id',
+        'inicio_atendimento',
+        'tempo_atendimento'
+    ];
+
+    protected $casts = [
+        'inicio_atendimento' => 'datetime',
     ];
 
     public function tipoAtendimento()

@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('prioridade')->nullable();
             $table->string('status')->nullable();
             $table->foreignId('tipo_atendimento_id')->constrained('tipo_atendimentos')->onDelete('cascade');
+            $table->timestamp('inicio_atendimento')->nullable();
+            $table->integer('tempo_atendimento')->nullable()->comment('Tempo em segundos');
             $table->timestamps();
             $table->softDeletes();
         });

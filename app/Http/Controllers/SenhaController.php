@@ -99,7 +99,10 @@ class SenhaController extends Controller
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            $senha->update(['status' => 'atendendo']);
+            $senha->update([
+                'status' => 'atendendo',
+                'inicio_atendimento' => Carbon::now(),
+            ]);
 
             return $senha;
         });
@@ -113,7 +116,8 @@ class SenhaController extends Controller
     public function finalizar(Request $request, Senha $senha)
     {
         $senha->update([
-            'status'      => 'atendida',
+            'status' => 'atendida',
+            'tempo_atendimento' => $senha->inicio_atendimento ? Carbon::now()->diffInSeconds($senha->inicio_atendimento) : null,
         ]);
 
         $guiche = $request->input('guiche');
