@@ -36,8 +36,7 @@ class GuicheController extends Controller
         $queue = Senha::whereIn('tipo_atendimento_id', $tipoIds)
             ->where('status', 'aguardando')
             ->orderBy('created_at')
-            ->take(5)
-            ->pluck('codigo');
+            ->get(['id', 'codigo', 'cpf']);
 
         $attended = Senha::whereIn('tipo_atendimento_id', $tipoIds)
             ->where('status', 'atendida')

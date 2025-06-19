@@ -136,5 +136,39 @@ class SenhaController extends Controller
 
         return redirect()->route('guiche.panel', ['guiche' => $guiche]);
     }
+
+     public function cancelar(Request $request, Senha $senha)
+    {
+        $senha->update(['status' => 'cancelada']);
+
+        $guiche = $request->input('guiche');
+        if (!$guiche) {
+            $senha->load('tipoAtendimento');
+            $guiche = $senha->tipoAtendimento->guiche;
+        }
+
+        return redirect()->route('guiche.panel', ['guiche' => $guiche]);
+    }
+
+    public function chamarSenha(Request $request, Senha $senha)
+    {
+        $guiche = (int) $request->input('guiche');
+
+        DB::transaction(function () use ($senha) {
+            if ($senha->status !== 'aguardando') {
+                abort(400, 'Senha indisponivel');
+            }
+
+            $senha->update([
+                'status' => 'atendendo',
+                'inicio_atendimento' => Carbon::now(),
+            ]);
+        });
+
+        $senha->load('tipoAtendimento');
+        SenhaAtualizada::dispatch($senha);
+
+        return redirect()->route('guiche.panel', ['guiche' => $guiche]);
+    }
    
 }
