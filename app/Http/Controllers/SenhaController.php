@@ -34,6 +34,22 @@ class SenhaController extends Controller
         ]);
     }
 
+    public function perguntasFrequentes()
+    {
+        $perguntasFrequentes = [
+            ['pergunta' => 'Como gerar minha senha?', 'resposta' => 'Clique em Iniciar e siga os passos informando o serviço e seu CPF.'],
+            ['pergunta' => 'Como gerar minha senha?', 'resposta' => 'Clique em Iniciar e siga os passos informando o serviço e seu CPF.'],
+            ['pergunta' => 'O que é uma senha prioritária?', 'resposta' => 'É uma senha que tem prioridade no atendimento, geralmente para pessoas com necessidades especiais ou idosos.'],
+            ['pergunta' => 'Como posso acompanhar minha senha?', 'resposta' => 'Você pode acompanhar sua senha na tela principal do sistema, onde serão exibidas as senhas em atendimento.'],
+            ['pergunta' => 'O que fazer se minha senha não for chamada?', 'resposta' => 'Se sua senha não for chamada dentro de um tempo razoável, você pode procurar o atendente para verificar a situação.'],
+            ['pergunta' => 'Posso cancelar minha senha?', 'resposta' => 'Sim, você pode cancelar sua senha a qualquer momento antes de ser atendido.'],
+        ];
+
+        return Inertia::render('Senha/PerguntasFrequentes', [
+            'perguntasFrequentes' => $perguntasFrequentes,
+        ]);
+    }
+
     public function store(StoreSenhaRequest $request)
     {
         $data = $request->validated();

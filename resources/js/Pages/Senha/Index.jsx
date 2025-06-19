@@ -1,129 +1,244 @@
 import React, { useState, useEffect } from 'react';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 
 export default function Index({ tipoAtendimentos }) {
     const [step, setStep] = useState(0);
     const [senhaGerada, setSenhaGerada] = useState(null);
-    const { data, setData, post, processing, errors, reset } = useForm({ tipo_atendimento_id: '', cpf: '' });
+
+    const { data, setData, post, processing, errors, reset } = useForm({
+        tipo_atendimento_id: '',
+        cpf: '',
+    });
 
     useEffect(() => {
         if (typeof window !== 'undefined' && window.Echo) {
-            const channel = window.Echo.channel('senhas.novas');
-            channel.listen('.SenhaCriada', (event) => {
-                if (event.senha && event.senha.codigo && step === 2) {
-                    setSenhaGerada({
-                        tipo: tipoAtendimentos.find(t => t.id === event.senha.tipo_atendimento_id)?.nome || 'Desconhecido',
-                        cpf: event.senha.cpf,
-                        codigo: event.senha.codigo,
-                    });
-                    setStep(3);
-                }
-            });
-            return () => {
-                window.Echo.leave('senhas.novas');
-            };
-        } else {
-            console.error('Index.jsx: Laravel Echo not found or not running in browser.');
+            const channel = window.Echo.channel('senhas.novas').listen('.SenhaCriada',
+                (event) => {
+                    if (event?.senha?.codigo && step === 2) {
+                        setSenhaGerada({
+                            tipo:
+                                tipoAtendimentos.find(
+                                    (t) => t.id === event.senha.tipo_atendimento_id,
+                                )?.nome ?? 'Desconhecido',
+                            cpf: event.senha.cpf,
+                            codigo: event.senha.codigo,
+                        });
+                        setStep(3);
+                    }
+                },
+            );
+            return () => window.Echo.leave('senhas.novas');
         }
     }, [step, tipoAtendimentos]);
 
-    function handleDigit(d) {
-        if (data.cpf.length < 11) setData('cpf', data.cpf + d);
-    }
-    function handleBackspace() {
+    const steps = ['Início', 'Serviço', 'CPF', 'Concluído'];
+
+    const handleDigit = (d) =>
+        data.cpf.length < 11 && setData('cpf', data.cpf + d);
+    const handleBackspace = () =>
         setData('cpf', data.cpf.slice(0, -1));
-    }
-    function handleClear() {
-        setData('cpf', '');
-    }
-
-    function submit(e) {
-        e.preventDefault();
-        post(route('senhas.store'), {
-            onError: (pageErrors) => {
-                console.error("Erro ao gerar senha:", pageErrors);
-                
-            }
-        });
-    }
-
-    function handleRestart() {
+    const handleClear = () => setData('cpf', '');
+    const handleRestart = () => {
         reset();
         setSenhaGerada(null);
         setStep(0);
-    }
+    };
+    const submit = (e) => {
+        e.preventDefault();
+        post(route('senhas.store'));
+    };
 
-    const steps = ['Início', 'Serviço', 'CPF', 'Concluído'];
 
     return (
         <>
             <Head title="Criar Senha" />
-            <div className="w-full h-screen flex flex-col items-center justify-center bg-[#004B6E] p-4 md:p-8 overflow-hidden">
-
-                <div className="w-full h-full bg-white rounded-2xl shadow-lg flex flex-col overflow-hidden">
-
-                    <div className="flex justify-between p-4 md:p-6">
-                        {steps.map((label, idx) => (
-                            <div key={idx} className="flex-1 text-center">
-                                <div className={`mx-auto w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-sm md:text-base ${step === idx ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'}`}>{idx + 1}</div>
-                                <p className={`mt-1 text-xs md:text-sm ${step === idx ? 'text-blue-600' : 'text-gray-500'}`}>{label}</p>
-                            </div>
-                        ))}
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-900 via-cyan-700 to-teal-500 py-10 px-4">
+                <div className="relative w-full max-w-2xl rounded-3xl bg-white/20 backdrop-blur-lg ring-1 ring-white/30 shadow-2xl overflow-hidden">
+                    <div className="relative p-6">
+                        <div className="absolute left-8 right-8 top-1/2 -z-10 h-1 mt-10 bg-white/30 rounded-full" />
+                        <div className="absolute left-8 top-1/2 -translate-y-1/2 h-1 mt-10 bg-gradient-to-r from-cyan-400 to-teal-300 rounded-full transition-all duration-500"
+                            style={{ width: `${(step / (steps.length - 1)) * 100}%` }}
+                        />
+                        <div className="flex justify-between">
+                            {steps.map((s, i) => (
+                                <div key={s} className="flex flex-col items-center gap-2">
+                                    <span
+                                        className={`flex h-10 w-10 items-center justify-center rounded-full border-2 text-sm font-semibold ${i <= step
+                                            ? 'border-white bg-gradient-to-r from-cyan-500 to-teal-400 text-white shadow-lg'
+                                            : 'border-white/40 bg-white/20 text-white/60'
+                                            }`}
+                                    >
+                                        {i + 1}
+                                    </span>
+                                    <span className={`text-xs md:text-sm ${i <= step ? 'text-white' : 'text-white/60'}`}>
+                                        {s}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
                     </div>
 
-                    <div className="flex-1 flex flex-col justify-center items-center p-4 md:p-6">
-
+                    <div className="p-8 md:p-12 text-center space-y-8">
                         {step === 0 && (
-                            <div className="flex flex-col items-center space-y-6 w-full">
-                                <h3 className="text-2xl md:text-3xl font-semibold">Bem-vindo!</h3>
-                                <p className="text-lg md:text-xl text-gray-600">Clique abaixo para gerar uma senha.</p>
-                                <button onClick={() => setStep(1)} className="w-full py-6 md:py-8 bg-blue-600 text-white rounded-xl text-lg md:text-2xl hover:bg-blue-700 transition">Iniciar</button>
+                            <div className="space-y-8">
+                                <h1 className="text-4xl font-extrabold tracking-tight text-white">
+                                    Bem-vindo!
+                                </h1>
+                                <p className="text-lg text-white/90">
+                                    Clique no botão abaixo para gerar sua
+                                    senha de atendimento.
+                                </p>
+                                <button
+                                    onClick={() => setStep(1)}
+                                    className="w-full py-4 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-500 font-semibold text-white text-xl hover:from-cyan-700 hover:to-teal-600 transition-colors focus:outline-none focus:ring-4 focus:ring-white/40"
+                                >
+                                    Iniciar
+                                </button>
+                                <Link
+                                    href={route('senhas.perguntas-frequentes')}
+                                    className="inline-block font-medium text-teal-100 hover:underline"
+                                >
+                                    Perguntas Frequentes
+                                </Link>
                             </div>
                         )}
 
                         {step === 1 && (
-                            <div className="flex flex-col space-y-6 w-full h-full">
-                                <h3 className="text-xl md:text-2xl font-medium">Selecione o serviço</h3>
-                                <div className="grid grid-cols-2 gap-4 flex-1">
-                                    {tipoAtendimentos.map(tipo => (
-                                        <button key={tipo.id} onClick={() => { setData('tipo_atendimento_id', tipo.id); setStep(2); }} className="py-8 md:py-10 bg-gray-100 rounded-xl hover:bg-blue-50 active:bg-blue-100 transition text-base md:text-lg font-medium">{tipo.nome}</button>
+                            <div className="space-y-6">
+                                <h2 className="text-3xl font-bold text-white">
+                                    Selecione o serviço
+                                </h2>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {tipoAtendimentos.map((tipo) => (
+                                        <button key={tipo.id}
+                                            onClick={() => {
+                                                setData(
+                                                    'tipo_atendimento_id',
+                                                    tipo.id,
+                                                );
+                                                setStep(2);
+                                            }}
+                                            className="py-4 px-3 rounded-xl bg-white/10 text-white/90 hover:bg-white/20 backdrop-blur-md shadow-lg"
+                                        >
+                                            {tipo.nome}
+                                        </button>
                                     ))}
                                 </div>
-                                <button onClick={() => setStep(0)} className="py-3 md:py-4 px-4 md:px-6 border rounded-lg text-base md:text-lg">Voltar</button>
+                                <button
+                                    onClick={() => setStep(0)}
+                                    className="inline-flex items-center gap-2 px-5 py-3 rounded-lg text-sm font-semibold text-white/80 hover:text-white hover:bg-white/10 transition"
+                                >
+                                    Voltar
+                                </button>
                             </div>
                         )}
 
                         {step === 2 && (
-                            <div className="flex flex-col space-y-6 w-full h-full">
-                                <h3 className="text-xl md:text-2xl font-medium text-center">Digite seu CPF</h3>
-                                <div className="text-2xl md:text-3xl tracking-widest text-center flex-1 flex items-center justify-center">{data.cpf.padEnd(11, '_')}</div>
-                                {errors.cpf && <p className="text-red-600 text-base md:text-lg text-center">{errors.cpf}</p>}
+                            <form onSubmit={submit} className="space-y-8">
+                                <h2 className="text-3xl font-bold text-white">
+                                    Digite seu CPF
+                                </h2>
 
-                                <div className="grid grid-cols-3 gap-2 md:gap-4">
-                                    {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => (
-                                        <button key={n} onClick={() => handleDigit(n.toString())} className="py-6 md:py-8 rounded-lg text-xl md:text-2xl font-medium hover:bg-gray-300 active:bg-gray-400 transition bg-gray-200">{n}</button>
-                                    ))}
-                                    <button onClick={handleBackspace} className="py-6 md:py-8 rounded-lg text-xl md:text-2xl font-medium hover:bg-yellow-300 active:bg-yellow-400 transition bg-yellow-200">⌫</button>
-                                    <button onClick={() => handleDigit('0')} className="py-6 md:py-8 rounded-lg text-xl md:text-2xl font-medium hover:bg-gray-300 active:bg-gray-400 transition bg-gray-200">0</button>
-                                    <button onClick={handleClear} className="py-6 md:py-8 rounded-lg text-xl md:text-2xl font-medium hover:bg-red-300 active:bg-red-400 transition bg-red-200">C</button>
+                                <div className="text-4xl font-mono text-white tracking-[0.4rem]">
+                                    {data.cpf.padEnd(11, '•')}
+                                </div>
+                                {errors.cpf && (
+                                    <p className="text-red-300 text-sm">
+                                        {errors.cpf}
+                                    </p>
+                                )}
+
+                                <div className="grid grid-cols-3 gap-3">
+                                    {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(
+                                        (n) => (
+                                            <button
+                                                type="button"
+                                                key={n}
+                                                onClick={() =>
+                                                    handleDigit(
+                                                        n.toString(),
+                                                    )
+                                                }
+                                                className="py-6 rounded-xl text-2xl font-semibold bg-white/10 text-white hover:bg-white/20 backdrop-blur-md"
+                                            >
+                                                {n}
+                                            </button>
+                                        ),
+                                    )}
+                                    <button
+                                        type="button"
+                                        onClick={handleBackspace}
+                                        className="py-6 rounded-xl text-xl font-semibold bg-yellow-500/20 text-yellow-100 hover:bg-yellow-500/30 backdrop-blur-md"
+                                    >
+                                        ⌫
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleDigit('0')}
+                                        className="py-6 rounded-xl text-2xl font-semibold bg-white/10 text-white hover:bg-white/20 backdrop-blur-md"
+                                    >
+                                        0
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={handleClear}
+                                        className="py-6 rounded-xl text-xl font-semibold bg-red-500/20 text-red-100 hover:bg-red-500/30 backdrop-blur-md"
+                                    >
+                                        C
+                                    </button>
                                 </div>
 
-                                <div className="flex justify-between w-full">
-                                    <button type="button" onClick={() => setStep(1)} className="py-4 md:py-5 px-6 md:px-8 border rounded-lg text-base md:text-lg">Voltar</button>
-                                    <button onClick={submit} disabled={processing || data.cpf.length < 11} className="py-4 md:py-5 px-6 md:px-8 bg-blue-600 text-white rounded-xl text-base md:text-xl hover:bg-blue-700 transition disabled:opacity-50">{processing ? 'Enviando...' : 'Gerar Senha'}</button>
+                                <div className="flex justify-between">
+                                    <button
+                                        type="button"
+                                        onClick={() => setStep(1)}
+                                        className="px-6 py-3 rounded-lg text-sm font-semibold text-white/80 hover:text-white hover:bg-white/10 transition"
+                                    >
+                                        Voltar
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={
+                                            processing || data.cpf.length < 11
+                                        }
+                                        className="px-6 py-3 rounded-lg bg-gradient-to-r from-cyan-600 to-teal-500 text-white font-semibold disabled:opacity-40 hover:from-cyan-700 hover:to-teal-600 transition-colors focus:outline-none focus:ring-4 focus:ring-white/40"
+                                    >
+                                        {processing
+                                            ? 'Enviando…'
+                                            : 'Gerar Senha'}
+                                    </button>
                                 </div>
-                            </div>
+                            </form>
                         )}
 
                         {step === 3 && senhaGerada && (
-                            <div className="flex flex-col space-y-6 w-full">
-                                <h3 className="text-2xl md:text-3xl font-semibold text-center text-green-600">Senha Gerada!</h3>
-                                <div className="flex flex-col space-y-2 bg-gray-50 p-4 rounded-lg text-center">
-                                    <p className="text-lg text-black md:text-xl"><span className="font-medium">Serviço:</span> {senhaGerada.tipo}</p>
-                                    <p className="text-lg md:text-xl"><span className="font-medium">CPF:</span> {senhaGerada.cpf}</p>
-                                    <p className="text-2xl md:text-4xl font-bold"><span className="font-medium">Código:</span> {senhaGerada.codigo}</p>
+                            <div className="space-y-8">
+                                <h2 className="text-4xl font-extrabold text-emerald-300">
+                                    Senha Gerada!
+                                </h2>
+                                <div className="space-y-2 bg-white/10 backdrop-blur-lg rounded-xl p-6 shadow-inner text-white">
+                                    <p className="text-lg">
+                                        <span className="font-semibold">
+                                            Serviço:
+                                        </span>{' '}
+                                        {senhaGerada.tipo}
+                                    </p>
+                                    <p className="text-lg">
+                                        <span className="font-semibold">
+                                            CPF:
+                                        </span>{' '}
+                                        {senhaGerada.cpf}
+                                    </p>
+                                    <p className="text-4xl font-black tracking-widest">
+                                        {senhaGerada.codigo}
+                                    </p>
                                 </div>
-                                <button onClick={handleRestart} className="mt-4 w-full py-6 md:py-8 bg-blue-600 text-white rounded-xl text-lg md:text-2xl hover:bg-blue-700 transition">Gerar Nova Senha</button>
+                                <button
+                                    onClick={handleRestart}
+                                    className="w-full py-4 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-500 font-semibold text-white text-xl hover:from-cyan-700 hover:to-teal-600 transition-colors focus:outline-none focus:ring-4 focus:ring-white/40"
+                                >
+                                    Gerar Nova Senha
+                                </button>
                             </div>
                         )}
                     </div>

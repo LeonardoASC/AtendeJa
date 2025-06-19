@@ -19,6 +19,7 @@ Route::middleware(['auth:admin', 'verified'])->prefix('admin')->group(function (
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
         Route::get('/telao', [SenhaController::class, 'telao'])->name('senhas.telao');
+        Route::get('/senhas/perguntas-frequentes', [SenhaController::class, 'perguntasFrequentes'])->name('senhas.perguntas-frequentes');
 
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
