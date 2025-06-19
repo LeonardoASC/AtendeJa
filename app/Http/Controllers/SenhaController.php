@@ -115,9 +115,16 @@ class SenhaController extends Controller
 
     public function finalizar(Request $request, Senha $senha)
     {
+        $timezone = 'America/Sao_Paulo';
+
+        $now = Carbon::now($timezone);
+        $inicio = Carbon::parse($senha->inicio_atendimento)->setTimezone($timezone);
+
+        $diff = abs((int) $now->diffInSeconds($inicio, false));
+
         $senha->update([
             'status' => 'atendida',
-            'tempo_atendimento' => $senha->inicio_atendimento ? Carbon::now()->diffInSeconds($senha->inicio_atendimento) : null,
+            'tempo_atendimento' => $diff,
         ]);
 
         $guiche = $request->input('guiche');

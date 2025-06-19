@@ -50,7 +50,9 @@ export default function AuthenticatedLayout({ header, children }) {
 
                             {filtered.map(({ route: r, icon: Icon, label, perm }) =>
                                 auth.permissions?.includes(perm) && (
-                                    <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                    <div
+                                        key={r}
+                                        className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                         <NavLink
                                             key={r}
                                             href={route(r)}
@@ -196,7 +198,9 @@ export default function AuthenticatedLayout({ header, children }) {
                 <div className={(showingNavigationDropdown ? 'block' : 'hidden') + ' sm:hidden'}>
                     {filtered.map(({ route: r, icon: Icon, label, perm }) =>
                         auth.permissions?.includes(perm) && (
-                            <div className="space-y-1 pb-3 pt-2">
+                            <div
+                                key={r}
+                                className="space-y-1 pb-3 pt-2">
                                 <ResponsiveNavLink
                                     key={r}
                                     href={route(r)}
