@@ -109,7 +109,7 @@ export default function GuichePanel({ guiche, initialSenha = null, queue = [], a
             <Head title={`Guichê ${guiche}`} />
 
             <div className="min-h-screen flex flex-col bg-gray-100 font-[Inter,sans-serif]">
-                <header className="bg-[#004B6E] text-white flex items-center justify-between px-6 py-3 shadow-md">
+                <header className="bg-[#004B6E] text-white flex items-center justify-between px-6 py-3 shadow-md md:px-6 md:py-3">
                     <h1 className="text-xl md:text-2xl font-semibold tracking-wide flex items-center gap-3">
                         <ArrowPathRoundedSquareIcon className="w-8 h-8" /> Guichê {guiche}
                     </h1>
@@ -118,7 +118,7 @@ export default function GuichePanel({ guiche, initialSenha = null, queue = [], a
                     </span>
                 </header>
 
-                <main className="flex flex-1 flex-row gap-8 p-6">
+                <main className="flex flex-1 flex-col md:flex-row gap-4 md:gap-8 p-4 md:p-6">
                     <div className="flex-1 flex flex-col justify-center items-center bg-white rounded-2xl shadow p-6">
                         {current ? (
                             <>
@@ -160,7 +160,7 @@ export default function GuichePanel({ guiche, initialSenha = null, queue = [], a
                         )}
                     </div>
 
-                    <div className="w-[320px] bg-white rounded-2xl shadow p-6 flex flex-col">
+                    <div className="w-full md:w-[320px] bg-white rounded-2xl shadow p-6 flex flex-col">
                         <h2 className="text-lg font-medium mb-4">Próximas senhas</h2>
                         <ul className="flex flex-col gap-2 text-gray-800 font-semibold text-base overflow-y-auto">
                             {queue.map((q) => (
@@ -181,7 +181,7 @@ export default function GuichePanel({ guiche, initialSenha = null, queue = [], a
                     </div>
                 </main>
 
-                <footer className="bg-white shadow-inner px-6 py-6 flex flex-col lg:flex-row gap-8 lg:gap-4 justify-between">
+                <footer className="bg-white shadow-inner px-4  md:px-6 md:py-6 py-6 flex flex-col lg:flex-row gap-8 lg:gap-4 justify-between">
                     <div className="flex-1 min-w-[220px]">
                         <h2 className="text-lg font-medium mb-2">Últimas finalizadas</h2>
                         <ul className="flex flex-wrap gap-2 text-gray-700 font-semibold text-base">
