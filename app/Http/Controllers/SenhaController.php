@@ -33,6 +33,18 @@ class SenhaController extends Controller
              'senha'           => $senha,
         ]);
     }
+    public function show(Senha $senha)
+    {
+        $senha->load('tipoAtendimento');
+
+        return Inertia::render('Senha/Show', [
+            'senha' => [
+                'codigo' => $senha->codigo,
+                'cpf'    => $senha->cpf,
+                'tipo'   => optional($senha->tipoAtendimento)->nome,
+            ],
+        ]);
+    }
 
     public function perguntasFrequentes()
     {
@@ -85,7 +97,7 @@ class SenhaController extends Controller
    
         SenhaCriada::dispatch($senha);
 
-        return redirect()->route('senhas.index');
+        return redirect()->route('senhas.show', $senha);
     }
 
     public function telao()

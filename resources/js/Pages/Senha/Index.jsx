@@ -1,46 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 
 export default function Index({ tipoAtendimentos }) {
     const [step, setStep] = useState(0);
-    const [senhaGerada, setSenhaGerada] = useState(null);
 
     const { data, setData, post, processing, errors, reset } = useForm({
         tipo_atendimento_id: '',
         cpf: '',
     });
 
-    useEffect(() => {
-        if (typeof window !== 'undefined' && window.Echo) {
-            const channel = window.Echo.channel('senhas.novas').listen('.SenhaCriada',
-                (event) => {
-                    if (event?.senha?.codigo && step === 2) {
-                        setSenhaGerada({
-                            tipo:
-                                tipoAtendimentos.find(
-                                    (t) => t.id === event.senha.tipo_atendimento_id,
-                                )?.nome ?? 'Desconhecido',
-                            cpf: event.senha.cpf,
-                            codigo: event.senha.codigo,
-                        });
-                        setStep(3);
-                    }
-                },
-            );
-            return () => window.Echo.leave('senhas.novas');
-        }
-    }, [step, tipoAtendimentos]);
-
     const steps = ['Início', 'Serviço', 'CPF', 'Concluído'];
 
     const handleDigit = (d) => data.cpf.length < 11 && setData('cpf', data.cpf + d);
     const handleBackspace = () => setData('cpf', data.cpf.slice(0, -1));
     const handleClear = () => setData('cpf', '');
-    const handleRestart = () => {
-        reset();
-        setSenhaGerada(null);
-        setStep(0);
-    };
     const submit = (e) => {
         e.preventDefault();
         post(route('senhas.store'));
@@ -201,42 +174,11 @@ export default function Index({ tipoAtendimentos }) {
                                         className="px-6 py-3 rounded-lg bg-gradient-to-r from-cyan-600 to-teal-500 text-white font-semibold disabled:opacity-40 hover:from-cyan-700 hover:to-teal-600 transition-colors focus:outline-none focus:ring-4 focus:ring-white/40"
                                     >
                                         {processing
-                                            ? 'Enviando…'
+                                            ? 'Gerando Senha…'
                                             : 'Gerar Senha'}
                                     </button>
                                 </div>
                             </form>
-                        )}
-
-                        {step === 3 && senhaGerada && (
-                            <div className="space-y-8">
-                                <h2 className="text-4xl font-extrabold text-emerald-300">
-                                    Senha Gerada!
-                                </h2>
-                                <div className="space-y-2 bg-white/10 backdrop-blur-lg rounded-xl p-6 shadow-inner text-white">
-                                    <p className="text-lg">
-                                        <span className="font-semibold">
-                                            Serviço:
-                                        </span>{' '}
-                                        {senhaGerada.tipo}
-                                    </p>
-                                    <p className="text-lg">
-                                        <span className="font-semibold">
-                                            CPF:
-                                        </span>{' '}
-                                        {senhaGerada.cpf}
-                                    </p>
-                                    <p className="text-4xl font-black tracking-widest">
-                                        {senhaGerada.codigo}
-                                    </p>
-                                </div>
-                                <button
-                                    onClick={handleRestart}
-                                    className="w-full py-4 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-500 font-semibold text-white text-xl hover:from-cyan-700 hover:to-teal-600 transition-colors focus:outline-none focus:ring-4 focus:ring-white/40"
-                                >
-                                    Gerar Nova Senha
-                                </button>
-                            </div>
                         )}
                     </div>
                 </div>
