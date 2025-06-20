@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('senhas', function (Blueprint $table) {
             $table->id();
+            $table->uuid('public_token')->unique();
             $table->string('cpf', 11)->nullable();
             $table->string('codigo', 10)->nullable();
             $table->string('prioridade')->nullable();

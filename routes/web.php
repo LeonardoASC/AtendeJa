@@ -15,7 +15,8 @@ use App\Http\Controllers\GuicheController;
 use App\Http\Controllers\RelatorioController;
 
 Route::get('/', [SiteController::class, 'index'])->name('site.index');
-
+// Route::get('/senhas/{codigo}/ticket-virtual', [SenhaController::class, 'ticketVirtual'])->name('senhas.ticket-virtual');
+Route::get('/senhas/{token}/ticket-virtual', [SenhaController::class, 'ticketVirtual'])->name('senhas.ticket-virtual')->whereUlid('token'); 
 Route::middleware(['auth:admin', 'verified'])->prefix('admin')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -34,7 +35,7 @@ Route::middleware(['auth:admin', 'verified'])->prefix('admin')->group(function (
         Route::post('/senhas/chamar',[SenhaController::class, 'chamar'])->name('senhas.chamar');
         Route::post('/senhas/{senha}/finalizar', [SenhaController::class, 'finalizar'])->name('senhas.finalizar');
         Route::post('/senhas/{senha}/cancelar', [SenhaController::class, 'cancelar'])->name('senhas.cancelar');
-        Route::post('/senhas/{senha}/chamar', [SenhaController::class, 'chamarSenha'])->name('senhas.chamarSenha');
+        Route::post('/senhas/{senha}/chamar', [SenhaController::class, 'chamarSenha'])->name('senhas.chamarSenha'); 
         
         Route::get('/guiche', [GuicheController::class, 'index'])->name('guiche.index');
         Route::get('/guiche/{guiche}', [GuicheController::class, 'guichePanel'])->name('guiche.panel');

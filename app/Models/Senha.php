@@ -6,12 +6,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use Illuminate\Database\QueryException;
           
 class Senha extends Model
 {
     /** @use HasFactory<\Database\Factories\SenhaFactory> */
     use HasFactory, SoftDeletes;
     protected $fillable = [
+        'public_token',
         'cpf',
         'codigo',
         'prioridade',
@@ -32,10 +34,8 @@ class Senha extends Model
 
     public static function gerarPrefixo(string $tipo)
     {
-        // 1) limpa símbolos
         $label = Str::title(str_replace(['_', 'º', '°'], ' ', $tipo));
 
-        // 2) lista de palavras a ignorar
         $stop = [
             'a',   'à',   'ante', 'após', 'até',
             'com', 'contra','de',   'desde','em',
@@ -47,10 +47,8 @@ class Senha extends Model
             'e','ou','mas'
         ];
 
-        // 3) explode em palavras e filtra números e stopwords
         $words = array_filter(explode(' ', $label), fn($w) => !in_array(mb_strtolower($w), $stop) && !ctype_digit($w));
 
-        // 4) monta prefixo
         if (count($words) >= 2) {
             $first = reset($words);
             $last  = end($words);
@@ -61,5 +59,15 @@ class Senha extends Model
         }
 
         return Str::upper($pre);
+    }
+
+    public static function generateUniquePublicToken()
+    {
+        do {
+            $token = (string) Str::ulid(); 
+        }
+         while (self::where('public_token', $token)->exists());
+
+        return $token;
     }
 }

@@ -42,6 +42,7 @@ class SenhaController extends Controller
                 'codigo' => $senha->codigo,
                 'cpf'    => $senha->cpf,
                 'tipo'   => optional($senha->tipoAtendimento)->nome,
+                'public_token' => $senha->public_token,
             ],
         ]);
     }
@@ -73,28 +74,35 @@ class SenhaController extends Controller
             ->whereDate('created_at', Carbon::today())
             ->orderBy('id', 'desc')
             ->first();
+
         if ($ultimo) {
-            // se tiver senha, pega o número dela e incrementa mais 1
             $numero = intval(substr($ultimo->codigo, strpos($ultimo->codigo, '-') + 1));
             $next   = $numero + 1;
         } else {
-            // se não tiver senha, começa do 1
             $next = 1;
         }
 
-        // formata 001, 002, ..., 010, 011...
         $seq    = str_pad($next, 3, '00', STR_PAD_LEFT);
         $codigo = "{$prefix}-{$seq}";
 
-        // cria a senha
-        $senha = Senha::create([
-            'cpf'        => $data['cpf'],
-            'codigo'     => $codigo,
-            'prioridade' => 'baixa',
-            'status'     => 'aguardando',
-            'tipo_atendimento_id' => $tipo->id,
-        ]);
-   
+        while (true) {
+            try {
+                $senha = Senha::create([
+                    'cpf'                 => $data['cpf'],
+                    'codigo'              => $codigo,
+                    'prioridade'          => 'baixa',
+                    'status'              => 'aguardando',
+                    'tipo_atendimento_id' => $tipo->id,
+                    'public_token'        => Senha::generateUniquePublicToken(),
+                ]);
+                break;
+            } catch (\Illuminate\Database\QueryException $e) {
+                if ($e->getCode() !== '23000') {
+                    throw $e;
+                }
+            }
+        }
+
         SenhaCriada::dispatch($senha);
 
         return redirect()->route('senhas.show', $senha);
@@ -197,6 +205,20 @@ class SenhaController extends Controller
         SenhaAtualizada::dispatch($senha);
 
         return redirect()->route('guiche.panel', ['guiche' => $guiche]);
+    }
+
+    public function ticketVirtual(string $token)
+    {
+        $senha = Senha::where('public_token', $token)->firstOrFail();
+
+        return Inertia::render('Senha/TicketVirtual', [
+            'senha' => [
+                'tipo'   => $senha->tipoAtendimento->nome,
+                'cpf'    => $senha->cpf,
+                'codigo' => $senha->codigo,
+                'created_at' => $senha->created_at->format('d/m/Y H:i'),
+            ],
+        ]);
     }
    
 }
