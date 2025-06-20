@@ -18,7 +18,7 @@ export default function TicketVirtual({ senha }) {
 
                     <header className="flex flex-col items-center leading-tight">
                         <span className="text-[16px] font-bold tracking-widest">PREVMOC</span>
-                        <span className="text-xs">Sistema de atendimento e Ticket Virtual</span>
+                        <span className="text-xs text-center">Sistema de atendimento e Ticket Virtual</span>
                     </header>
 
                     <main className="flex-1 flex flex-col items-center justify-center gap-6">
@@ -33,7 +33,7 @@ export default function TicketVirtual({ senha }) {
                             </div>
                             <div className="flex flex-col items-center">
                                 <span className="text-base font-semibold">CPF</span>
-                                <span className="text-xl">{senha.cpf}</span>
+                                <span className="text-xl">222.222.222-22</span>
                             </div>
                             <div className='flex flex-row gap-2 items-center justify-center mt-2'>
                                 <CalendarDaysIcon class="h-6 w-6 text-gray-500" />

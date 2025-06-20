@@ -42,6 +42,7 @@ class SenhaController extends Controller
                 'codigo' => $senha->codigo,
                 'cpf'    => $senha->cpf,
                 'tipo'   => optional($senha->tipoAtendimento)->nome,
+                'created_at' => $senha->created_at->format('d/m/Y H:i'),
                 'public_token' => $senha->public_token,
             ],
         ]);
