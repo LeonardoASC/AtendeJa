@@ -28,6 +28,8 @@ export default function AuthenticatedLayout({ header, children }) {
         { route: 'guiche.index', label: 'Guichês', perm: 'ver-dashboard', icon: HomeIcon },
         { route: 'senhas.index', label: 'Senhas', perm: 'ver-dashboard', icon: DocumentTextIcon },
         { route: 'senhas.telao', label: 'Telão', perm: 'ver-dashboard', icon: HomeIcon },
+        { route: 'relatorio.index', label: 'Relatórios', perm: 'ver-relatorios', icon: NewspaperIcon },
+
     ];
 
     const filtered = links.filter(

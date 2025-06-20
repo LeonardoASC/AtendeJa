@@ -37,6 +37,7 @@ Route::middleware(['auth:admin', 'verified'])->prefix('admin')->group(function (
         
         Route::get('/guiche', [GuicheController::class, 'index'])->name('guiche.index');
         Route::get('/guiche/{guiche}', [GuicheController::class, 'guichePanel'])->name('guiche.panel');
+        Route::get('/relatorios', [RelatorioController::class, 'index'])->name('relatorio.index');
     });
 
 require __DIR__.'/auth.php';
