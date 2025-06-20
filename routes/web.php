@@ -12,6 +12,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SenhaController;
 use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\GuicheController;
+use App\Http\Controllers\RelatorioController;
 
 Route::get('/', [SiteController::class, 'index'])->name('site.index');
 
@@ -38,6 +39,7 @@ Route::middleware(['auth:admin', 'verified'])->prefix('admin')->group(function (
         Route::get('/guiche', [GuicheController::class, 'index'])->name('guiche.index');
         Route::get('/guiche/{guiche}', [GuicheController::class, 'guichePanel'])->name('guiche.panel');
         Route::get('/relatorios', [RelatorioController::class, 'index'])->name('relatorio.index');
+        Route::get('/relatorios/senhas/pdf', [RelatorioController::class, 'senhasPdf'])->name('relatorios.senhas.pdf');
     });
 
 require __DIR__.'/auth.php';

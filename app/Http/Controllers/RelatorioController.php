@@ -5,6 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Relatorio;
 use App\Http\Requests\StoreRelatorioRequest;
 use App\Http\Requests\UpdateRelatorioRequest;
+use Inertia\Inertia;
+use App\Models\Senha;
+use Illuminate\Support\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 
 class RelatorioController extends Controller
 {
@@ -14,6 +19,19 @@ class RelatorioController extends Controller
     public function index()
     {
         return Inertia::render('Autenticado/Relatorios/Index');
+    }
+
+    public function senhasPdf()
+    {
+        $senhas = Senha::with('tipoAtendimento')
+            ->whereDate('created_at', Carbon::today())
+            ->get();
+
+        $pdf = Pdf::loadView('relatorios.senhas', compact('senhas'))
+            ->setPaper('a4', 'portrait')
+            ->setOptions(['defaultFont' => 'sans-serif']);
+
+        return $pdf->download('relatorio_senhas.pdf');
     }
 
     /**
