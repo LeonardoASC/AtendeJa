@@ -9,7 +9,7 @@ export default function Show({ senha }) {
     const [step] = useState(3);
     const [showQR, setShowQR] = useState(false);
     const steps = ['Início', 'Serviço', 'CPF', 'Concluído'];
-    const maskCpf = cpf => (cpf?.replace(/\D/g, '').replace(/^(\d{3})\d{6}(\d{2})$/, '$1.***.***-$2')) || '***';
+    const maskCpf = cpf => (cpf?.toString().replace(/\D/g, '').replace(/^(\d{3})\d{6}(\d{2})$/, '$1.***.***-$2')) || '***';
 
     const qrUrl = route('senhas.ticket-virtual', { token: senha.public_token });
 

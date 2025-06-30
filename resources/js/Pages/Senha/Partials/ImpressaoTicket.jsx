@@ -1,30 +1,24 @@
 import React from 'react';
 
-/**
- * Gera o HTML completo do ticket – DOCTYPE, <html>, CSS inline e <script> print
- * A ideia é poder convertê-lo em string (ReactDOMServer) e mandar para a nova janela.
- */
 export default function ImpressaoTicket({ codigo, tipo, cpf, created_at }) {
+    const maskCpf = cpf => (cpf?.toString().replace(/\D/g, '').slice(0, 11).replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')) || '';
     return (
         <html lang="pt-BR">
             <head>
                 <meta charSet="utf-8" />
                 <title>{codigo}</title>
                 <style>{`
-                    @page   { margin: 0 }
-                    body    { margin: 0; background:#FFF6D2; font-family: monospace; color:#1f2937 }
-                    .ticket { position:relative; width:300px; margin:0 auto;
-                              padding:24px; box-sizing:border-box;
-                              border:6px solid #d9bf4f; }
-                    .serri  { position:absolute; left:0; right:0; height:12px;
-                              background-repeat:repeat-x;
-                              background-image:radial-gradient(circle,transparent 4px,#FFF6D2 5px); }
-                    .serri.top { top:-12px } .serri.bot { bottom:-12px }
-                    h1      { font-size:48px; margin:0 0 24px; font-weight:800; text-align:center }
+                    @page { margin: 0 }
+                    body { margin: 0; background:#FFF6D2; font-family: monospace; color:#1f2937 }
+                    h1 { font-size:48px; margin:0 0 24px; font-weight:800; text-align:center }
+                    footer { font-size:12px; text-align:center; margin-top:24px }
+                    .ticket { position:relative; width:300px; margin:0 auto; padding:24px; box-sizing:border-box; border:6px solid #d9bf4f; }
+                    .serri { position:absolute; left:0; right:0; height:12px; background-repeat:repeat-x; background-image:radial-gradient(circle,transparent 4px,#FFF6D2 5px); }
+                    .serri.top { top:-12px } 
+                    .serri.bot { bottom:-12px }
                     .divider{ border-top:1px dashed #d9bf4f; margin:24px 0 }
-                    .label  { font-size:14px; font-weight:600; text-align:center }
-                    .value  { font-size:20px; text-align:center }
-                    footer  { font-size:12px; text-align:center; margin-top:24px }
+                    .label { font-size:14px; font-weight:600; text-align:center }
+                    .value { font-size:20px; text-align:center }
                 `}</style>
             </head>
 
@@ -46,13 +40,13 @@ export default function ImpressaoTicket({ codigo, tipo, cpf, created_at }) {
                     <div style={{ height: 16 }} />
 
                     <div className="label">CPF</div>
-                    <div className="value">{cpf}</div>
+                    <div className="value">{maskCpf(cpf)}</div>
 
                     <div style={{ marginTop: 20, textAlign: 'center', fontSize: 14 }}>{created_at}</div>
 
                     <div className="divider" />
 
-                    <footer>Guarde este ticket até o atendimento</footer>
+                    <footer>Guarde este ticket até o atendimento.</footer>
                     <div className="serri bot" />
                 </div>
 

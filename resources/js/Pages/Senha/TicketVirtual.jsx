@@ -3,6 +3,7 @@ import { Head } from '@inertiajs/react';
 import { CalendarDaysIcon } from '@heroicons/react/24/solid';
 
 export default function TicketVirtual({ senha }) {
+    const maskCpf = cpf => (cpf?.toString().replace(/\D/g, '').slice(0, 11).replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')) || '';
     return (
         <>
             <Head title={`Ticket • ${senha.codigo}`} />
@@ -33,7 +34,7 @@ export default function TicketVirtual({ senha }) {
                             </div>
                             <div className="flex flex-col items-center">
                                 <span className="text-base font-semibold">CPF</span>
-                                <span className="text-xl">222.222.222-22</span>
+                                <span className="text-xl">{maskCpf(senha.cpf)}</span>
                             </div>
                             <div className='flex flex-row gap-2 items-center justify-center mt-2'>
                                 <CalendarDaysIcon class="h-6 w-6 text-gray-500" />
@@ -45,7 +46,7 @@ export default function TicketVirtual({ senha }) {
                     <div className="w-full border-t border-dashed border-[#d9bf4f]" />
 
                     <footer className="text-center text-xs leading-tight mt-4">
-                        Guarde este ticket até o atendimento
+                        Não feche esta aba — Guarde este ticket mantendo a aba aberta até o atendimento.
                     </footer>
                 </div>
             </div>
