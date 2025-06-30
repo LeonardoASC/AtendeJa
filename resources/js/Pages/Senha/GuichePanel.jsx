@@ -193,12 +193,6 @@ export default function GuichePanel({ guiche, initialSenha = null, queue = [], a
                             {attended.length === 0 && <li className="text-gray-500">Nenhuma</li>}
                         </ul>
                     </div>
-
-                    <div className="flex items-center text-sm text-gray-500 self-end lg:self-auto">
-                        Atalho:&nbsp;
-                        <kbd className="font-mono bg-gray-200 px-1">Enter</kbd>&nbsp;= Próxima ·{' '}
-                        <kbd className="font-mono bg-gray-200 px-1">Esc</kbd>&nbsp;= Finalizar
-                    </div>
                 </footer>
             </div>
             {showModal && (

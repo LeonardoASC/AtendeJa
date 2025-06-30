@@ -32,7 +32,7 @@ export default function Show({ senha }) {
             <Head title="Senha Gerada" />
             <style>{`
                 @keyframes popIn {
-                  0%   { opacity: 0; transform: scale(.8) translateY(20px); }
+                  0%   { opacity: 0; transform: scale(.18) translateY(100px); }
                   100% { opacity: 1; transform: scale(1) translateY(0); }
                 }
             `}</style>
@@ -68,7 +68,8 @@ export default function Show({ senha }) {
                     </div>
 
                     <div className="px-6 py-10 md:p-12 text-center">
-                        <h2 className="mb-4 text-4xl font-extrabold text-white">Senha gerada!</h2>
+                        <h2 className="mb-2 text-4xl font-extrabold text-white">Senha gerada!</h2>
+                        <h2 className="mb-2 text-xl font-extrabold text-white">{senha.created_at}</h2>
 
                         <div className="space-y-3 bg-white/10 backdrop-blur-lg rounded-xl p-6 shadow-inner text-white">
                             <p className="text-4xl font-black tracking-widest">{senha.codigo}</p>
