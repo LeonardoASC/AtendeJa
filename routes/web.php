@@ -16,6 +16,9 @@ use App\Http\Controllers\RelatorioController;
 
 Route::get('/', [SiteController::class, 'index'])->name('site.index');
 // Route::get('/senhas/{codigo}/ticket-virtual', [SenhaController::class, 'ticketVirtual'])->name('senhas.ticket-virtual');
+      
+Route::get('/busca-cpf/consultar', [SiteController::class, 'consultarCpf'])->name('busca.cpf.search');
+
 Route::get('/senhas/{token}/ticket-virtual', [SenhaController::class, 'ticketVirtual'])->name('senhas.ticket-virtual')->whereUlid('token'); 
 Route::middleware(['auth:admin', 'verified'])->prefix('admin')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

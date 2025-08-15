@@ -23,6 +23,9 @@ class StoreSenhaRequest extends FormRequest
     {
         return [
             'cpf' => 'required|string|size:11',
+            'email' => 'nullable|email|max:255',
+            'nome' => 'nullable|string|max:255',
+            'matricula' => 'nullable|string|max:255',
             'tipo_atendimento_id' => ['required', 'exists:tipo_atendimentos,id'],
         ];
     }

@@ -15,6 +15,9 @@ return new class extends Migration
             $table->id();
             $table->uuid('public_token')->unique();
             $table->string('cpf', 11)->nullable();
+            $table->string('email')->nullable();
+            $table->string('nome')->nullable();
+            $table->string('matricula')->nullable();
             $table->string('codigo', 10)->nullable();
             $table->string('prioridade')->nullable();
             $table->string('status')->nullable();

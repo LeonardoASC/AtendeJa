@@ -41,6 +41,7 @@ class SenhaController extends Controller
             'senha' => [
                 'codigo' => $senha->codigo,
                 'cpf'    => $senha->cpf,
+                'nome'   => $senha->nome,
                 'tipo'   => optional($senha->tipoAtendimento)->nome,
                 'created_at' => $senha->created_at->format('d/m/Y H:i'),
                 'public_token' => $senha->public_token,
@@ -90,6 +91,9 @@ class SenhaController extends Controller
             try {
                 $senha = Senha::create([
                     'cpf'                 => $data['cpf'],
+                    'email'               => $data['email'] ?? null,
+                    'nome'                => $data['nome'] ?? null,
+                    'matricula'           => $data['matricula'] ?? null,
                     'codigo'              => $codigo,
                     'prioridade'          => 'baixa',
                     'status'              => 'aguardando',
@@ -104,7 +108,7 @@ class SenhaController extends Controller
             }
         }
 
-        SenhaCriada::dispatch($senha);
+        // SenhaCriada::dispatch($senha);
 
         return redirect()->route('senhas.show', $senha);
     }

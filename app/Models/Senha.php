@@ -15,6 +15,9 @@ class Senha extends Model
     protected $fillable = [
         'public_token',
         'cpf',
+        'email',
+        'nome',
+        'matricula',
         'codigo',
         'prioridade',
         'status',
