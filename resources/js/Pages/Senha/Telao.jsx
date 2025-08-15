@@ -53,7 +53,10 @@ export default function Telao({ senhasAtendidas = [] }) {
                         {lastCalled ? (
                             <>
                                 <h2 className="text-2xl md:text-3xl tracking-wider font-medium mb-4">Senha</h2>
-                                <span className="text-8xl md:text-[12rem] font-extrabold leading-none drop-shadow-lg">
+                                <span className="text-7xl text-center font-extrabold leading-none drop-shadow-lg">
+                                    {lastCalled.nome}
+                                </span>
+                                <span className="text-3xl font-semibold text-slate-200 leading-none drop-shadow-lg">
                                     {lastCalled.codigo}
                                 </span>
                                 <h3 className="text-2xl md:text-3xl tracking-wider font-medium mt-6">Guichê</h3>
@@ -69,7 +72,7 @@ export default function Telao({ senhasAtendidas = [] }) {
                     <aside className="w-full lg:w-96 xl:w-[28rem] bg-white/10 backdrop-blur-sm p-4 flex flex-col gap-4">
                         <div className="w-full rounded-lg overflow-hidden aspect-video bg-black/70">
                             <iframe
-                                src="https://www.youtube.com/embed/IDFo9uf977Q?si=ShTgIs-9xddqvJ7o"
+                                src="https://www.youtube.com/embed/llQXGJ4AkYw"
                                 title="YouTube video"
                                 allow="autoplay; encrypted-media; picture-in-picture; clipboard-write"
                                 allowFullScreen
