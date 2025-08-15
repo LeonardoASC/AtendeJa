@@ -36,13 +36,15 @@ class GuicheController extends Controller
         $queue = Senha::whereIn('tipo_atendimento_id', $tipoIds)
             ->where('status', 'aguardando')
             ->orderBy('created_at')
-            ->get(['id', 'codigo', 'cpf']);
+            ->get(['id', 'codigo', 'nome', 'cpf']);
 
         $attended = Senha::whereIn('tipo_atendimento_id', $tipoIds)
             ->where('status', 'atendida')
             ->latest('updated_at')
             ->take(5)
             ->pluck('codigo');
+
+        // dd($current, $queue, $attended);
 
         return Inertia::render('Senha/GuichePanel', [
             'guiche'       => $guiche,

@@ -13,7 +13,7 @@ export default function GuichePanel({ guiche, initialSenha = null, queue = [], a
     const [elapsed, setElapsed] = useState('00:00');
     const [showModal, setShowModal] = useState(false);
     const [selectedId, setSelectedId] = useState(null);
-
+    const emAtendimento = Boolean(current);
 
     useEffect(() => {
         if (!current) return;
@@ -129,6 +129,11 @@ export default function GuichePanel({ guiche, initialSenha = null, queue = [], a
                                     <span className="text-7xl md:text-9xl font-extrabold text-gray-800 drop-shadow">
                                         {current.codigo}
                                     </span>
+                                    <div className='text-center font-semibold text-gray-700'>
+                                        <p className="text-gray-600 mt-2">Nome: {current.nome ? current.nome : 'Não informado'}</p>
+                                        <p className="text-gray-600">Email: {current.email ? current.email : 'Não informado'}</p>
+                                        <p className="text-gray-600">CPF: {current.cpf ? current.cpf : 'Não informado'}</p>
+                                    </div>
                                     <p className="text-gray-600 mt-2">Tempo: {elapsed}</p>
                                 </div>
 
@@ -172,7 +177,7 @@ export default function GuichePanel({ guiche, initialSenha = null, queue = [], a
                                             setShowModal(true);
                                         }}
                                     >
-                                        {q.codigo} - {q.cpf}
+                                        {q.codigo} - {q.nome}
                                     </button>
                                 </li>
                             ))}
@@ -199,27 +204,34 @@ export default function GuichePanel({ guiche, initialSenha = null, queue = [], a
                 <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
                     <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6 space-y-6">
                         <h2 className="text-xl font-semibold text-gray-800">Confirmar ação</h2>
-                        <p className="text-gray-600">
-                            Você está prestes a chamar uma senha fora da ordem. Deseja continuar?
-                        </p>
+
+                        {emAtendimento ? (
+                            <p className="text-sm text-red-600">
+                                Você está em atendimento. Finalize ou cancele o atendimento atual para chamar outra senha.
+                            </p>
+                        ) : (
+                            <p className="text-gray-600">
+                                Você está prestes a chamar uma senha fora da ordem. Deseja continuar?
+                            </p>
+                        )}
+
                         <div className="flex justify-end gap-4">
                             <button
                                 className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium px-4 py-2 rounded-lg"
-                                onClick={() => {
-                                    setShowModal(false);
-                                    setSelectedId(null);
-                                }}
+                                onClick={() => { setShowModal(false); setSelectedId(null); }}
                             >
                                 Cancelar
                             </button>
+
                             <button
-                                className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg"
+                                className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg disabled:opacity-60"
+                                disabled={emAtendimento || !selectedId}
                                 onClick={() => {
-                                    if (selectedId) {
-                                        chamarSenha(selectedId);
-                                        setShowModal(false);
-                                        setSelectedId(null);
-                                    }
+                                    if (emAtendimento) return;
+                                    if (!selectedId) return;
+                                    chamarSenha(selectedId);
+                                    setShowModal(false);
+                                    setSelectedId(null);
                                 }}
                             >
                                 Confirmar
