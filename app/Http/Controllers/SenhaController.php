@@ -108,7 +108,7 @@ class SenhaController extends Controller
             }
         }
 
-        // SenhaCriada::dispatch($senha);
+        SenhaCriada::dispatch($senha);
 
         return redirect()->route('senhas.show', $senha);
     }
