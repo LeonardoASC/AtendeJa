@@ -3,64 +3,48 @@
 namespace App\Http\Controllers;
 
 use App\Models\TipoAtendimento;
+use Illuminate\Http\Request;
 use App\Http\Requests\StoreTipoAtendimentoRequest;
 use App\Http\Requests\UpdateTipoAtendimentoRequest;
+use Inertia\Inertia;
 
 class TipoAtendimentoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
-        //
+        return Inertia::render('Autenticado/TipoAtendimento/Index', [
+            'tipoAtendimentos' => TipoAtendimento::orderBy('nome')->get(),
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreTipoAtendimentoRequest $request)
     {
-        //
+        TipoAtendimento::create($request->validated());
+
+        return redirect()
+            ->route('tipo-atendimentos.index')
+            ->with('success', 'Tipo de atendimento criado com sucesso!');
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(TipoAtendimento $tipoAtendimento)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(TipoAtendimento $tipoAtendimento)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
+     * Atualiza um tipo de atendimento existente.
      */
     public function update(UpdateTipoAtendimentoRequest $request, TipoAtendimento $tipoAtendimento)
     {
-        //
+        $tipoAtendimento->update($request->validated());
+
+        return redirect()
+            ->route('tipo-atendimentos.index')
+            ->with('success', 'Tipo de atendimento atualizado com sucesso!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(TipoAtendimento $tipoAtendimento)
     {
-        //
+        $tipoAtendimento->delete();
+
+        return redirect()
+            ->route('tipo-atendimentos.index')
+            ->with('success', 'Tipo de atendimento excluído com sucesso!');
     }
 }

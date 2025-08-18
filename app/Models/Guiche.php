@@ -13,6 +13,6 @@ class Guiche extends Model
 
     public function tiposAtendimento()
     {
-        return $this->hasMany(TipoAtendimento::class, 'guiche', 'numero');
+        return $this->belongsToMany(TipoAtendimento::class, 'guiche_tipo_atendimento')->withTimestamps();
     }
 }

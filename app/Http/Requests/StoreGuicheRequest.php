@@ -3,26 +3,36 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreGuicheRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            //
+            'numero' => ['required', 'string', 'max:50', Rule::unique('guiches', 'numero')],
+            'tipo_atendimento_ids' => ['nullable', 'array'],
+            'tipo_atendimento_ids.*' => ['integer', 'exists:tipo_atendimentos,id'],
+        ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'numero' => is_string($this->numero) ? trim($this->numero) : $this->numero,
+        ]);
+    }
+
+    public function messages(): array
+    {
+        return [
+            'numero.required' => 'O número do guichê é obrigatório.',
+            'numero.unique'   => 'Este número de guichê já está cadastrado.',
         ];
     }
 }

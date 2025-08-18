@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('tipo_atendimentos', function (Blueprint $table) {
             $table->id();
             $table->string('nome')->nullable();
-            $table->string('guiche')->nullable();
             $table->timestamps();
         });
     }

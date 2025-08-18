@@ -16,27 +16,21 @@ class TipoAtendimentoSeeder extends Seeder
        $tipos = [
             [
                 'nome' => 'Prova de Vida',
-                'guiche' => '1'
             ],
             [
                 'nome' => 'Processo Administrativo',
-                'guiche' => '1'
             ],
             [
                 'nome' => 'Adiantamento 13°',
-                'guiche' => '2'
             ],
             [
                 'nome' => 'Informações Aposentadoria', 
-                'guiche' => '2'
             ],
             [
                 'nome' => 'Contribuição Previdenciária',
-                'guiche' => '3'
             ],
             [
                 'nome' => 'Atendimento Interno',
-                'guiche' => '3'
             ]
        ];
 

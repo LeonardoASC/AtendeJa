@@ -25,11 +25,12 @@ export default function AuthenticatedLayout({ header, children }) {
 
     const links = [
         { route: 'dashboard', label: 'Dashboard', perm: 'ver-dashboard', icon: HomeIcon },
-        { route: 'guiche.index', label: 'Guichês', perm: 'ver-dashboard', icon: HomeIcon },
+        { route: 'guiche.select', label: 'Guichês', perm: 'ver-dashboard', icon: HomeIcon },
         { route: 'senhas.index', label: 'Senhas', perm: 'ver-dashboard', icon: DocumentTextIcon },
         { route: 'senhas.telao', label: 'Telão', perm: 'ver-dashboard', icon: HomeIcon },
         { route: 'relatorio.index', label: 'Relatórios', perm: 'ver-relatorios', icon: NewspaperIcon },
-
+        { route: 'tipo-atendimentos.index', label: 'Tipos de Atendimento', perm: 'ver-dashboard', icon: NewspaperIcon },
+        { route: 'guiches.index', label: 'Guichês', perm: 'ver-dashboard', icon: HomeIcon },
     ];
 
     const filtered = links.filter(

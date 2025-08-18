@@ -13,13 +13,55 @@ use Illuminate\Support\Facades\Cache;
 
 class GuicheController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $guiches = Guiche::all();
         return Inertia::render('Autenticado/Guiches/Index', [
+            'guiches' => Guiche::with('tiposAtendimento:id,nome')
+                ->orderBy('numero')
+                ->get(['id','numero']),
+            'tiposAtendimentoOptions' => TipoAtendimento::orderBy('nome')->get(['id','nome']),
+        ]);
+    }
+
+    public function store(StoreGuicheRequest $request)
+    {
+        $guiche = Guiche::create([
+            'numero' => $request->validated()['numero'],
+        ]);
+
+        $guiche->tiposAtendimento()->sync($request->validated()['tipo_atendimento_ids'] ?? []);
+
+        return redirect()
+            ->route('guiches.index')
+            ->with('success', 'Guichê criado com sucesso!');
+    }
+
+    public function update(UpdateGuicheRequest $request, Guiche $guiche)
+    {
+        $guiche->update([
+            'numero' => $request->validated()['numero'],
+        ]);
+
+        $guiche->tiposAtendimento()->sync($request->validated()['tipo_atendimento_ids'] ?? []);
+
+        return redirect()
+            ->route('guiches.index')
+            ->with('success', 'Guichê atualizado com sucesso!');
+    }
+
+    public function destroy(Guiche $guiche)
+    {
+        $guiche->delete();
+
+        return redirect()
+            ->route('guiches.index')
+            ->with('success', 'Guichê excluído com sucesso!');
+    }
+
+    public function selectGuiche()
+    {
+        $guiches = Guiche::all();
+        return Inertia::render('Autenticado/Guiches/SelectGuiche', [
             'guiches' => $guiches,
         ]);
     }
@@ -43,8 +85,6 @@ class GuicheController extends Controller
             ->latest('updated_at')
             ->take(5)
             ->pluck('codigo');
-
-        // dd($current, $queue, $attended);
 
         return Inertia::render('Senha/GuichePanel', [
             'guiche'       => $guiche,

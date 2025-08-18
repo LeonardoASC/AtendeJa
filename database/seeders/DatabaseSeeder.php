@@ -16,9 +16,7 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
         $this->call(RolesAndPermissionsSeeder::class);
         $this->call(AdminSeeder::class);
-        $this->call(GuicheSeeder::class);
-        $this->call(TipoAtendimentoSeeder::class);
-
-
+        // $this->call(GuicheSeeder::class);
+        // $this->call(TipoAtendimentoSeeder::class);
     }
 }
