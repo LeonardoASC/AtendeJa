@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use Illuminate\Database\QueryException;
+
           
 class Senha extends Model
 {
@@ -22,6 +23,7 @@ class Senha extends Model
         'prioridade',
         'status',
         'tipo_atendimento_id',
+        'guiche_id',
         'inicio_atendimento',
         'tempo_atendimento'
     ];
@@ -33,6 +35,11 @@ class Senha extends Model
     public function tipoAtendimento()
     {
         return $this->belongsTo(TipoAtendimento::class);
+    }
+
+    public function guiche()
+    {
+        return $this->belongsTo(Guiche::class);
     }
 
     public static function gerarPrefixo(string $tipo)

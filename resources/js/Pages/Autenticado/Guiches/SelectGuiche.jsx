@@ -5,10 +5,10 @@ import {
     CursorArrowRaysIcon,
 } from '@heroicons/react/24/outline';
 
-function BoothCard({ id, numero }) {
+function BoothCard({ id, nome, slug }) {
     return (
         <Link
-            href={route('guiche.panel', numero)}
+            href={route('guiche.panel', slug)}
             key={id}
             className="group relative rounded-2xl p-px transition-shadow hover:shadow-2xl"
         >
@@ -16,7 +16,7 @@ function BoothCard({ id, numero }) {
             <div className="relative flex flex-col items-center justify-center rounded-[inherit] bg-white/20 backdrop-blur-md py-10 px-7 text-gray-100">
                 <BuildingOffice2Icon className="h-9 w-9 text-teal-200 mb-4 group-hover:scale-110 transition-transform" />
                 <span className="text-xl font-semibold tracking-wide">
-                    Guichê&nbsp;{numero}
+                    Guichê {nome}
                 </span>
                 <p className="mt-2 text-sm text-gray-200 text-center">
                     Estação de atendimento onde as senhas são chamadas e cronomet­radas.
@@ -56,7 +56,7 @@ export default function Guiches({ guiches = [] }) {
                     {guiches.length ? (
                         <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                             {guiches.map((g) => (
-                                <BoothCard key={g.id} id={g.id} numero={g.numero} />
+                                <BoothCard key={g.id} id={g.id} nome={g.nome} slug={g.slug} />
                             ))}
                         </div>
                     ) : (

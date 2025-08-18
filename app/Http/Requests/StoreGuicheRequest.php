@@ -15,7 +15,7 @@ class StoreGuicheRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'numero' => ['required', 'string', 'max:50', Rule::unique('guiches', 'numero')],
+            'nome' => ['required', 'string', 'max:50', Rule::unique('guiches', 'nome')],
             'tipo_atendimento_ids' => ['nullable', 'array'],
             'tipo_atendimento_ids.*' => ['integer', 'exists:tipo_atendimentos,id'],
         ];
@@ -24,15 +24,17 @@ class StoreGuicheRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'numero' => is_string($this->numero) ? trim($this->numero) : $this->numero,
+            'nome' => is_string($this->nome) ? trim($this->nome) : $this->nome,
         ]);
     }
 
     public function messages(): array
     {
         return [
-            'numero.required' => 'O número do guichê é obrigatório.',
-            'numero.unique'   => 'Este número de guichê já está cadastrado.',
+            'nome.required' => 'O nome do guichê é obrigatório.',
+            'nome.max'      => 'O nome do guichê não pode ter mais de 50 caracteres.',
+            'nome.string'   => 'O nome do guichê deve ser uma string.',
+            'nome.unique'   => 'Este nome de guichê já está cadastrado.',
         ];
     }
 }

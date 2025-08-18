@@ -49,7 +49,7 @@ export default function Index() {
 
                     <section className="mt-6">
                         {list.length === 0 ? (
-                            <div className="rounded-2xl border border-dashed border-white/15 bg-white/5 p-10 text-center text-neutral-800 backdrop-blur">
+                            <div className="rounded-2xl border border-dashed border-white/15 bg-white/5 p-10 text-center text-white backdrop-blur">
                                 Nenhum guichê cadastrado.
                             </div>
                         ) : (
@@ -66,7 +66,7 @@ export default function Index() {
                                         <tbody className="divide-y divide-white/10">
                                             {list.map((item) => (
                                                 <tr key={item.id} className="hover:bg-white/5">
-                                                    <td className="px-6 py-4 text-sm font-medium text-white">{item.numero}</td>
+                                                    <td className="px-6 py-4 text-sm font-medium text-white">{item.nome}</td>
                                                     <td className="px-6 py-4 text-sm text-neutral-300">
                                                         {Array.isArray(item.tipos_atendimento) && item.tipos_atendimento.length
                                                             ? item.tipos_atendimento.map(t => t.nome).join(', ')
@@ -101,7 +101,7 @@ export default function Index() {
                                         <div key={item.id} className="p-4">
                                             <div className="flex items-start justify-between">
                                                 <div>
-                                                    <h3 className="text-base font-semibold text-white">Guichê {item.numero}</h3>
+                                                    <h3 className="text-base font-semibold text-white">Guichê {item.nome}</h3>
                                                     <p className="mt-1 text-sm text-neutral-300">
                                                         <span className="font-medium">Tipos:</span>{' '}
                                                         {Array.isArray(item.tipos_atendimento) && item.tipos_atendimento.length
@@ -149,7 +149,7 @@ export default function Index() {
                     <GuicheForm
                         initialData={{
                             id: editing.id,
-                            numero: editing.numero,
+                            nome: editing.nome,
                             tipo_atendimento_ids: Array.isArray(editing.tipos_atendimento)
                                 ? editing.tipos_atendimento.map(t => t.id)
                                 : [],
@@ -166,7 +166,7 @@ export default function Index() {
                 <div className="space-y-5">
                     <p className="text-sm text-neutral-800">
                         Tem certeza que deseja excluir o guichê{' '}
-                        <span className="font-semibold text-white">{confirming?.numero}</span>?
+                        <span className="font-semibold text-white">{confirming?.nome}</span>?
                     </p>
                     <div className="flex items-center justify-end gap-2">
                         <button
@@ -192,7 +192,7 @@ function GuicheForm({ initialData = null, tiposAtendimentoOptions = [], onCancel
     const isEdit = mode === 'edit'
     const initialTipoIds = Array.isArray(initialData?.tipo_atendimento_ids) ? initialData.tipo_atendimento_ids : []
     const { data, setData, post, put, processing, errors, reset } = useForm({
-        numero: initialData?.numero ?? '',
+        nome: initialData?.nome ?? '',
         tipo_atendimento_ids: initialTipoIds,
     })
 
@@ -213,7 +213,7 @@ function GuicheForm({ initialData = null, tiposAtendimentoOptions = [], onCancel
         const opts = {
             preserveScroll: true,
             onSuccess: () => {
-                reset('numero', 'tipo_atendimento_ids')
+                reset('nome', 'tipo_atendimento_ids')
                 onSuccess?.()
             },
         }
@@ -231,13 +231,13 @@ function GuicheForm({ initialData = null, tiposAtendimentoOptions = [], onCancel
                     <label className="mb-1 block text-sm font-medium text-neutral-800">Identificador Guichê</label>
                     <input
                         type="text"
-                        value={data.numero}
-                        onChange={(e) => setData('numero', e.target.value)}
-                        className={`w-full rounded-2xl border px-3 py-2.5 text-sm text-neutral-800 placeholder:text-neutral-400 shadow-sm focus:outline-none focus:ring-2 bg-white/5 backdrop-blur ${errors.numero ? 'border-rose-400/40 ring-rose-400/30' : 'border-white/10 ring-white/10'
+                        value={data.nome}
+                        onChange={(e) => setData('nome', e.target.value)}
+                        className={`w-full rounded-2xl border px-3 py-2.5 text-sm text-neutral-800 placeholder:text-neutral-400 shadow-sm focus:outline-none focus:ring-2 bg-white/5 backdrop-blur ${errors.nome ? 'border-rose-400/40 ring-rose-400/30' : 'border-white/10 ring-white/10'
                             }`}
                         placeholder="Ex.: 01 / Nome atendente"
                     />
-                    {errors.numero && <p className="mt-1 text-xs text-rose-300">{errors.numero}</p>}
+                    {errors.nome && <p className="mt-1 text-xs text-rose-300">{errors.nome}</p>}
                 </div>
 
                 <div>

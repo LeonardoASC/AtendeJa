@@ -20,7 +20,7 @@ class GuicheFactory extends Factory
     {
         static $num = 1;
         return [
-            'numero' => (string) $num++,
+            'nome' => (string) $num++,
         ];
     }
 }

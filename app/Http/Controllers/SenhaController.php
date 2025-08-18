@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\TipoAtendimento;
 use App\Events\SenhaCriada;
 use App\Events\SenhaAtualizada;
+use App\Models\Guiche;
 
 
 class SenhaController extends Controller
@@ -27,6 +28,7 @@ class SenhaController extends Controller
     public function index()
     {
         $tipoAtendimentos = TipoAtendimento::all();
+        
         $senha = session('senha');
         return Inertia::render('Senha/Index', [
             'tipoAtendimentos' => $tipoAtendimentos,
@@ -115,7 +117,7 @@ class SenhaController extends Controller
 
     public function telao()
     {
-        $senhasAtendidas = Senha::with('tipoAtendimento')
+        $senhasAtendidas = Senha::with('tipoAtendimento', 'guiche')
             ->where('status', 'atendendo')
             ->orWhere('status', 'atendida')
             ->orderBy('updated_at', 'desc')
@@ -127,12 +129,43 @@ class SenhaController extends Controller
         ]);
     }
 
+    // public function chamar(Request $request)
+    // {
+    //     $guiche = (int) $request->input('guiche');
+
+    //     $senha = DB::transaction(function () use ($guiche) {
+    //         $tipoIds = TipoAtendimento::where('guiche', $guiche)->pluck('id');
+
+    //         $senha = Senha::whereIn('tipo_atendimento_id', $tipoIds)
+    //             ->where('status', 'aguardando')
+    //             ->orderBy('created_at')
+    //             ->lockForUpdate()
+    //             ->firstOrFail();
+
+    //         $senha->update([
+    //             'status' => 'atendendo',
+    //             'inicio_atendimento' => Carbon::now(),
+    //         ]);
+
+    //         return $senha;
+    //     });
+        
+    //     $senha->load('tipoAtendimento');
+    //     SenhaAtualizada::dispatch($senha);
+
+    //     return redirect()->route('guiche.panel', ['guiche' => $guiche]);
+    // }
     public function chamar(Request $request)
     {
-        $guiche = (int) $request->input('guiche');
+        $guicheKey = (string) $request->input('guiche');
+
+        $guiche = Guiche::where('slug', $guicheKey)
+            ->orWhere('nome', $guicheKey)
+            ->firstOrFail();
+        
 
         $senha = DB::transaction(function () use ($guiche) {
-            $tipoIds = TipoAtendimento::where('guiche', $guiche)->pluck('id');
+            $tipoIds = $guiche->tiposAtendimento()->pluck('tipo_atendimentos.id');
 
             $senha = Senha::whereIn('tipo_atendimento_id', $tipoIds)
                 ->where('status', 'aguardando')
@@ -143,15 +176,16 @@ class SenhaController extends Controller
             $senha->update([
                 'status' => 'atendendo',
                 'inicio_atendimento' => Carbon::now(),
+                'guiche_id' => $guiche->id,
             ]);
 
             return $senha;
         });
-        
+
         $senha->load('tipoAtendimento');
         SenhaAtualizada::dispatch($senha);
 
-        return redirect()->route('guiche.panel', ['guiche' => $guiche]);
+        return redirect()->route('guiche.panel', ['guiche' => $guiche->slug]);
     }
 
     public function finalizar(Request $request, Senha $senha)

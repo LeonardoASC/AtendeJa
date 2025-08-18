@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('guiches', function (Blueprint $table) {
             $table->id();
-            $table->string('numero');
+            $table->string('nome');
+            $table->string('slug')->unique();
             $table->timestamps();
         });
     }

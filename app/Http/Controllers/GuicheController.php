@@ -10,6 +10,7 @@ use App\Models\TipoAtendimento;
 use App\Models\Senha;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 class GuicheController extends Controller
 {
@@ -17,19 +18,22 @@ class GuicheController extends Controller
     {
         return Inertia::render('Autenticado/Guiches/Index', [
             'guiches' => Guiche::with('tiposAtendimento:id,nome')
-                ->orderBy('numero')
-                ->get(['id','numero']),
+                ->orderBy('nome')
+                ->get(['id','nome']),
             'tiposAtendimentoOptions' => TipoAtendimento::orderBy('nome')->get(['id','nome']),
         ]);
     }
 
     public function store(StoreGuicheRequest $request)
     {
+        $data = $request->validated();
+
         $guiche = Guiche::create([
-            'numero' => $request->validated()['numero'],
+            'nome' => $data['nome'],
+            'slug' => Str::slug($data['nome']),
         ]);
 
-        $guiche->tiposAtendimento()->sync($request->validated()['tipo_atendimento_ids'] ?? []);
+        $guiche->tiposAtendimento()->sync($data['tipo_atendimento_ids'] ?? []);
 
         return redirect()
             ->route('guiches.index')
@@ -38,11 +42,14 @@ class GuicheController extends Controller
 
     public function update(UpdateGuicheRequest $request, Guiche $guiche)
     {
+        $data = $request->validated();
+
         $guiche->update([
-            'numero' => $request->validated()['numero'],
+            'nome' => $data['nome'],
+            'slug' => Str::slug($data['nome']),
         ]);
 
-        $guiche->tiposAtendimento()->sync($request->validated()['tipo_atendimento_ids'] ?? []);
+        $guiche->tiposAtendimento()->sync($data['tipo_atendimento_ids'] ?? []);
 
         return redirect()
             ->route('guiches.index')
@@ -66,9 +73,10 @@ class GuicheController extends Controller
         ]);
     }
 
-    public function guichePanel(string $guiche)
+    public function guichePanel(Guiche $guiche)
     {
-        $tipoIds = TipoAtendimento::where('guiche', $guiche)->pluck('id');
+        $tipoIds = $guiche->tiposAtendimento()->pluck('tipo_atendimentos.id');
+        
 
         $current = Senha::whereIn('tipo_atendimento_id', $tipoIds)
             ->where('status', 'atendendo')
@@ -79,6 +87,7 @@ class GuicheController extends Controller
             ->where('status', 'aguardando')
             ->orderBy('created_at')
             ->get(['id', 'codigo', 'nome', 'cpf']);
+        
 
         $attended = Senha::whereIn('tipo_atendimento_id', $tipoIds)
             ->where('status', 'atendida')
@@ -87,7 +96,7 @@ class GuicheController extends Controller
             ->pluck('codigo');
 
         return Inertia::render('Senha/GuichePanel', [
-            'guiche'       => $guiche,
+            'guiche'       => $guiche->nome, 
             'initialSenha' => $current,
             'queue'        => $queue,
             'attended'     => $attended,

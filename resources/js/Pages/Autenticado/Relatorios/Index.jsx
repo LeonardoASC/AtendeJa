@@ -19,7 +19,7 @@ export default function Relatorios() {
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <section className="mb-10 max-w-3xl text-gray-300">
                         <p className="text-lg">
-                            A seção abaixo disponibiliza relatórios gerenciais em&nbsp;PDF.
+                            A seção abaixo disponibiliza relatórios gerenciais em PDF.
                             Utilize-os para análises de desempenho, auditoria e prestação de
                             contas.
                         </p>

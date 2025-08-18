@@ -45,7 +45,7 @@ Route::middleware(['auth:admin', 'verified'])->prefix('admin')->group(function (
         Route::post('/senhas/{senha}/chamar', [SenhaController::class, 'chamarSenha'])->name('senhas.chamarSenha'); 
 
         Route::get('/select-guiche', [GuicheController::class, 'selectGuiche'])->name('guiche.select');
-        Route::get('/select-guiche/{guiche}', [GuicheController::class, 'guichePanel'])->name('guiche.panel');
+        Route::get('/select-guiche/{guiche:slug}', [GuicheController::class, 'guichePanel'])->name('guiche.panel');
 
         Route::resource('guiches', GuicheController::class)->parameters(['guiches' => 'guiche']);
 

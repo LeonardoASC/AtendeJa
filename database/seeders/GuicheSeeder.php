@@ -14,9 +14,9 @@ class GuicheSeeder extends Seeder
     public function run(): void
     {
         $guiches = [
-            ['numero' => '1'],
-            ['numero' => '2'],
-            ['numero' => '3'],
+            ['nome' => '1'],
+            ['nome' => '2'],
+            ['nome' => '3'],
         ];
 
         foreach ($guiches as $g) {

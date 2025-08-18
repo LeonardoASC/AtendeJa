@@ -35,16 +35,13 @@ export default function GuichePanel({ guiche, initialSenha = null, queue = [], a
 
     useEffect(() => {
         if (window.Echo) {
-            console.log('Subscribing to senhas.novas channel...');
             const channel = window.Echo.channel('senhas.novas');
 
             channel.listen('.SenhaCriada', (event) => {
-                console.log('SenhaCriada event received:', event);
                 router.reload();
             });
 
             return () => {
-                console.log('Leaving senhas.novas channel...');
                 window.Echo.leave('senhas.novas');
             };
         } else {
@@ -96,7 +93,7 @@ export default function GuichePanel({ guiche, initialSenha = null, queue = [], a
         setLoading(true);
         router.post(
             route('senhas.chamarSenha', id),
-            { guiche },
+            { guiche: guiche.slug },
             {
                 preserveScroll: true,
                 onFinish: () => setLoading(false),
