@@ -129,32 +129,6 @@ class SenhaController extends Controller
         ]);
     }
 
-    // public function chamar(Request $request)
-    // {
-    //     $guiche = (int) $request->input('guiche');
-
-    //     $senha = DB::transaction(function () use ($guiche) {
-    //         $tipoIds = TipoAtendimento::where('guiche', $guiche)->pluck('id');
-
-    //         $senha = Senha::whereIn('tipo_atendimento_id', $tipoIds)
-    //             ->where('status', 'aguardando')
-    //             ->orderBy('created_at')
-    //             ->lockForUpdate()
-    //             ->firstOrFail();
-
-    //         $senha->update([
-    //             'status' => 'atendendo',
-    //             'inicio_atendimento' => Carbon::now(),
-    //         ]);
-
-    //         return $senha;
-    //     });
-        
-    //     $senha->load('tipoAtendimento');
-    //     SenhaAtualizada::dispatch($senha);
-
-    //     return redirect()->route('guiche.panel', ['guiche' => $guiche]);
-    // }
     public function chamar(Request $request)
     {
         $guicheKey = (string) $request->input('guiche');
@@ -227,23 +201,29 @@ class SenhaController extends Controller
 
     public function chamarSenha(Request $request, Senha $senha)
     {
-        $guiche = (int) $request->input('guiche');
+        $guicheKey = (string) $request->input('guiche');
 
-        DB::transaction(function () use ($senha) {
+        $guiche = Guiche::where('slug', $guicheKey)
+            ->orWhere('nome', $guicheKey)
+            ->firstOrFail();
+
+        DB::transaction(function () use ($senha, $guiche) {
+            $senha = Senha::whereKey($senha->id)->lockForUpdate()->first();
             if ($senha->status !== 'aguardando') {
-                abort(400, 'Senha indisponivel');
+                abort(400, 'Senha indisponível');
             }
 
             $senha->update([
-                'status' => 'atendendo',
-                'inicio_atendimento' => Carbon::now(),
+                'status'             => 'atendendo',
+                'inicio_atendimento' => now(),
+                'guiche_id'          => $guiche->id,
             ]);
         });
 
         $senha->load('tipoAtendimento');
         SenhaAtualizada::dispatch($senha);
 
-        return redirect()->route('guiche.panel', ['guiche' => $guiche]);
+        return redirect()->route('guiche.panel', ['guiche' => $guiche->slug]);
     }
 
     public function ticketVirtual(string $token)

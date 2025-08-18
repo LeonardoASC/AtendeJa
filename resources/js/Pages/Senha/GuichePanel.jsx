@@ -36,11 +36,9 @@ export default function GuichePanel({ guiche, initialSenha = null, queue = [], a
     useEffect(() => {
         if (window.Echo) {
             const channel = window.Echo.channel('senhas.novas');
-
             channel.listen('.SenhaCriada', (event) => {
                 router.reload();
             });
-
             return () => {
                 window.Echo.leave('senhas.novas');
             };
@@ -51,6 +49,7 @@ export default function GuichePanel({ guiche, initialSenha = null, queue = [], a
 
     const chamar = () => {
         setLoading(true);
+        
         router.post(
             route('senhas.chamar'),
             { guiche },
@@ -93,7 +92,7 @@ export default function GuichePanel({ guiche, initialSenha = null, queue = [], a
         setLoading(true);
         router.post(
             route('senhas.chamarSenha', id),
-            { guiche: guiche.slug },
+            { guiche },
             {
                 preserveScroll: true,
                 onFinish: () => setLoading(false),

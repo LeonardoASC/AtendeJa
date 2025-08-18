@@ -3,8 +3,6 @@ import { Head, router } from '@inertiajs/react';
 
 export default function Telao({ senhasAtendidas = [] }) {
     const lastCalled = senhasAtendidas[0] ?? null;
-    
-    
     const recent = senhasAtendidas.slice(0, 6);
     const [now, setNow] = useState(new Date());
 
@@ -62,7 +60,7 @@ export default function Telao({ senhasAtendidas = [] }) {
                                 </span>
                                 <h3 className="text-2xl md:text-3xl tracking-wider font-medium mt-6">Guichê</h3>
                                 <span className="text-6xl md:text-7xl font-bold leading-none">
-                                    {lastCalled.guiche.nome ?? '—'}
+                                    {lastCalled?.guiche?.nome ?? '—'}
                                 </span>
                             </>
                         ) : (
@@ -96,7 +94,7 @@ export default function Telao({ senhasAtendidas = [] }) {
                                     {recent.map((s) => (
                                         <tr key={s.id} className="odd:bg-white/5 hover:bg-white/15 transition-colors">
                                             <td className="py-2 px-2 font-medium tracking-wide">{s.codigo}</td>
-                                            <td className="py-2 px-2">{s.guiche.nome ?? '—'}</td>
+                                            <td className="py-2 px-2">{s?.guiche?.nome ?? '—'}</td>
                                         </tr>
                                     ))}
                                 </tbody>
