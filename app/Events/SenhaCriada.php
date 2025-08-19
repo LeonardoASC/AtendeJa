@@ -74,7 +74,6 @@ class SenhaCriada implements ShouldBroadcastNow
                 'cpf' => $this->senha->cpf,
                 'tipo_atendimento_id' => $this->senha->tipo_atendimento_id,
                 'status' => $this->senha->status,
-                'guiche' => $this->senha->guiche,
             ],
         ];
     }

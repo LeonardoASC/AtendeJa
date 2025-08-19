@@ -72,6 +72,10 @@ class SiteController extends Controller
             ])
             ->timeout(20);
 
+        // if (app()->environment('local')) {
+        //     $returnApi = $returnApi->withoutVerifying();
+        // }
+
         return $returnApi;
     }
 }
