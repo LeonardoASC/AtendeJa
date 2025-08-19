@@ -151,6 +151,7 @@ class SenhaController extends Controller
                 'status' => 'atendendo',
                 'inicio_atendimento' => Carbon::now(),
                 'guiche_id' => $guiche->id,
+                'atendente_nome' => auth()->user()->name,
             ]);
 
             return $senha;
@@ -217,6 +218,7 @@ class SenhaController extends Controller
                 'status'             => 'atendendo',
                 'inicio_atendimento' => now(),
                 'guiche_id'          => $guiche->id,
+                'atendente_nome'           => auth()->user()->name,
             ]);
         });
 

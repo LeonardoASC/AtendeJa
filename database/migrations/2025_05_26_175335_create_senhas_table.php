@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('codigo', 10)->nullable();
             $table->string('prioridade')->nullable();
             $table->string('status')->nullable();
+            $table->string('atendente_nome')->nullable();
             $table->foreignId('tipo_atendimento_id')->constrained('tipo_atendimentos')->onDelete('cascade');
             $table->foreignId('guiche_id')->nullable()->constrained('guiches')->onDelete('cascade');
             $table->timestamp('inicio_atendimento')->nullable();

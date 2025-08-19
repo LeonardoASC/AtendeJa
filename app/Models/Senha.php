@@ -24,6 +24,7 @@ class Senha extends Model
         'status',
         'tipo_atendimento_id',
         'guiche_id',
+        'atendente_nome',
         'inicio_atendimento',
         'tempo_atendimento'
     ];
