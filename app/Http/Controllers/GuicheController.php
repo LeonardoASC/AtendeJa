@@ -94,7 +94,7 @@ class GuicheController extends Controller
             ->pluck('codigo');
 
         return Inertia::render('Senha/GuichePanel', [
-            'guiche'       => $guiche->nome,
+            'guiche'       => $guiche->slug,
             'initialSenha' => $current,
             'queue'        => $queue,
             'attended'     => $attended,
