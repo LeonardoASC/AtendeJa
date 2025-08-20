@@ -158,7 +158,6 @@ function TipoAtendimentoForm({ initialData = null, onCancel, onSuccess, mode = '
     const isEdit = mode === 'edit'
     const { data, setData, post, put, processing, errors, reset, clearErrors } = useForm({
         nome: initialData?.nome ?? '',
-        guiche: initialData?.guiche ?? '',
     })
 
     const submit = (e) => {
@@ -166,7 +165,7 @@ function TipoAtendimentoForm({ initialData = null, onCancel, onSuccess, mode = '
         const opts = {
             preserveScroll: true,
             onSuccess: () => {
-                reset('nome', 'guiche')
+                reset('nome')
                 onSuccess?.()
             },
         }
@@ -191,7 +190,7 @@ function TipoAtendimentoForm({ initialData = null, onCancel, onSuccess, mode = '
                             }`}
                         placeholder="Ex.: Atendimento Geral"
                     />
-                    {errors.nome && <p className="mt-1 text-xs text-rose-300">{errors.nome}</p>}
+                    {errors.nome && <p className="mt-1 text-xs text-rose-700">{errors.nome}</p>}
                 </div>
 
             </div>
@@ -232,7 +231,7 @@ function TipoAtendimentoForm({ initialData = null, onCancel, onSuccess, mode = '
 
 function Spinner() {
     return (
-        <svg className="h-4 w-4 animate-spin text-white" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <svg className="h-4 w-4 animate-spin text-green-900" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <circle className="opacity-30" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-80" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
         </svg>

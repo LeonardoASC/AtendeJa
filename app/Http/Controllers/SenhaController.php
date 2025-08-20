@@ -27,7 +27,7 @@ class SenhaController extends Controller
 
     public function index()
     {
-        $tipoAtendimentos = TipoAtendimento::all();
+        $tipoAtendimentos = TipoAtendimento::whereHas('guiches')->with('guiches')->get();
         
         $senha = session('senha');
         return Inertia::render('Senha/Index', [

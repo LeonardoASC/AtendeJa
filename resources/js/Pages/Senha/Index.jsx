@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Head, Link, useForm } from '@inertiajs/react';
 import LoadingModal from '@/Components/LoadingModal';
+import { motion, AnimatePresence } from "framer-motion";
 
 const isNomeCompletoValido = (nome) => {
     if (!nome) return false;
@@ -190,49 +191,65 @@ export default function Index({ tipoAtendimentos }) {
                                 </div>
                                 {errors.cpf && <p className="text-red-300 text-sm">{errors.cpf}</p>}
 
-                                {/* {buscando && <p className="text-3xl text-teal-100">Consultando CPF…</p>} */}
+
                                 <LoadingModal open={buscando} message="Consultando CPF…" />
                                 {lookupError && <p className="text-sm text-yellow-200">{lookupError}</p>}
 
-                                {pessoa && pessoa.NOME && !showNomeInput && (
-                                    <div className="rounded-xl bg-white/15 backdrop-blur p-4 text-left text-white">
-                                        <p className="text-sm opacity-80 mb-1">Encontramos um cadastro:</p>
-                                        <p className="text-lg font-semibold">{pessoa.NOME}</p>
-                                        <div className="mt-2 text-xs opacity-80">
-                                            {pessoa.MATRICULA && <span>Matrícula: {pessoa.MATRICULA}</span>}
-                                            {pessoa.EMAIL && <span className="ml-3">E-mail: {String(pessoa.EMAIL).toLowerCase()}</span>}
-                                        </div>
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                setShowNomeInput(true);
-                                                setData('nome', '');
-                                                setData('matricula', '');
-                                                setData('email', '');
-                                            }}
-                                            className="mt-3 text-xs underline underline-offset-4 opacity-80 hover:opacity-100"
+                                <AnimatePresence mode="wait">
+                                    {(pessoa && pessoa.NOME && !showNomeInput) || showNomeInput ? (
+                                        <motion.div
+                                            key={showNomeInput ? "nomeInput" : "pessoaEncontrada"}
+                                            initial={{ opacity: 0, y: -10, height: 0 }}
+                                            animate={{ opacity: 1, y: 0, height: "auto" }}
+                                            exit={{ opacity: 0, y: -10, height: 0 }}
+                                            transition={{ duration: 0.3 }}
+                                            className="overflow-hidden"
                                         >
-                                            Não sou eu / digitar outro nome
-                                        </button>
-                                    </div>
-                                )}
+                                            {pessoa && pessoa.NOME && !showNomeInput ? (
+                                                <div className="rounded-xl bg-white/15 backdrop-blur p-4 text-left text-white">
+                                                    <p className="text-sm opacity-80 mb-1">Encontramos um cadastro:</p>
+                                                    <p className="text-lg font-semibold">{pessoa.NOME}</p>
+                                                    <div className="mt-2 text-xs opacity-80">
+                                                        {pessoa.MATRICULA && <span>Matrícula: {pessoa.MATRICULA}</span>}
+                                                        {pessoa.EMAIL && (
+                                                            <span className="ml-3">
+                                                                E-mail: {String(pessoa.EMAIL).toLowerCase()}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setShowNomeInput(true);
+                                                            setData("nome", "");
+                                                            setData("matricula", "");
+                                                            setData("email", "");
+                                                        }}
+                                                        className="mt-3 text-xs underline underline-offset-4 opacity-80 hover:opacity-100"
+                                                    >
+                                                        Não sou eu / digitar outro nome
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <div className="rounded-xl bg-white/15 backdrop-blur p-4 text-left text-white">
+                                                    <label htmlFor="nome" className="block text-teal-100 mb-1">
+                                                        Nome completo
+                                                    </label>
+                                                    <input
+                                                        id="nome"
+                                                        name="nome"
+                                                        value={data.nome}
+                                                        onChange={(e) => setData("nome", e.target.value)}
+                                                        placeholder="Digite seu nome completo"
+                                                        className="w-full rounded-lg border border-white/30 bg-white/10 px-3 py-4 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/40"
+                                                        required
+                                                    />
+                                                </div>
+                                            )}
+                                        </motion.div>
+                                    ) : null}
+                                </AnimatePresence>
 
-                                {showNomeInput && (
-                                    <div className="text-left">
-                                        <label htmlFor="nome" className="block text-teal-100 mb-1">
-                                            Nome completo
-                                        </label>
-                                        <input
-                                            id="nome"
-                                            name="nome"
-                                            value={data.nome}
-                                            onChange={(e) => setData('nome', e.target.value)}
-                                            placeholder="Digite seu nome completo"
-                                            className="w-full rounded-lg border border-white/30 bg-white/10 px-3 py-4 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/40"
-                                            required
-                                        />
-                                    </div>
-                                )}
 
                                 <div className="grid grid-cols-3 gap-3">
                                     {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (

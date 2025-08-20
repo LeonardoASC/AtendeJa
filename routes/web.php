@@ -49,7 +49,6 @@ Route::middleware(['auth:admin', 'verified'])->prefix('admin')->group(function (
 
         Route::resource('guiches', GuicheController::class)->parameters(['guiches' => 'guiche']);
 
-
         Route::get('/relatorios', [RelatorioController::class, 'index'])->name('relatorio.index');
         Route::get('/relatorios/senhas/pdf', [RelatorioController::class, 'senhasPdf'])->name('relatorios.senhas.pdf');
     });

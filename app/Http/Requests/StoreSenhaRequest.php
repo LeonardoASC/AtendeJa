@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Rules\CpfValido;
 
 class StoreSenhaRequest extends FormRequest
 {
@@ -22,7 +23,7 @@ class StoreSenhaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'cpf' => 'required|string|size:11',
+            'cpf' => ['required', 'string', 'size:11', new CpfValido],
             'email' => 'nullable|email|max:255',
             'nome' => 'nullable|string|max:255',
             'matricula' => 'nullable|string|max:255',

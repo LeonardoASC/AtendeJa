@@ -20,8 +20,7 @@ class StoreTipoAtendimentoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nome'   => ['required', 'string', 'max:255'],
-            'guiche' => ['nullable', 'string', 'max:50'],
+            'nome'   => ['required', 'string', 'max:255', 'unique:tipo_atendimentos,nome'],
         ];
     }
 
@@ -34,8 +33,7 @@ class StoreTipoAtendimentoRequest extends FormRequest
             'nome.required' => 'O nome é obrigatório.',
             'nome.string'   => 'O nome deve ser um texto.',
             'nome.max'      => 'O nome não pode ultrapassar :max caracteres.',
-            'guiche.string' => 'O guichê deve ser um texto.',
-            'guiche.max'    => 'O guichê não pode ultrapassar :max caracteres.',
+            'nome.unique'   => 'Já existe um tipo de atendimento com este nome.',
         ];
     }
 
@@ -46,7 +44,6 @@ class StoreTipoAtendimentoRequest extends FormRequest
     {
         return [
             'nome'   => 'nome',
-            'guiche' => 'guichê',
         ];
     }
 
@@ -57,7 +54,6 @@ class StoreTipoAtendimentoRequest extends FormRequest
     {
         $this->merge([
             'nome'   => is_string($this->nome) ? trim($this->nome) : $this->nome,
-            'guiche' => is_string($this->guiche) ? trim($this->guiche) : $this->guiche,
         ]);
     }
 }

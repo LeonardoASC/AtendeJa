@@ -30,7 +30,7 @@ export default function AuthenticatedLayout({ header, children }) {
         { route: 'senhas.telao', label: 'Telão', perm: 'ver-dashboard', icon: HomeIcon },
         { route: 'relatorio.index', label: 'Relatórios', perm: 'ver-relatorios', icon: NewspaperIcon },
         { route: 'tipo-atendimentos.index', label: 'Tipos de Atendimento', perm: 'ver-dashboard', icon: NewspaperIcon },
-        { route: 'guiches.index', label: 'Guichês', perm: 'ver-dashboard', icon: HomeIcon },
+        { route: 'guiches.index', label: 'Gerenciar Guichês', perm: 'ver-dashboard', icon: HomeIcon },
     ];
 
     const filtered = links.filter(

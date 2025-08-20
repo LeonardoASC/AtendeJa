@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
 
 class UpdateTipoAtendimentoRequest extends FormRequest
 {
@@ -19,9 +21,13 @@ class UpdateTipoAtendimentoRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'nome'   => ['required', 'string', 'max:255'],
-            'guiche' => ['nullable', 'string', 'max:50'],
+         return [
+            'nome' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('tipo_atendimentos', 'nome')->ignore($this->route('tipo_atendimento')->id), 
+            ],
         ];
     }
 
@@ -34,8 +40,6 @@ class UpdateTipoAtendimentoRequest extends FormRequest
             'nome.required' => 'O nome é obrigatório.',
             'nome.string'   => 'O nome deve ser um texto.',
             'nome.max'      => 'O nome não pode ultrapassar :max caracteres.',
-            'guiche.string' => 'O guichê deve ser um texto.',
-            'guiche.max'    => 'O guichê não pode ultrapassar :max caracteres.',
         ];
     }
 
@@ -46,7 +50,6 @@ class UpdateTipoAtendimentoRequest extends FormRequest
     {
         return [
             'nome'   => 'nome',
-            'guiche' => 'guichê',
         ];
     }
 
@@ -57,7 +60,6 @@ class UpdateTipoAtendimentoRequest extends FormRequest
     {
         $this->merge([
             'nome'   => is_string($this->nome) ? trim($this->nome) : $this->nome,
-            'guiche' => is_string($this->guiche) ? trim($this->guiche) : $this->guiche,
         ]);
     }
 }
