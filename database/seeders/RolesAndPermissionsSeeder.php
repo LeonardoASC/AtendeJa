@@ -21,29 +21,16 @@ class RolesAndPermissionsSeeder extends Seeder
             'guard_name' => 'admin',
         ]);
 
-        $caixaRole = Role::firstOrCreate([
-            'name' => 'Caixa',
+        $atendenteRole = Role::firstOrCreate([
+            'name' => 'Atendente',
             'guard_name' => 'admin',
         ]);
-
     
         $permissions = [
             'ver-dashboard',
             'criar-dashboard',
             'editar-dashboard',
             'excluir-dashboard',
-            'ver-patio',
-            'criar-patio',
-            'editar-patio',
-            'excluir-patio',
-            'ver-historico',
-            'criar-historico',
-            'editar-historico',
-            'excluir-historico',
-            'ver-taxas',
-            'criar-taxas',
-            'editar-taxas',
-            'excluir-taxas',
             'ver-admin',
             'criar-admin',
             'editar-admin',
@@ -60,6 +47,26 @@ class RolesAndPermissionsSeeder extends Seeder
             'criar-relatorios',
             'editar-relatorios',
             'excluir-relatorios',
+            'ver-senhas',
+            'criar-senhas',
+            'editar-senhas',
+            'excluir-senhas',
+            'ver-telao',
+            'criar-telao',
+            'editar-telao',
+            'excluir-telao',
+            'ver-guiche',
+            'criar-guiche',
+            'editar-guiche',
+            'excluir-guiche',
+            'ver-tipoAtendimento',
+            'criar-tipoAtendimento',
+            'editar-tipoAtendimento',
+            'excluir-tipoAtendimento',
+            'ver-gerenciarGuiche',
+            'criar-gerenciarGuiche',
+            'editar-gerenciarGuiche',
+            'excluir-gerenciarGuiche',
         ];
         
 
@@ -72,19 +79,5 @@ class RolesAndPermissionsSeeder extends Seeder
 
         $adminRole->givePermissionTo(Permission::all());
 
-        $operadorRole->givePermissionTo([
-            'ver-dashboard',
-            'ver-patio',
-            'ver-historico',
-            'ver-usuarios',
-            'criar-patio',
-        ]);
-        $caixaRole->givePermissionTo([
-            'ver-dashboard',
-            'ver-patio',
-            'ver-historico',
-            'editar-patio',
-            'ver-usuarios',
-        ]);
     }
 }
