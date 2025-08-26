@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { EnvelopeIcon, LockClosedIcon } from "@heroicons/react/24/outline";
 import GuestLayout from "@/Layouts/GuestLayout";
 import { Head, Link, useForm } from "@inertiajs/react";
@@ -11,20 +11,51 @@ export default function Login({ status, canResetPassword }) {
         remember: false,
     });
 
+    const submitRef = useRef(null);
+
     const submit = (e) => {
         e.preventDefault();
         post(route("login"), { onFinish: () => reset("password") });
     };
 
-    const container = {
-        hidden: { opacity: 0, y: 20 },
-        show: {
-            opacity: 1,
-            y: 0,
-            transition: { staggerChildren: 0.12, duration: 0.6, ease: "easeOut" },
-        },
+    const ensureVisible = (el) => {
+        if (!el) return;
+        setTimeout(() => {
+            el.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+            window.scrollBy({ top: -24, behavior: "instant" });
+        }, 60);
     };
 
+    const focusNextInForm = (current) => {
+        const form = current.form || current.closest("form") || document;
+        const focusables = Array.from(
+            form.querySelectorAll(
+                'input, select, textarea, button, [tabindex]:not([tabindex="-1"])'
+            )
+        ).filter((el) => !el.disabled && el.tabIndex !== -1 && !el.hasAttribute("aria-hidden"));
+        const i = focusables.indexOf(current);
+        const next = focusables[i + 1];
+        if (next) next.focus();
+    };
+
+    const onEmailKeyDown = (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            focusNextInForm(e.currentTarget);
+        }
+    };
+
+    const onPasswordKeyDown = (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            submitRef.current?.click(); // envia
+        }
+    };
+
+    const container = {
+        hidden: { opacity: 0, y: 20 },
+        show: { opacity: 1, y: 0, transition: { staggerChildren: 0.12, duration: 0.6, ease: "easeOut" } },
+    };
     const item = {
         hidden: { opacity: 0, y: 20 },
         show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
@@ -46,6 +77,7 @@ export default function Login({ status, canResetPassword }) {
             </div>
 
             <Head title="Entrar" />
+
             {status && (
                 <motion.div
                     initial={{ y: -20, opacity: 0 }}
@@ -73,11 +105,8 @@ export default function Login({ status, canResetPassword }) {
                     >
                         Acesse sua conta
                     </motion.h1>
-                    <motion.p
-                        variants={item}
-                        className="mt-2 text-sm text-gray-500"
-                    >
-                        Entre com seu e‑mail institucional
+                    <motion.p variants={item} className="mt-2 text-sm text-gray-500">
+                        Entre com seu e-mail institucional
                     </motion.p>
                 </motion.header>
 
@@ -90,7 +119,10 @@ export default function Login({ status, canResetPassword }) {
                         placeholder="Email"
                         value={data.email}
                         onChange={(e) => setData("email", e.target.value)}
+                        onFocus={(e) => ensureVisible(e.currentTarget)}
+                        onKeyDown={onEmailKeyDown}
                         autoComplete="username"
+                        inputMode="email"
                         required
                         className="peer w-full rounded-xl border border-gray-300 bg-gray-50 py-3 pl-11 pr-3 text-sm outline-none transition-colors duration-300 focus:border-sky-500 focus:bg-white focus:ring-4 focus:ring-sky-500/20"
                     />
@@ -105,16 +137,15 @@ export default function Login({ status, canResetPassword }) {
                         placeholder="Senha"
                         value={data.password}
                         onChange={(e) => setData("password", e.target.value)}
+                        onFocus={(e) => ensureVisible(e.currentTarget)}
+                        onKeyDown={onPasswordKeyDown}
                         autoComplete="current-password"
                         required
                         className="peer w-full rounded-xl border border-gray-300 bg-gray-50 py-3 pl-11 pr-3 text-sm outline-none transition-colors duration-300 focus:border-sky-500 focus:bg-white focus:ring-4 focus:ring-sky-500/20"
                     />
                 </motion.div>
 
-                <motion.div
-                    variants={item}
-                    className="flex items-center justify-between text-sm"
-                >
+                <motion.div variants={item} className="flex items-center justify-between text-sm">
                     <label className="flex items-center gap-2 text-gray-600">
                         <input
                             type="checkbox"
@@ -127,16 +158,14 @@ export default function Login({ status, canResetPassword }) {
                     </label>
 
                     {canResetPassword && (
-                        <Link
-                            href={route("password.request")}
-                            className="font-medium text-sky-500 hover:underline"
-                        >
+                        <Link href={route("password.request")} className="font-medium text-sky-500 hover:underline">
                             Esqueceu a senha?
                         </Link>
                     )}
                 </motion.div>
 
                 <motion.button
+                    ref={submitRef}
                     variants={item}
                     whileHover={{ scale: 1.06 }}
                     whileTap={{ scale: 0.94 }}
@@ -155,16 +184,11 @@ export default function Login({ status, canResetPassword }) {
                 </motion.button>
 
                 {(errors.email || errors.password) && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="space-y-1 text-center text-sm text-red-600"
-                    >
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-1 text-center text-sm text-red-600">
                         {errors.email && <p>{errors.email}</p>}
                         {errors.password && <p>{errors.password}</p>}
                     </motion.div>
                 )}
-
             </motion.form>
         </GuestLayout>
     );
