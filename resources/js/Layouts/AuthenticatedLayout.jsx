@@ -61,31 +61,34 @@ export default function AuthenticatedLayout({ header, children }) {
                         </div>
 
                         <div className="hidden lg:flex items-center gap-3">
-                            <Dropdown>
-                                <Dropdown.Trigger>
-                                    <span className="inline-flex rounded-md">
-                                        <button
-                                            type="button"
-                                            className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
-                                        >
-                                            Sistema
-                                            <svg className="-me-0.5 ms-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                                <path
-                                                    fillRule="evenodd"
-                                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                    clipRule="evenodd"
-                                                />
-                                            </svg>
-                                        </button>
-                                    </span>
-                                </Dropdown.Trigger>
+                            {auth.permissions?.includes('ver-admin') && (
+                                <Dropdown>
+                                    <Dropdown.Trigger>
+                                        <span className="inline-flex rounded-md">
+                                            <button
+                                                type="button"
+                                                className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
+                                            >
+                                                Sistema
+                                                <svg className="-me-0.5 ms-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path
+                                                        fillRule="evenodd"
+                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                        clipRule="evenodd"
+                                                    />
+                                                </svg>
+                                            </button>
+                                        </span>
+                                    </Dropdown.Trigger>
 
-                                <Dropdown.Content>
-                                    <Dropdown.Link href={route('admins.index')}>Administradores</Dropdown.Link>
-                                    <Dropdown.Link href={route('users.index')}>Usuarios</Dropdown.Link>
-                                    <Dropdown.Link href={route('roles.index')}>Cargos</Dropdown.Link>
-                                </Dropdown.Content>
-                            </Dropdown>
+
+                                    <Dropdown.Content>
+                                        <Dropdown.Link href={route('admins.index')}>Administradores</Dropdown.Link>
+                                        <Dropdown.Link href={route('users.index')}>Usuarios</Dropdown.Link>
+                                        <Dropdown.Link href={route('roles.index')}>Cargos</Dropdown.Link>
+                                    </Dropdown.Content>
+                                </Dropdown>
+                            )}
 
                             <Dropdown>
                                 <Dropdown.Trigger>
@@ -140,18 +143,19 @@ export default function AuthenticatedLayout({ header, children }) {
                         ) : null
                     )}
 
-                    <div className="border-t border-gray-200 pb-1 pt-4">
-                        <div className="px-4">
-                            <div className="text-base font-medium text-gray-800">Sistema</div>
-                        </div>
+                    {auth.permissions?.includes('ver-admin') && (
+                        <div className="border-t border-gray-200 pb-1 pt-4">
+                            <div className="px-4">
+                                <div className="text-base font-medium text-gray-800">Sistema</div>
+                            </div>
 
-                        <div className="mt-3 ml-4 space-y-1">
-                            <ResponsiveNavLink href={route('admins.index')}>Administradores</ResponsiveNavLink>
-                            <ResponsiveNavLink href={route('users.index')}>Usuarios</ResponsiveNavLink>
-                            <ResponsiveNavLink href={route('roles.index')}>Cargos</ResponsiveNavLink>
+                            <div className="mt-3 ml-4 space-y-1">
+                                <ResponsiveNavLink href={route('admins.index')}>Administradores</ResponsiveNavLink>
+                                <ResponsiveNavLink href={route('users.index')}>Usuarios</ResponsiveNavLink>
+                                <ResponsiveNavLink href={route('roles.index')}>Cargos</ResponsiveNavLink>
+                            </div>
                         </div>
-                    </div>
-
+                    )}
                     <div className="border-t border-gray-200 pb-1 pt-4">
                         <div className="px-4">
                             <div className="text-base font-medium text-gray-800">{user.name}</div>
