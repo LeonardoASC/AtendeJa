@@ -30,7 +30,7 @@ class SenhaAtualizada implements ShouldBroadcastNow
      */
     public function __construct(Senha $senha)
     {
-        $this->senha = $senha;
+        $this->senha = $senha->loadMissing(['guiche','tipoAtendimento']);
     }
 
     /**
@@ -52,10 +52,13 @@ class SenhaAtualizada implements ShouldBroadcastNow
     public function broadcastWith(): array
     {
         return [
-            'id'      => $this->senha->id,
-            'codigo'  => $this->senha->codigo,
-            'guiche'  => $this->senha->tipoAtendimento->guiche,
-            'tipo'    => $this->senha->tipoAtendimento->nome,
+            'id'          => $this->senha->id,
+            'codigo'      => $this->senha->codigo,
+            'status'      => $this->senha->status,
+            'guiche_id'   => $this->senha->guiche_id,
+            'guiche_slug' => optional($this->senha->guiche)->slug,
+            'tipo_id'     => $this->senha->tipo_atendimento_id,
+            'inicio_atendimento' => optional($this->senha->inicio_atendimento)?->toISOString(),
         ];
     }
 }

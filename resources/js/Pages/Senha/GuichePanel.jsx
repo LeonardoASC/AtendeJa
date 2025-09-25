@@ -17,7 +17,9 @@ export default function GuichePanel({ guiche, initialSenha = null, queue = [], a
 
     useEffect(() => {
         if (!current) return;
-        const start = new Date(current.started_at || Date.now());
+        const start = current.inicio_atendimento
+            ? new Date(current.inicio_atendimento)
+            : new Date();
         const tick = () => {
             const diff = Date.now() - start.getTime();
             const m = String(Math.floor(diff / 60000)).padStart(2, '0');
@@ -34,17 +36,25 @@ export default function GuichePanel({ guiche, initialSenha = null, queue = [], a
     }, [initialSenha]);
 
     useEffect(() => {
-        if (window.Echo) {
-            const channel = window.Echo.channel('senhas.novas');
-            channel.listen('.SenhaCriada', (event) => {
-                router.reload();
-            });
-            return () => {
-                window.Echo.leave('senhas.novas');
-            };
-        } else {
+        if (!window.Echo) {
             console.error('Laravel Echo not found. Make sure it is initialized.');
+            return;
         }
+
+        const chNovas = window.Echo.channel('senhas.novas')
+            .listen('.SenhaCriada', () => {
+                router.reload({ only: ['queue'] });
+            });
+
+        const chTelao = window.Echo.channel('senhas.telao')
+            .listen('.SenhaAtualizada', (e) => {
+                router.reload({ only: ['initialSenha', 'queue', 'attended'] });
+            });
+
+        return () => {
+            window.Echo.leave('senhas.novas');
+            window.Echo.leave('senhas.telao');
+        };
     }, []);
 
     const chamar = () => {
