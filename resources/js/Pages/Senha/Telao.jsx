@@ -52,7 +52,7 @@ export default function Telao({ senhasAtendidas = [] }) {
                         {lastCalled ? (
                             <>
                                 <h2 className="text-2xl md:text-3xl tracking-wider font-medium mb-4">Senha</h2>
-                                <span className="text-7xl text-center font-extrabold leading-none drop-shadow-lg">
+                                <span className="text-7xl text-center font-extrabold leading-none drop-shadow-lg uppercase">
                                     {lastCalled.nome}
                                 </span>
                                 <span className="text-3xl font-semibold text-slate-200 leading-none drop-shadow-lg">
