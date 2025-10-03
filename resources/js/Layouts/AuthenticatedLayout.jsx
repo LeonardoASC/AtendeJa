@@ -31,6 +31,7 @@ export default function AuthenticatedLayout({ header, children }) {
         { route: 'relatorio.index', label: 'Relatórios', perm: 'ver-relatorios', icon: NewspaperIcon },
         { route: 'tipo-atendimentos.index', label: 'Tipos de Atendimento', perm: 'ver-tipoAtendimento', icon: NewspaperIcon },
         { route: 'guiches.index', label: 'Gerenciar Guichês', perm: 'ver-gerenciarGuiche', icon: HomeIcon },
+        { route: 'vouchers.index', label: 'Vouchers', perm: 'ver-voucher', icon: DocumentTextIcon },
     ];
 
     const filtered = links.filter(

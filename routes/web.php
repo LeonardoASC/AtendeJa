@@ -50,6 +50,7 @@ Route::middleware(['auth:admin', 'verified'])->prefix('admin')->group(function (
         
         Route::get('/relatorios', [RelatorioController::class, 'index'])->name('relatorio.index')->middleware('permission:ver-relatorios');
         Route::get('/relatorios/senhas/pdf', [RelatorioController::class, 'senhasPdf'])->name('relatorios.senhas.pdf')->middleware('permission:ver-relatorios');
+        Route::get('/vouchers', fn() => Inertia::render('Autenticado/Vouchers/Index'))->name('vouchers.index')->middleware('permission:ver-voucher');
     });
 
 require __DIR__.'/auth.php';

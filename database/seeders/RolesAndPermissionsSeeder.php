@@ -67,6 +67,10 @@ class RolesAndPermissionsSeeder extends Seeder
             'criar-gerenciarGuiche',
             'editar-gerenciarGuiche',
             'excluir-gerenciarGuiche',
+            'ver-voucher',
+            'criar-voucher',
+            'editar-voucher',
+            'excluir-voucher',
         ];
         
 
