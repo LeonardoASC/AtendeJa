@@ -44,11 +44,12 @@ Route::middleware(['auth:admin', 'verified'])->prefix('admin')->group(function (
         Route::post('/senhas/{senha}/cancelar', [SenhaController::class, 'cancelar'])->name('senhas.cancelar');
         Route::post('/senhas/{senha}/chamar', [SenhaController::class, 'chamarSenha'])->name('senhas.chamarSenha'); 
 
+        
         Route::get('/select-guiche', [GuicheController::class, 'selectGuiche'])->name('guiche.select');
         Route::get('/select-guiche/{guiche:slug}', [GuicheController::class, 'guichePanel'])->name('guiche.panel');
-
+        
         Route::resource('guiches', GuicheController::class)->parameters(['guiches' => 'guiche']);
-
+        
         Route::get('/relatorios', [RelatorioController::class, 'index'])->name('relatorio.index');
         Route::get('/relatorios/senhas/pdf', [RelatorioController::class, 'senhasPdf'])->name('relatorios.senhas.pdf');
     });

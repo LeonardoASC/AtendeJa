@@ -37,6 +37,8 @@
                 <th>CPF</th>
                 <th>Tipo</th>
                 <th>Status</th>
+                <th>Guiche</th>
+                <th>Atendente</th>
                 <th>Criado em</th>
                 <th>Tempo atendimento (s)</th>
             </tr>
@@ -48,6 +50,8 @@
                     <td>{{ $senha->cpf }}</td>
                     <td>{{ $senha->tipoAtendimento->nome ?? '' }}</td>
                     <td>{{ $senha->status }}</td>
+                    <td>{{ $senha->guiche_id ?? '-' }}</td>
+                    <td>{{ $senha->atendente_nome ?? 'Atendente' }}</td>
                     <td>{{ $senha->created_at->format('d/m/Y H:i') }}</td>
                     <td>{{ $senha->tempo_atendimento }}</td>
                 </tr>
