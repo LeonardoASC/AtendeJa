@@ -38,10 +38,10 @@ Route::middleware(['auth:admin', 'verified'])->prefix('admin')->group(function (
         Route::resource('roles', RoleController::class)->middleware('permission:ver-cargos');
 
         Route::resource('senhas', SenhaController::class)->middleware('permission:ver-senhas');
-        Route::post('/senhas/chamar',[SenhaController::class, 'chamar'])->name('senhas.chamar')->middleware('permission:ver-senhas');
-        Route::post('/senhas/{senha}/finalizar', [SenhaController::class, 'finalizar'])->name('senhas.finalizar');
-        Route::post('/senhas/{senha}/cancelar', [SenhaController::class, 'cancelar'])->name('senhas.cancelar');
-        Route::post('/senhas/{senha}/chamar', [SenhaController::class, 'chamarSenha'])->name('senhas.chamarSenha'); 
+        Route::post('/senhas/chamar',[SenhaController::class, 'chamar'])->name('senhas.chamar')->middleware('permission:editar-senhas');
+        Route::post('/senhas/{senha}/finalizar', [SenhaController::class, 'finalizar'])->name('senhas.finalizar')->middleware('permission:editar-senhas');
+        Route::post('/senhas/{senha}/cancelar', [SenhaController::class, 'cancelar'])->name('senhas.cancelar')->middleware('permission:editar-senhas');
+        Route::post('/senhas/{senha}/chamar', [SenhaController::class, 'chamarSenha'])->name('senhas.chamarSenha')->middleware('permission:editar-senhas');
 
         Route::get('/select-guiche', [GuicheController::class, 'selectGuiche'])->name('guiche.select')->middleware('permission:ver-guiche');
         Route::get('/select-guiche/{guiche:slug}', [GuicheController::class, 'guichePanel'])->name('guiche.panel')->middleware('permission:ver-guiche');
