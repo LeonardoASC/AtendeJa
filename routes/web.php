@@ -14,6 +14,7 @@ use App\Http\Controllers\SenhaController;
 use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\GuicheController;
 use App\Http\Controllers\RelatorioController;
+use App\Http\Controllers\VoucherController;
 
 Route::get('/', [SiteController::class, 'index'])->name('site.index');
 // Route::get('/senhas/{codigo}/ticket-virtual', [SenhaController::class, 'ticketVirtual'])->name('senhas.ticket-virtual');
@@ -50,7 +51,9 @@ Route::middleware(['auth:admin', 'verified'])->prefix('admin')->group(function (
         
         Route::get('/relatorios', [RelatorioController::class, 'index'])->name('relatorio.index')->middleware('permission:ver-relatorios');
         Route::get('/relatorios/senhas/pdf', [RelatorioController::class, 'senhasPdf'])->name('relatorios.senhas.pdf')->middleware('permission:ver-relatorios');
-        Route::get('/vouchers', fn() => Inertia::render('Autenticado/Vouchers/Index'))->name('vouchers.index')->middleware('permission:ver-voucher');
+        Route::resource('vouchers', VoucherController::class)->middleware('permission:ver-voucher');
+        Route::post('/vouchers/{voucher}/use', [VoucherController::class, 'use'])->name('vouchers.use');
+        Route::post('/vouchers/import', [VoucherController::class, 'import'])->name('vouchers.import');
     });
 
 require __DIR__.'/auth.php';
