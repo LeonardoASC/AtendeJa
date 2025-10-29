@@ -15,7 +15,7 @@ export default function Relatorios(props) {
         guiche: { header: 'Guichê', render: (s) => s.guiche_id ?? '-' },
         atendente: { header: 'Atendente', render: (s) => s.atendente_nome ?? 'Atendente' },
         criado_em: { header: 'Criado em', render: (s) => new Date(s.created_at).toLocaleString() },
-        tempo: { header: 'Tempo atendimento (s)', render: (s) => s.tempo_atendimento },
+        tempo: { header: 'Tempo atendimento', render: (s) => (s.tempo_atendimento) },
     }), []);
 
     const [from, setFrom] = useState(filters?.from || '');
@@ -44,6 +44,22 @@ export default function Relatorios(props) {
     useEffect(() => {
         if (filters?.per_page !== perPage) submit();
     }, [perPage]);
+
+    function formatTempo(totalSeconds) {
+        const s = Math.max(0, Math.floor(Number(totalSeconds) || 0));
+        const h = Math.floor(s / 3600);
+        const m = Math.floor((s % 3600) / 60);
+        const seg = s % 60;
+
+        if (h > 0) {
+            const minStr = m > 0 ? `${m} min` : "";
+            return minStr ? `${h}h e ${minStr}` : `${h}h`;
+        }
+        if (m > 0) {
+            return `${m} min`;
+        }
+        return `${seg} seg`;
+    }
 
     return (
         <AuthenticatedLayout
@@ -202,7 +218,7 @@ export default function Relatorios(props) {
                                                 {visibleColumns.includes('guiche') && <td className="border border-gray-700 px-4 py-2">{columnDefs.guiche.render(s)}</td>}
                                                 {visibleColumns.includes('atendente') && <td className="border border-gray-700 px-4 py-2">{columnDefs.atendente.render(s)}</td>}
                                                 {visibleColumns.includes('criado_em') && <td className="border border-gray-700 px-4 py-2">{columnDefs.criado_em.render(s)}</td>}
-                                                {visibleColumns.includes('tempo') && <td className="border border-gray-700 px-4 py-2">{columnDefs.tempo.render(s)}</td>}
+                                                {visibleColumns.includes('tempo') && (<td className="border border-gray-700 px-4 py-2">{formatTempo(columnDefs.tempo.render(s))}</td>)}
                                             </tr>
                                         ))}
                                     </tbody>

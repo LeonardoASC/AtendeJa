@@ -44,7 +44,7 @@ class RelatorioController extends Controller
             ['key' => 'guiche',      'label' => 'Guichê'],
             ['key' => 'atendente',   'label' => 'Atendente'],
             ['key' => 'criado_em',   'label' => 'Criado em'],
-            ['key' => 'tempo',       'label' => 'Tempo atendimento (s)'],
+            ['key' => 'tempo',       'label' => 'Tempo atendimento'],
         ];
 
         return Inertia::render('Autenticado/Relatorios/Index', [
