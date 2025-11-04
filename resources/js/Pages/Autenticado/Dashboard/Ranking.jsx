@@ -1,10 +1,11 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import React from "react";
-import { router, usePage } from "@inertiajs/react";
+import { Head, router, usePage } from "@inertiajs/react";
 import Svg1Podium from "./SVG/svg1";
 
-export default function Ranking({ rankingAtendentes, period, label }) {
+export default function Ranking({ rankingAtendentes, period, label, totalNaoAtendidas, estatisticas }) {
     const ranking = rankingAtendentes ?? [];
+    const stats = estatisticas || { total: 0, por_status: {} };
 
     const gold = ranking[0] ?? null;
     const silver = ranking[1] ?? null;
@@ -13,7 +14,17 @@ export default function Ranking({ rankingAtendentes, period, label }) {
     const avatarFor = (name) =>
         `https://ui-avatars.com/api/?name=${encodeURIComponent(name || "")}&background=1f1f1f&color=fff&size=400`;
 
+    const formatarStatus = (status) => {
+        if (!status) return 'Indefinido';
+
+        return status
+            .split('_')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .join(' ');
+    };
+
     const periods = [
+        { id: "today", text: "Hoje" },
         { id: "week", text: "Semana" },
         { id: "month", text: "Mês" },
         { id: "year", text: "Ano" },
@@ -31,6 +42,7 @@ export default function Ranking({ rankingAtendentes, period, label }) {
 
     return (
         <AuthenticatedLayout>
+            <Head title="Ranking de Atendentes" />
             <div className="min-h-screen bg-gradient-to-br from-neutral-800 via-neutral-900 to-black">
                 <div className="max-w-[1140px] mx-auto px-4 py-10 sm:py-12 text-neutral-100">
 
@@ -42,6 +54,11 @@ export default function Ranking({ rankingAtendentes, period, label }) {
                             <p className="mt-1 text-sm text-neutral-400">
                                 Período: <span className="font-medium text-neutral-200">{label || "esta semana"}</span>
                             </p>
+                            {totalNaoAtendidas !== undefined && totalNaoAtendidas > 0 && (
+                                <p className="mt-2 text-xs text-amber-400/80">
+                                    {totalNaoAtendidas} senha{totalNaoAtendidas !== 1 ? 's' : ''} pendente{totalNaoAtendidas !== 1 ? 's' : ''} (não atendida{totalNaoAtendidas !== 1 ? 's' : ''})
+                                </p>
+                            )}
                         </div>
 
                         <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
@@ -59,6 +76,30 @@ export default function Ranking({ rankingAtendentes, period, label }) {
                                     {p.text}
                                 </button>
                             ))}
+                        </div>
+
+                        <div className="mt-6 bg-neutral-800/40 backdrop-blur border border-neutral-700/50 rounded-lg p-2 sm:p-3 max-w-2xl mx-auto">
+                            <h3 className="text-sm font-medium text-neutral-300 mb-3 text-center">Estatísticas do Período</h3>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+                                <div className="text-center p-3 bg-neutral-900/50 rounded-lg border border-neutral-700/30">
+                                    <div className="text-xl sm:text-2xl font-bold text-neutral-100">
+                                        {stats.total || 0}
+                                    </div>
+                                    <div className="text-xs sm:text-sm text-neutral-400 mt-1">
+                                        Total de Senhas
+                                    </div>
+                                </div>
+                                {Object.entries(stats.por_status).map(([status, count]) => (
+                                    <div key={status} className="text-center p-3 bg-neutral-900/50 rounded-lg border border-neutral-700/30">
+                                        <div className="text-xl sm:text-2xl font-bold text-neutral-100">
+                                            {count}
+                                        </div>
+                                        <div className="text-xs sm:text-sm text-neutral-400 mt-1">
+                                            {formatarStatus(status)}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
 

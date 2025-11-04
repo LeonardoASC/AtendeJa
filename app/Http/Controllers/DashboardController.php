@@ -76,6 +76,11 @@ class DashboardController extends Controller
         $label = '';
 
         switch ($period) {
+            case 'today':
+                $start = $now->copy()->startOfDay();
+                $end = $now->copy()->endOfDay();
+                $label = 'hoje';
+                break;
             case 'week':
                 $start = $now->copy()->startOfWeek(Carbon::MONDAY);
                 $end = $now->copy()->endOfWeek(Carbon::SUNDAY);
@@ -103,7 +108,8 @@ class DashboardController extends Controller
             ->whereNotNull('atendente_nome');
 
         if ($start && $end) {
-            $query->whereBetween('created_at', [$start, $end]);
+            $query->where('created_at', '>=', $start->format('Y-m-d H:i:s'))
+                ->where('created_at', '<=', $end->format('Y-m-d H:i:s'));
         }
 
         $rankingAtendentes = $query
@@ -112,11 +118,44 @@ class DashboardController extends Controller
             ->limit(10)
             ->get();
 
+        $queryNaoAtendidas = Senha::query()
+            ->where('status', '!=', 'atendida');
+
+        if ($start && $end) {
+            $queryNaoAtendidas->where('created_at', '>=', $start->format('Y-m-d H:i:s'))
+                ->where('created_at', '<=', $end->format('Y-m-d H:i:s'));
+        }
+
+        $totalNaoAtendidas = $queryNaoAtendidas->count();
+
+        $queryStats = Senha::query();
+
+        if ($start && $end) {
+            $queryStats->where('created_at', '>=', $start->format('Y-m-d H:i:s'))
+                ->where('created_at', '<=', $end->format('Y-m-d H:i:s'));
+        }
+
+        $totalSenhas = $queryStats->count();
+
+        $statusCounts = Senha::query()
+            ->select('status', DB::raw('COUNT(*) as total'))
+            ->when($start && $end, function ($q) use ($start, $end) {
+                $q->where('created_at', '>=', $start->format('Y-m-d H:i:s'))
+                    ->where('created_at', '<=', $end->format('Y-m-d H:i:s'));
+            })
+            ->groupBy('status')
+            ->pluck('total', 'status');
+
         return Inertia::render('Autenticado/Dashboard/Ranking', [
             'rankingAtendentes' => $rankingAtendentes,
             'period'           => $period,
             'label'            => $label,
             'generated_at'     => $now->toDateTimeString(),
+            'totalNaoAtendidas' => $totalNaoAtendidas,
+            'estatisticas' => [
+                'total' => $totalSenhas,
+                'por_status' => $statusCounts,
+            ],
         ]);
     }
 }
