@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Senha;
 
 
+
 class DashboardController extends Controller
 {
     /**
@@ -48,7 +49,7 @@ class DashboardController extends Controller
             ->whereDate('created_at', Carbon::today())
             ->groupBy('hora')
             ->orderBy('hora')
-            ->pluck('total', 'hora'); 
+            ->pluck('total', 'hora');
 
         return Inertia::render('Autenticado/Dashboard/Index', [
             'metrics' => [
@@ -61,6 +62,61 @@ class DashboardController extends Controller
                 'hora_pico'   => $pico?->hora,
             ],
             'seriesHora' => $seriesHora,
+        ]);
+    }
+
+    public function ranking(Request $request)
+    {
+        $period = $request->input('period', 'week');
+        $tz = config('app.timezone', 'America/Sao_Paulo');
+        $now = Carbon::now($tz);
+
+        $start = null;
+        $end = null;
+        $label = '';
+
+        switch ($period) {
+            case 'week':
+                $start = $now->copy()->startOfWeek(Carbon::MONDAY);
+                $end = $now->copy()->endOfWeek(Carbon::SUNDAY);
+                $label = 'esta semana';
+                break;
+            case 'month':
+                $start = $now->copy()->startOfMonth();
+                $end = $now->copy()->endOfMonth();
+                $label = 'este mês';
+                break;
+            case 'year':
+                $start = $now->copy()->startOfYear();
+                $end = $now->copy()->endOfYear();
+                $label = 'este ano';
+                break;
+            case 'all':
+            default:
+                $label = 'todos os tempos';
+                break;
+        }
+
+        $query = Senha::query()
+            ->select('atendente_nome', DB::raw('COUNT(*) as total_atendimentos'))
+            ->where('status', 'atendida')
+            ->whereNotNull('atendente_nome');
+
+        if ($start && $end) {
+            $query->whereBetween('created_at', [$start, $end]);
+        }
+
+        $rankingAtendentes = $query
+            ->groupBy('atendente_nome')
+            ->orderByDesc('total_atendimentos')
+            ->limit(10)
+            ->get();
+
+        return Inertia::render('Autenticado/Dashboard/Ranking', [
+            'rankingAtendentes' => $rankingAtendentes,
+            'period'           => $period,
+            'label'            => $label,
+            'generated_at'     => $now->toDateTimeString(),
         ]);
     }
 }

@@ -25,6 +25,7 @@ export default function AuthenticatedLayout({ header, children }) {
 
     const links = [
         { route: 'dashboard', label: 'Dashboard', perm: 'ver-dashboard', icon: HomeIcon },
+        { route: 'dashboard.ranking', label: 'Ranking', perm: 'ver-dashboard', icon: HomeIcon },
         { route: 'guiche.select', label: 'Guichês', perm: 'ver-guiche', icon: HomeIcon },
         { route: 'senhas.index', label: 'Senhas', perm: 'ver-senhas', icon: DocumentTextIcon },
         { route: 'senhas.telao', label: 'Telão', perm: 'ver-telao', icon: HomeIcon },

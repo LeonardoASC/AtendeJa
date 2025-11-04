@@ -24,7 +24,7 @@ Route::get('/busca-cpf/consultar', [SiteController::class, 'consultarCpf'])->nam
 Route::get('/senhas/{token}/ticket-virtual', [SenhaController::class, 'ticketVirtual'])->name('senhas.ticket-virtual')->whereUlid('token'); 
 Route::middleware(['auth:admin', 'verified'])->prefix('admin')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('permission:ver-dashboard');
-
+        Route::get('/ranking', [DashboardController::class, 'ranking'])->name('dashboard.ranking')->middleware('permission:ver-dashboard');
         Route::get('/telao', [SenhaController::class, 'telao'])->name('senhas.telao')->middleware('permission:ver-telao');
         Route::get('/senhas/perguntas-frequentes', [SenhaController::class, 'perguntasFrequentes'])->name('senhas.perguntas-frequentes');
 
