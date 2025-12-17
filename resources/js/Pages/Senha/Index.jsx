@@ -121,11 +121,6 @@ export default function Index({ tipoAtendimentos }) {
         <>
             <Head title="Criar Senha" />
             <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-r from-blue-900 via-cyan-700 to-teal-500 py-4 px-4">
-                <img
-                    src="https://prevmoc.mg.gov.br/imagens/logo/logo-principal.png"
-                    alt="Logo Prevmoc"
-                    className='h-14 bg-white rounded-full p-1 mb-2 object-contain'
-                />
                 <div className="relative w-full max-w-6xl rounded-3xl bg-white/10 backdrop-blur-lg ring-1 ring-white/30 shadow-2xl overflow-hidden">
                     <div className="relative p-6">
                         <div className="absolute left-8 right-8 top-1/2 -z-10 h-1 mt-10 bg-white/30 rounded-full" />
@@ -152,13 +147,20 @@ export default function Index({ tipoAtendimentos }) {
 
                     <div className="px-8 py-2 text-center space-y-8">
                         {step === 0 && (
-                            <div className="py-10">
+                            <div className="py-8">
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                                     <div className="text-left space-y-4 px-4">
                                         <div>
                                             <p className="text-5xl lg:text-5xl font-extrabold text-white leading-tight text-center">Bem-vindo ao</p>
                                             <p className="text-5xl lg:text-7xl font-extrabold text-white leading-tight text-center">ATENDE AÍ</p>
-                                            <p className="text-5xl lg:text-5xl font-extrabold text-white leading-tight text-center">PREVMOC!</p>
+                                            <div className='flex items-center justify-center gap-4'>
+                                                <p className="text-5xl lg:text-5xl font-extrabold text-white leading-tight text-center">PREVMOC!</p>
+                                                <img
+                                                    src="https://prevmoc.mg.gov.br/imagens/logo/logo-principal.png"
+                                                    alt="Logo Prevmoc"
+                                                    className='h-14 bg-white rounded-full p-1 mb-2 object-contain'
+                                                />
+                                            </div>
                                         </div>
 
                                         <p className="text-lg text-white/90">
@@ -326,85 +328,63 @@ export default function Index({ tipoAtendimentos }) {
                                 {lookupError && <p className="text-sm text-yellow-200">{lookupError}</p>}
 
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-                                    <div className="flex items-center justify-center">
-                                        <AnimatePresence mode="wait">
-                                            {pessoa && pessoa.NOME && !showNomeInput ? (
-                                                <motion.div
-                                                    key="pessoaEncontrada"
-                                                    initial={{ opacity: 0, x: -20 }}
-                                                    animate={{ opacity: 1, x: 0 }}
-                                                    exit={{ opacity: 0, x: -20 }}
-                                                    transition={{ duration: 0.3 }}
-                                                    className="w-full"
-                                                >
-                                                    <div className="rounded-xl bg-white/15 backdrop-blur p-6 text-left text-white">
-                                                        <p className="text-sm opacity-80 mb-2">✓ Encontramos um cadastro:</p>
-                                                        <p className="text-xl font-bold mb-3">{pessoa.NOME}</p>
-                                                        <div className="mt-3 space-y-1 text-sm opacity-90">
-                                                            {pessoa.MATRICULA && (
-                                                                <p>
-                                                                    <span className="font-medium">Matrícula:</span> {pessoa.MATRICULA}
-                                                                </p>
-                                                            )}
-                                                            {pessoa.EMAIL && (
-                                                                <p>
-                                                                    <span className="font-medium">E-mail:</span> {String(pessoa.EMAIL).toLowerCase()}
-                                                                </p>
-                                                            )}
-                                                        </div>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => {
-                                                                setShowNomeModal(true);
-                                                                setTempNome("");
-                                                            }}
-                                                            className="mt-4 text-sm underline underline-offset-4 opacity-80 hover:opacity-100 transition"
-                                                        >
-                                                            Não sou eu / digitar outro nome
-                                                        </button>
+                                    <div className="flex items-center justify-center w-full">
+                                        {pessoa && pessoa.NOME && !showNomeInput ? (
+                                            <div className="w-full">
+                                                <div className="rounded-xl bg-white/15 backdrop-blur p-6 text-left text-white">
+                                                    <p className="text-sm opacity-80 mb-2">✓ Encontramos um cadastro:</p>
+                                                    <p className="text-xl font-bold mb-3">{pessoa.NOME}</p>
+                                                    <div className="mt-3 space-y-1 text-sm opacity-90">
+                                                        {pessoa.MATRICULA && (
+                                                            <p>
+                                                                <span className="font-medium">Matrícula:</span> {pessoa.MATRICULA}
+                                                            </p>
+                                                        )}
+                                                        {pessoa.EMAIL && (
+                                                            <p>
+                                                                <span className="font-medium">E-mail:</span> {String(pessoa.EMAIL).toLowerCase()}
+                                                            </p>
+                                                        )}
                                                     </div>
-                                                </motion.div>
-                                            ) : showNomeInput && data.nome ? (
-                                                <motion.div
-                                                    key="nomeDigitado"
-                                                    initial={{ opacity: 0, x: -20 }}
-                                                    animate={{ opacity: 1, x: 0 }}
-                                                    exit={{ opacity: 0, x: -20 }}
-                                                    transition={{ duration: 0.3 }}
-                                                    className="w-full"
-                                                >
-                                                    <div className="rounded-xl bg-white/15 backdrop-blur p-6 text-left text-white">
-                                                        <p className="text-sm opacity-80 mb-2">✓ Nome informado:</p>
-                                                        <p className="text-xl font-bold ">{data.nome}</p>
-                                                        <p className="text-xl font-bold ">{data.cpf}</p>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => {
-                                                                setShowNomeModal(true);
-                                                                setTempNome(data.nome);
-                                                            }}
-                                                            className="mt-3 text-sm underline underline-offset-4 opacity-80 hover:opacity-100 transition"
-                                                        >
-                                                            Alterar nome
-                                                        </button>
-                                                    </div>
-                                                </motion.div>
-                                            ) : (
-                                                <motion.div
-                                                    key="aguardando"
-                                                    initial={{ opacity: 0 }}
-                                                    animate={{ opacity: 1 }}
-                                                    exit={{ opacity: 0 }}
-                                                    className="w-full"
-                                                >
-                                                    <div className="rounded-xl bg-white/10 backdrop-blur p-6 text-center flex flex-col items-center text-white">
-                                                        <UserIcon className="h-14 w-14 text-white" />
-                                                        <p className="text-lg">Digite seu CPF completo</p>
-                                                        <p className=" mt-1 opacity-75">para verificar seus dados</p>
-                                                    </div>
-                                                </motion.div>
-                                            )}
-                                        </AnimatePresence>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setShowNomeModal(true);
+                                                            setTempNome("");
+                                                        }}
+                                                        className="mt-4 text-sm underline underline-offset-4 opacity-80 hover:opacity-100 transition"
+                                                    >
+                                                        Não sou eu / digitar outro nome
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ) : showNomeInput && data.nome ? (
+                                            <div className="w-full">
+                                                <div className="rounded-xl bg-white/15 backdrop-blur p-6 text-left text-white">
+                                                    <p className="text-sm opacity-80 mb-2">✓ Nome informado:</p>
+                                                    <p className="text-xl font-bold ">{data.nome}</p>
+                                                    <p className="text-xl font-bold ">{data.cpf}</p>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setShowNomeModal(true);
+                                                            setTempNome(data.nome);
+                                                        }}
+                                                        className="mt-3 text-sm underline underline-offset-4 opacity-80 hover:opacity-100 transition"
+                                                    >
+                                                        Alterar nome
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="w-full">
+                                                <div className="rounded-xl bg-white/10 backdrop-blur p-6 text-center flex flex-col items-center text-white">
+                                                    <UserIcon className="h-14 w-14 text-white" />
+                                                    <p className="text-lg">Digite seu CPF completo</p>
+                                                    <p className=" mt-1 opacity-75">para verificar seus dados</p>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
 
                                     <div className="grid grid-cols-3 gap-3">
@@ -457,7 +437,7 @@ export default function Index({ tipoAtendimentos }) {
                                             buscando ||
                                             (showNomeInput && !data.nome)
                                         }
-                                        className="px-6 py-3 rounded-lg bg-gradient-to-r from-cyan-600 to-teal-500 text-white font-semibold disabled:opacity-40 hover:from-cyan-700 hover:to-teal-600 transition-colors focus:outline-none focus:ring-4 focus:ring-white/40"
+                                        className="px-6 py-3 rounded-lg bg-white text-cyan-600 font-semibold disabled:opacity-40   transition-colors focus:outline-none focus:ring-4 "
                                     >
                                         {processing ? 'Gerando Senha…' : 'Gerar Senha'}
                                     </button>

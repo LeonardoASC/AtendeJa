@@ -43,7 +43,7 @@ export default function Show({ senha }) {
                         </div>
                     </div>
 
-                    <div className="px-6 py-6 md:px-10 md:py-8">
+                    <div className="px-6 py-6 md:px-10 md:pb-8 md:pt-0">
                         <div className="text-center space-y-2 mb-6">
                             <div className="flex items-center justify-center">
                                 <div className="h-16 w-16 rounded-full bg-white/90 p-2 ring-2 ring-white/40 shadow-xl">
