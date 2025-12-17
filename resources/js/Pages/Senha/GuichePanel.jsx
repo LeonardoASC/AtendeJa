@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Head, router } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import {
     PlayIcon,
     CheckCircleIcon,
-    ArrowPathRoundedSquareIcon,
     XCircleIcon,
 } from '@heroicons/react/24/solid';
+import { ArrowLeftCircleIcon } from '@heroicons/react/24/outline';
 
 export default function GuichePanel({ guiche, initialSenha = null, queue = [], attended = [] }) {
     const [current, setCurrent] = useState(initialSenha);
@@ -116,9 +116,10 @@ export default function GuichePanel({ guiche, initialSenha = null, queue = [], a
 
             <div className="min-h-screen flex flex-col bg-gray-100 font-[Inter,sans-serif]">
                 <header className="bg-[#004B6E] text-white flex items-center justify-between px-6 py-3 shadow-md md:px-6 md:py-3">
-                    <h1 className="text-xl md:text-2xl font-semibold tracking-wide flex items-center gap-3">
-                        <ArrowPathRoundedSquareIcon className="w-8 h-8" /> Guichê {guiche}
-                    </h1>
+                    <Link href={route('dashboard')} className="flex items-center gap-2 text-white hover:text-gray-300">
+                        <ArrowLeftCircleIcon className="w-8 h-8" />
+                        <span className="text-lg font-semibold">Guichê {guiche}</span>
+                    </Link>
                     <span className="text-sm md:text-base bg-white/10 rounded-full px-3 py-1">
                         Aguardando: {queue.length}
                     </span>
