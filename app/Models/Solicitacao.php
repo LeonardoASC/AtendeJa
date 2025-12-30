@@ -20,7 +20,6 @@ class Solicitacao extends Model
         'telefone',
         'dados_formulario',
         'status',
-        'observacoes',
         'assinatura',
         'foto',
         'admin_id',

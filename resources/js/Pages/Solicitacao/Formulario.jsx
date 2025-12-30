@@ -25,7 +25,6 @@ export default function Formulario({ tipoAtendimento }) {
         matricula: '',
         telefone: '',
         dados_formulario: {},
-        observacoes: '',
     });
 
     const formatCPF = (value) => {

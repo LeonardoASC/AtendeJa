@@ -101,7 +101,6 @@ class SolicitacaoController extends Controller
             'matricula' => 'nullable|string|max:50',
             'telefone' => 'nullable|string|max:20',
             'dados_formulario' => 'nullable|array',
-            'observacoes' => 'nullable|string|max:1000',
             'assinatura' => 'required|string',
         ]);
 
@@ -114,7 +113,6 @@ class SolicitacaoController extends Controller
                 'matricula' => $validated['matricula'] ?? null,
                 'telefone' => $validated['telefone'] ?? null,
                 'dados_formulario' => $validated['dados_formulario'] ?? null,
-                'observacoes' => $validated['observacoes'] ?? null,
                 'assinatura' => $validated['assinatura'],
                 'status' => 'pendente',
             ]);
