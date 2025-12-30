@@ -162,15 +162,15 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
                     transition={{ duration: 0.5 }}
                     className="relative w-full max-w-7xl rounded-3xl bg-white/10 backdrop-blur-lg ring-1 ring-white/30 shadow-2xl overflow-hidden"
                 >
-                    <div className="p-4 md:p-6">
-                        <div className="py-8">
+                    <div className="p-4 md:px-6">
+                        <div className="">
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mb-8">
                                 <div className="text-left space-y-4 px-4">
                                     <div>
                                         <p className="text-2xl lg:text-2xl font-extrabold text-white leading-tight text-center">Tire uma</p>
                                         <p className="text-2xl lg:text-3xl font-extrabold text-white leading-tight text-center">FOTO</p>
                                         <div className='flex items-center justify-center gap-4'>
-                                            <p className="text-2xl lg:text-2xl font-extrabold text-white leading-tight text-center">AGORA!</p>
+                                            <p className="text-2xl lg:text-2xl font-extrabold text-white leading-tight text-center">PARA CONTINUAR!</p>
                                             <img
                                                 src="https://prevmoc.mg.gov.br/imagens/logo/logo-principal.png"
                                                 alt="Logo Prevmoc"
@@ -237,7 +237,7 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
 
                                 <div className="flex flex-col gap-2 px-4">
                                     <form onSubmit={handleSubmit} className="space-y-6">
-                                        <div className="bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-md rounded-3xl px-8 py-6 ring-2 ring-white/30 shadow-2xl space-y-6 border border-white/10">
+                                        <div className="bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-md rounded-3xl px-8 py-4 ring-2 ring-white/30 shadow-2xl space-y-6 border border-white/10">
                                             <div className="flex items-center justify-between mb-6">
                                                 <div className="flex items-center gap-3">
 
@@ -382,7 +382,7 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
                                                 <motion.button
                                                     type="submit"
                                                     disabled={processing || !data.foto}
-                                                    className="py-3 px-6 rounded-xl bg-gradient-to-r from-white to-cyan-100 border-4 border-double border-sky-700 font-bold text-teal-700 text-xl hover:from-cyan-100 hover:to-white hover:border-white transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-white/40 shadow-2xl hover:shadow-3xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                                                    className="py-2 px-6 rounded-xl bg-gradient-to-r from-white to-cyan-100 border-4 border-double border-sky-700 font-bold text-teal-700 text-xl hover:from-cyan-100 hover:to-white hover:border-white transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-white/40 shadow-2xl hover:shadow-3xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                                                     whileHover={{ scale: 1.05 }}
                                                     whileTap={{ scale: 0.95 }}
                                                 >

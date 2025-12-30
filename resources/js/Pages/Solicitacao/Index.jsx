@@ -14,8 +14,8 @@ export default function Index({ tiposAtendimento }) {
                     transition={{ duration: 0.5 }}
                     className="relative w-full max-w-6xl rounded-3xl bg-white/10 backdrop-blur-lg ring-1 ring-white/30 shadow-2xl overflow-hidden"
                 >
-                    <div className="p-8 md:p-12">
-                        <div className="py-8">
+                    <div className="p-8 md:px-12">
+                        <div className="">
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                                 <div className="text-left space-y-4 px-4">
                                     <div>
@@ -35,12 +35,12 @@ export default function Index({ tiposAtendimento }) {
                                         Nosso sistema para fazer solicitações de forma rápida e prática.
                                     </p>
 
-                                    <div className="space-y-4 text-white/90 text-lg">
+                                    <div className="space-y-2 text-white/90 text-lg">
                                         <p className="text-xl font-semibold text-white">
                                             Como funciona:
                                         </p>
 
-                                        <div className="space-y-3">
+                                        <div className="space-y-1">
                                             <div className="flex items-start gap-3">
                                                 <span className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-white/20 text-white font-bold">
                                                     1

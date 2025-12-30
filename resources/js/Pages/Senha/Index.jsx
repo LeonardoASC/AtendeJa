@@ -147,9 +147,9 @@ export default function Index({ tipoAtendimentos }) {
 
                     <div className="px-8 py-2 text-center space-y-8">
                         {step === 0 && (
-                            <div className="py-8">
+                            <div className="py-4">
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-                                    <div className="text-left space-y-4 px-4">
+                                    <div className="text-left space-y-2 px-4">
                                         <div>
                                             <p className="text-5xl lg:text-5xl font-extrabold text-white leading-tight text-center">Bem-vindo ao</p>
                                             <p className="text-5xl lg:text-7xl font-extrabold text-white leading-tight text-center">ATENDE AÍ</p>
@@ -273,7 +273,7 @@ export default function Index({ tipoAtendimentos }) {
                                     </div>
 
                                     <div className="flex-1 overflow-y-auto px-4 pb-4 scrollbar-thin scrollbar-thumb-white/30 scrollbar-track-white/10 hover:scrollbar-thumb-white/50">
-                                        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 max-w-6xl mx-auto">
+                                        <div className="grid grid-cols-2 lg:grid-cols-5 xl:grid-cols-4 gap-4 max-w-6xl mx-auto">
                                             {tipoAtendimentos.map((tipo, index) => (
                                                 <motion.button
                                                     key={tipo.id}
@@ -286,16 +286,10 @@ export default function Index({ tipoAtendimentos }) {
                                                     }}
                                                     className="group relative overflow-hidden rounded-xl bg-white/15 backdrop-blur-md p-5 text-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:bg-white/25 ring-1 ring-white/20 hover:ring-white/40 min-h-[140px] flex flex-col items-center justify-center"
                                                 >
-                                                    <div className="mb-3 flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-cyan-400 to-teal-300 text-white shadow-lg group-hover:scale-110 transition-transform">
-                                                        <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                                                        </svg>
-                                                    </div>
-
-                                                    <h3 className="text-base font-bold text-white leading-tight line-clamp-2">
+                                                    <h3 className="text-lg font-bold text-white leading-tight line-clamp-2">
                                                         {tipo.nome}
                                                     </h3>
-                                                    <div className="flex gap-2 items-center text-white/80 text-sm">Clique para selecionar <CursorArrowRaysIcon className="h-5 w-5 text-white" /></div>
+                                                    <div className="flex mt-2 items-center text-white/80 text-sm">Clique para selecionar <CursorArrowRaysIcon className="h-5 w-5 text-white" /></div>
 
                                                     <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
                                                 </motion.button>

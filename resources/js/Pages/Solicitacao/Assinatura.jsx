@@ -129,9 +129,9 @@ export default function Assinatura({ dadosSolicitacao, tipoAtendimento }) {
                     transition={{ duration: 0.5 }}
                     className="relative w-full max-w-7xl rounded-3xl bg-white/10 backdrop-blur-lg ring-1 ring-white/30 shadow-2xl overflow-hidden"
                 >
-                    <div className="p-4 md:p-6">
+                    <div className="p-4 md:px-6">
                         <div className="">
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mb-8">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center mb-8">
                                 <div className="text-left space-y-4 px-4">
                                     <div>
                                         <p className="text-2xl lg:text-2xl font-extrabold text-white leading-tight text-center">Assine sua</p>
@@ -208,22 +208,12 @@ export default function Assinatura({ dadosSolicitacao, tipoAtendimento }) {
                             <div className="flex flex-col gap-2 items-center justify-center px-4">
                                 <div className="w-full">
                                     <form onSubmit={handleSubmit} className="space-y-6">
-                                        <div className="bg-white/15 backdrop-blur-md rounded-2xl px-8 py-4 ring-1 ring-white/20 space-y-6">
-                                            <div className="flex items-center justify-between mb-6">
+                                        <div className="bg-white/15 backdrop-blur-md rounded-2xl px-8 py-2 ring-1 ring-white/20 space-y-6">
+                                            <div className="flex items-center justify-between">
                                                 <h3 className="text-2xl font-bold text-white flex items-center gap-2">
                                                     <PencilSquareIcon className="h-5 w-5" />
                                                     Assine abaixo
                                                 </h3>
-                                                <div className="bg-yellow-500/20 backdrop-blur-md rounded-lg p-4 border-l-4 border-yellow-400">
-                                                    <p className="text-yellow-100 text-sm flex items-start gap-2">
-                                                        <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                        </svg>
-                                                        <span>
-                                                            Ao assinar, você concorda com os termos e confirma que as informações fornecidas são verdadeiras.
-                                                        </span>
-                                                    </p>
-                                                </div>
                                                 <button
                                                     type="button"
                                                     onClick={clearSignature}
@@ -244,13 +234,13 @@ export default function Assinatura({ dadosSolicitacao, tipoAtendimento }) {
                                                     onTouchStart={startDrawing}
                                                     onTouchMove={draw}
                                                     onTouchEnd={stopDrawing}
-                                                    className="w-full h-[200px] md:h-[250px] bg-white rounded-xl border-4 border-dashed border-cyan-300 cursor-crosshair touch-none shadow-2xl"
+                                                    className="w-full h-[200px] md:h-[150px] bg-white rounded-xl border-4 border-dashed border-cyan-300 cursor-crosshair touch-none shadow-2xl"
                                                     style={{ touchAction: 'none' }}
                                                 />
                                                 {!hasDrawn && (
                                                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                                                         <div className="text-center">
-                                                            <PencilSquareIcon className="h-12 w-12 text-gray-300 mx-auto mb-2" />
+                                                            <PencilSquareIcon className="h-8 w-8 text-gray-300 mx-auto mb-2" />
                                                             <p className="text-gray-400 text-xl font-medium">
                                                                 Assine aqui
                                                             </p>

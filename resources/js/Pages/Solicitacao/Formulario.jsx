@@ -102,8 +102,8 @@ export default function Formulario({ tipoAtendimento }) {
                     transition={{ duration: 0.5 }}
                     className="relative w-full max-w-5xl rounded-3xl bg-white/10 backdrop-blur-lg ring-1 ring-white/30 shadow-2xl overflow-hidden"
                 >
-                    <div className="p-8 md:p-12">
-                        <div className="py-8">
+                    <div className="p-8 md:px-12">
+                        <div className="">
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
                                 <div className="text-left space-y-4 px-4">
                                     <div>
@@ -123,12 +123,12 @@ export default function Formulario({ tipoAtendimento }) {
                                         Complete suas informações para prosseguir com a solicitação.
                                     </p>
 
-                                    <div className="space-y-4 text-white/90 text-lg">
+                                    <div className="space-y-1 text-white/90 text-lg">
                                         <p className="text-xl font-semibold text-white">
                                             Como preencher:
                                         </p>
 
-                                        <div className="space-y-3">
+                                        <div className="space-y-1">
                                             <div className="flex items-start gap-3">
                                                 <span className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-white/20 text-white font-bold">
                                                     1
@@ -189,7 +189,7 @@ export default function Formulario({ tipoAtendimento }) {
                                                         type="text"
                                                         value={data.cpf}
                                                         onChange={(e) => setData('cpf', formatCPF(e.target.value))}
-                                                        className="w-full px-4 py-3 rounded-lg bg-white/90 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/50 transition"
+                                                        className="w-full px-4 py-2 rounded-lg bg-white/90 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/50 transition"
                                                         placeholder="Digite apenas os números do CPF"
                                                         maxLength={11}
                                                         required
@@ -200,7 +200,7 @@ export default function Formulario({ tipoAtendimento }) {
 
                                                 {pessoa && (
                                                     <div className="mt-6 space-y-4">
-                                                        <div className="p-4 bg-green-500/20 backdrop-blur-md rounded-lg border border-green-400/30">
+                                                        <div className="p-2 bg-green-500/20 backdrop-blur-md rounded-lg border border-green-400/30">
                                                             <p className="text-green-100 flex items-center gap-2 font-semibold">
                                                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -210,9 +210,9 @@ export default function Formulario({ tipoAtendimento }) {
                                                         </div>
 
                                                         <div className="bg-white/10 backdrop-blur-md rounded-lg p-4 ring-1 ring-white/20 space-y-3">
-                                                            <div className="grid grid-cols-1 gap-3">
+                                                            <div className="grid grid-cols-1 gap-1">
                                                                 <div>
-                                                                    <p className="text-white/70 text-sm font-medium mb-1 flex items-center gap-2">
+                                                                    <p className="text-white/70 text-sm font-medium  flex items-center ">
                                                                         <IdentificationIcon className="h-4 w-4" />
                                                                         CPF
                                                                     </p>
@@ -220,7 +220,7 @@ export default function Formulario({ tipoAtendimento }) {
                                                                 </div>
 
                                                                 <div>
-                                                                    <p className="text-white/70 text-sm font-medium mb-1 flex items-center gap-2">
+                                                                    <p className="text-white/70 text-sm font-medium  flex items-center gap-2">
                                                                         <UserIcon className="h-4 w-4" />
                                                                         Nome Completo
                                                                     </p>
@@ -229,14 +229,14 @@ export default function Formulario({ tipoAtendimento }) {
 
                                                                 {pessoa.MATRICULA && (
                                                                     <div>
-                                                                        <p className="text-white/70 text-sm font-medium mb-1">Matrícula</p>
+                                                                        <p className="text-white/70 text-sm font-medium ">Matrícula</p>
                                                                         <p className="text-white text-lg font-semibold">{pessoa.MATRICULA}</p>
                                                                     </div>
                                                                 )}
 
                                                                 {pessoa.EMAIL && (
                                                                     <div>
-                                                                        <p className="text-white/70 text-sm font-medium mb-1 flex items-center gap-2">
+                                                                        <p className="text-white/70 text-sm font-medium  flex items-center gap-2">
                                                                             <EnvelopeIcon className="h-4 w-4" />
                                                                             E-mail
                                                                         </p>
