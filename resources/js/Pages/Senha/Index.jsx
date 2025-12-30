@@ -236,7 +236,7 @@ export default function Index({ tipoAtendimentos }) {
                                                 <span>Gerar Senha de Atendimento</span>
                                             </div>
                                         </button>
-                                        <Link
+                                        {/* <Link
                                             href={route('solicitacoes.index')}
                                             className="w-full max-w-sm py-8 px-6 rounded-2xl bg-white border-4 border-double border-sky-700 font-bold text-teal-700 text-2xl hover:bg-teal-600 hover:text-white hover:border-white transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-white/40 shadow-2xl hover:shadow-3xl transform hover:scale-105"
                                         >
@@ -246,7 +246,7 @@ export default function Index({ tipoAtendimentos }) {
                                                 </svg>
                                                 <span>Fazer Solicitação Online</span>
                                             </div>
-                                        </Link>
+                                        </Link> */}
                                     </div>
                                 </div>
                             </div>
