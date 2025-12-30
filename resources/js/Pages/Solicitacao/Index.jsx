@@ -14,15 +14,15 @@ export default function Index({ tiposAtendimento }) {
                     transition={{ duration: 0.5 }}
                     className="relative w-full max-w-6xl rounded-3xl bg-white/10 backdrop-blur-lg ring-1 ring-white/30 shadow-2xl overflow-hidden"
                 >
-                    <div className="p-8 md:px-12">
+                    <div className="p-4 md:px-12">
                         <div className="">
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                                 <div className="text-left space-y-4 px-4">
                                     <div>
-                                        <p className="text-5xl lg:text-5xl font-extrabold text-white leading-tight text-center">Faça sua</p>
-                                        <p className="text-5xl lg:text-7xl font-extrabold text-white leading-tight text-center">SOLICITAÇÃO</p>
+                                        <p className="text-4xl lg:text-4xl font-extrabold text-white leading-tight text-center">Faça sua</p>
+                                        <p className="text-4xl lg:text-5xl font-extrabold text-white leading-tight text-center">SOLICITAÇÃO</p>
                                         <div className='flex items-center justify-center gap-4'>
-                                            <p className="text-5xl lg:text-5xl font-extrabold text-white leading-tight text-center">ONLINE!</p>
+                                            <p className="text-4xl lg:text-4xl font-extrabold text-white leading-tight text-center">ONLINE!</p>
                                             <img
                                                 src="https://prevmoc.mg.gov.br/imagens/logo/logo-principal.png"
                                                 alt="Logo Prevmoc"

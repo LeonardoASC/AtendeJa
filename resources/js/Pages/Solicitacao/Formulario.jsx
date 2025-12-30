@@ -104,13 +104,13 @@ export default function Formulario({ tipoAtendimento }) {
                 >
                     <div className="p-8 md:px-12">
                         <div className="">
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                                 <div className="text-left space-y-4 px-4">
                                     <div>
-                                        <p className="text-5xl lg:text-5xl font-extrabold text-white leading-tight text-center">Preencha o</p>
-                                        <p className="text-5xl lg:text-7xl font-extrabold text-white leading-tight text-center">FORMULÁRIO</p>
+                                        <p className="text-4xl lg:text-4xl font-extrabold text-white leading-tight text-center">Preencha o</p>
+                                        <p className="text-4xl lg:text-5xl font-extrabold text-white leading-tight text-center">FORMULÁRIO</p>
                                         <div className='flex items-center justify-center gap-4'>
-                                            <p className="text-5xl lg:text-5xl font-extrabold text-white leading-tight text-center">AGORA!</p>
+                                            <p className="text-4xl lg:text-4xl font-extrabold text-white leading-tight text-center">AGORA!</p>
                                             <img
                                                 src="https://prevmoc.mg.gov.br/imagens/logo/logo-principal.png"
                                                 alt="Logo Prevmoc"
