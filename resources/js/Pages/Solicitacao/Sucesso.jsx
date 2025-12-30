@@ -97,7 +97,7 @@ export default function Sucesso({ solicitacao }) {
 
                         <div className="pt-4">
                             <Link
-                                href={route('site.index')}
+                                href={route('senhas.index')}
                                 className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-white border-4 border-double border-sky-700 font-bold text-teal-700 text-lg hover:bg-teal-600 hover:text-white hover:border-white transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-white/40 shadow-2xl hover:shadow-3xl transform hover:scale-105"
                             >
                                 Voltar para o Início

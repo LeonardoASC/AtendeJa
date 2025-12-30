@@ -78,7 +78,6 @@ export default function Index({ roles, allPermissions }) {
                                             key={role.id}
                                             className="border border-gray-200 rounded-lg p-4 bg-white hover:shadow-md transition-shadow"
                                         >
-                                            {/* título e guard */}
                                             <div className="mb-4 border-b border-gray-100 pb-2">
                                                 <h4 className="text-lg font-semibold text-gray-800">
                                                     {role.name}
@@ -114,7 +113,6 @@ export default function Index({ roles, allPermissions }) {
                                                 badgeColor="bg-red-100 text-red-700"
                                             />
 
-                                            {/* ações */}
                                             <div className="flex justify-end gap-2 mt-4">
                                                 <Link
                                                     href={route('roles.edit', role.id)}
