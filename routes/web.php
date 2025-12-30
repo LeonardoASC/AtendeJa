@@ -56,6 +56,8 @@ Route::middleware(['auth:admin', 'verified'])->prefix('admin')->group(function (
     Route::post('/senhas/{senha}/cancelar', [SenhaController::class, 'cancelar'])->name('senhas.cancelar')->middleware('permission:editar-senhas');
     Route::post('/senhas/{senha}/chamar', [SenhaController::class, 'chamarSenha'])->name('senhas.chamarSenha')->middleware('permission:editar-senhas');
 
+    
+
     Route::get('/solicitacoes', [SolicitacaoController::class, 'index'])->name('admin.solicitacoes.index');
     Route::get('/solicitacoes/criar', [SolicitacaoController::class, 'create'])->name('admin.solicitacoes.create');
     Route::get('/solicitacoes/{solicitacao}/sucesso', [SolicitacaoController::class, 'sucesso'])->name('admin.solicitacoes.sucesso');
