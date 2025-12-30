@@ -69,6 +69,9 @@ export default function Index() {
                                                 <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-300">
                                                     Nome do atendimento
                                                 </th>
+                                                <th className="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider text-neutral-300">
+                                                    Tem Formulário
+                                                </th>
                                                 <th className="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wider text-neutral-300">
                                                     Ações
                                                 </th>
@@ -79,6 +82,23 @@ export default function Index() {
                                                 <tr key={item.id} className="hover:bg-white/5">
                                                     <td className="px-6 py-4 text-sm font-medium text-white">
                                                         {item.nome}
+                                                    </td>
+                                                    <td className="px-6 py-4 text-center">
+                                                        {item.tem_formulario ? (
+                                                            <span className="inline-flex items-center gap-1 rounded-full bg-green-500/20 px-2.5 py-0.5 text-xs font-medium text-green-300">
+                                                                <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                                </svg>
+                                                                Sim
+                                                            </span>
+                                                        ) : (
+                                                            <span className="inline-flex items-center gap-1 rounded-full bg-gray-500/20 px-2.5 py-0.5 text-xs font-medium text-gray-400">
+                                                                <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                                                </svg>
+                                                                Não
+                                                            </span>
+                                                        )}
                                                     </td>
                                                     <td className="px-6 py-4">
                                                         <div className="flex justify-end gap-2">
@@ -158,6 +178,7 @@ function TipoAtendimentoForm({ initialData = null, onCancel, onSuccess, mode = '
     const isEdit = mode === 'edit'
     const { data, setData, post, put, processing, errors, reset, clearErrors } = useForm({
         nome: initialData?.nome ?? '',
+        tem_formulario: initialData?.tem_formulario ?? false,
     })
 
     const submit = (e) => {
@@ -193,6 +214,21 @@ function TipoAtendimentoForm({ initialData = null, onCancel, onSuccess, mode = '
                     {errors.nome && <p className="mt-1 text-xs text-rose-700">{errors.nome}</p>}
                 </div>
 
+                <div className="sm:col-span-1">
+                    <label className="mb-1 block text-sm font-medium text-gray-700">Tem Formulário de Solicitação?</label>
+                    <div className="flex items-center gap-3 pt-2">
+                        <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                                type="checkbox"
+                                checked={data.tem_formulario}
+                                onChange={(e) => setData('tem_formulario', e.target.checked)}
+                                className="h-5 w-5 rounded border-white/20 bg-white/10 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0"
+                            />
+                            <span className="text-sm text-gray-300">Habilitar formulário</span>
+                        </label>
+                    </div>
+                    <p className="mt-1 text-xs text-gray-500">Marque se este tipo requer preenchimento de formulário de solicitação</p>
+                </div>
             </div>
 
             <div className="flex items-center justify-end gap-2">

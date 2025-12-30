@@ -21,6 +21,7 @@ class StoreTipoAtendimentoRequest extends FormRequest
     {
         return [
             'nome'   => ['required', 'string', 'max:255', 'unique:tipo_atendimentos,nome'],
+            'tem_formulario' => ['nullable', 'boolean'],
         ];
     }
 

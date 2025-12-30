@@ -224,7 +224,7 @@ export default function Index({ tipoAtendimentos }) {
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center justify-center px-4">
+                                    <div className="flex flex-col gap-2 items-center justify-center px-4">
                                         <button
                                             onClick={() => setStep(1)}
                                             className="w-full max-w-sm py-8 px-6 rounded-2xl bg-white border-4 border-double border-sky-700 font-bold text-teal-700 text-2xl hover:bg-teal-600 hover:text-white hover:border-white transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-white/40 shadow-2xl hover:shadow-3xl transform hover:scale-105"
@@ -236,6 +236,17 @@ export default function Index({ tipoAtendimentos }) {
                                                 <span>Iniciar Atendimento</span>
                                             </div>
                                         </button>
+                                        <Link
+                                            href={route('solicitacoes.index')}
+                                            className="w-full max-w-sm py-8 px-6 rounded-2xl bg-white border-4 border-double border-sky-700 font-bold text-teal-700 text-2xl hover:bg-teal-600 hover:text-white hover:border-white transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-white/40 shadow-2xl hover:shadow-3xl transform hover:scale-105"
+                                        >
+                                            <div className="flex flex-col items-center gap-3">
+                                                <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                </svg>
+                                                <span>Fazer Solicitação</span>
+                                            </div>
+                                        </Link>
                                     </div>
                                 </div>
                             </div>

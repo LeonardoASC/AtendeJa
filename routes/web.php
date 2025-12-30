@@ -15,45 +15,52 @@ use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\GuicheController;
 use App\Http\Controllers\RelatorioController;
 use App\Http\Controllers\VoucherController;
+use App\Http\Controllers\SolicitacaoController;
 
 Route::get('/', [SiteController::class, 'index'])->name('site.index');
 // Route::get('/senhas/{codigo}/ticket-virtual', [SenhaController::class, 'ticketVirtual'])->name('senhas.ticket-virtual');
-      
 Route::get('/busca-cpf/consultar', [SiteController::class, 'consultarCpf'])->name('busca.cpf.search');
 
-Route::get('/senhas/{token}/ticket-virtual', [SenhaController::class, 'ticketVirtual'])->name('senhas.ticket-virtual')->whereUlid('token'); 
+Route::get('/senhas/{token}/ticket-virtual', [SenhaController::class, 'ticketVirtual'])->name('senhas.ticket-virtual')->whereUlid('token');
 Route::middleware(['auth:admin', 'verified'])->prefix('admin')->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('permission:ver-dashboard');
-        Route::get('/ranking', [DashboardController::class, 'ranking'])->name('dashboard.ranking')->middleware('permission:ver-dashboard');
-        Route::get('/telao', [SenhaController::class, 'telao'])->name('senhas.telao')->middleware('permission:ver-telao');
-        Route::get('/senhas/perguntas-frequentes', [SenhaController::class, 'perguntasFrequentes'])->name('senhas.perguntas-frequentes');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('permission:ver-dashboard');
+    Route::get('/ranking', [DashboardController::class, 'ranking'])->name('dashboard.ranking')->middleware('permission:ver-dashboard');
+    Route::get('/telao', [SenhaController::class, 'telao'])->name('senhas.telao')->middleware('permission:ver-telao');
+    Route::get('/senhas/perguntas-frequentes', [SenhaController::class, 'perguntasFrequentes'])->name('senhas.perguntas-frequentes');
 
-        Route::resource('tipo-atendimentos', TipoAtendimentoController::class)->middleware('permission:ver-tipoAtendimento');
+    Route::resource('tipo-atendimentos', TipoAtendimentoController::class)->middleware('permission:ver-tipoAtendimento');
 
-        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-        Route::resource('users', UserController::class)->middleware('permission:ver-usuarios');
-        Route::resource('admins', AdminController::class)->middleware('permission:ver-admin');
-        Route::resource('roles', RoleController::class)->middleware('permission:ver-cargos');
+    Route::resource('users', UserController::class)->middleware('permission:ver-usuarios');
+    Route::resource('admins', AdminController::class)->middleware('permission:ver-admin');
+    Route::resource('roles', RoleController::class)->middleware('permission:ver-cargos');
 
-        Route::resource('senhas', SenhaController::class)->middleware('permission:ver-senhas');
-        Route::post('/senhas/chamar',[SenhaController::class, 'chamar'])->name('senhas.chamar')->middleware('permission:editar-senhas');
-        Route::post('/senhas/{senha}/finalizar', [SenhaController::class, 'finalizar'])->name('senhas.finalizar')->middleware('permission:editar-senhas');
-        Route::post('/senhas/{senha}/cancelar', [SenhaController::class, 'cancelar'])->name('senhas.cancelar')->middleware('permission:editar-senhas');
-        Route::post('/senhas/{senha}/chamar', [SenhaController::class, 'chamarSenha'])->name('senhas.chamarSenha')->middleware('permission:editar-senhas');
+    Route::resource('senhas', SenhaController::class)->middleware('permission:ver-senhas');
+    Route::post('/senhas/chamar', [SenhaController::class, 'chamar'])->name('senhas.chamar')->middleware('permission:editar-senhas');
+    Route::post('/senhas/{senha}/finalizar', [SenhaController::class, 'finalizar'])->name('senhas.finalizar')->middleware('permission:editar-senhas');
+    Route::post('/senhas/{senha}/cancelar', [SenhaController::class, 'cancelar'])->name('senhas.cancelar')->middleware('permission:editar-senhas');
+    Route::post('/senhas/{senha}/chamar', [SenhaController::class, 'chamarSenha'])->name('senhas.chamarSenha')->middleware('permission:editar-senhas');
 
-        Route::get('/select-guiche', [GuicheController::class, 'selectGuiche'])->name('guiche.select')->middleware('permission:ver-guiche');
-        Route::get('/select-guiche/{guiche:slug}', [GuicheController::class, 'guichePanel'])->name('guiche.panel')->middleware('permission:ver-guiche');
-        
-        Route::resource('guiches', GuicheController::class)->parameters(['guiches' => 'guiche'])->middleware('permission:ver-guiche');
-        
-        Route::get('/relatorios', [RelatorioController::class, 'index'])->name('relatorio.index')->middleware('permission:ver-relatorios');
-        Route::get('/relatorios/senhas/pdf', [RelatorioController::class, 'senhasPdf'])->name('relatorios.senhas.pdf')->middleware('permission:ver-relatorios');
-        Route::resource('vouchers', VoucherController::class)->middleware('permission:ver-voucher');
-        Route::post('/vouchers/{voucher}/use', [VoucherController::class, 'use'])->name('vouchers.use');
-        Route::post('/vouchers/import', [VoucherController::class, 'import'])->name('vouchers.import');
-    });
+    Route::get('/solicitacoes', [SolicitacaoController::class, 'index'])->name('solicitacoes.index');
+    Route::get('/solicitacoes/criar', [SolicitacaoController::class, 'create'])->name('solicitacoes.create');
+    Route::get('/solicitacoes/assinar', [SolicitacaoController::class, 'assinarForm'])->name('solicitacoes.assinar.form');
+    Route::post('/solicitacoes/assinar', [SolicitacaoController::class, 'assinarStore'])->name('solicitacoes.assinar.store');
+    Route::post('/solicitacoes', [SolicitacaoController::class, 'store'])->name('solicitacoes.store');
+    Route::get('/solicitacoes/{solicitacao}/sucesso', [SolicitacaoController::class, 'sucesso'])->name('solicitacoes.sucesso');
 
-require __DIR__.'/auth.php';
+    Route::get('/select-guiche', [GuicheController::class, 'selectGuiche'])->name('guiche.select')->middleware('permission:ver-guiche');
+    Route::get('/select-guiche/{guiche:slug}', [GuicheController::class, 'guichePanel'])->name('guiche.panel')->middleware('permission:ver-guiche');
+
+    Route::resource('guiches', GuicheController::class)->parameters(['guiches' => 'guiche'])->middleware('permission:ver-guiche');
+
+    Route::get('/relatorios', [RelatorioController::class, 'index'])->name('relatorio.index')->middleware('permission:ver-relatorios');
+    Route::get('/relatorios/senhas/pdf', [RelatorioController::class, 'senhasPdf'])->name('relatorios.senhas.pdf')->middleware('permission:ver-relatorios');
+    Route::resource('vouchers', VoucherController::class)->middleware('permission:ver-voucher');
+    Route::post('/vouchers/{voucher}/use', [VoucherController::class, 'use'])->name('vouchers.use');
+    Route::post('/vouchers/import', [VoucherController::class, 'import'])->name('vouchers.import');
+});
+
+require __DIR__ . '/auth.php';

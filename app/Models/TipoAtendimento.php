@@ -9,9 +9,13 @@ class TipoAtendimento extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nome'];
+    protected $fillable = ['nome', 'tem_formulario'];
 
     protected $table = 'tipo_atendimentos';
+
+    protected $casts = [
+        'tem_formulario' => 'boolean',
+    ];
 
     public function senhas()
     {

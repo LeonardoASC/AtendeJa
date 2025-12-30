@@ -4,11 +4,9 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 
 export default function Edit({ role, permissions, rolePermissions }) {
-    /* ------------------------------------------------------------------ */
-    /* form setup                                                          */
     const { data, setData, put, processing, errors } = useForm({
         name: role.name ?? '',
-        permissions: rolePermissions ?? [], // IDs já atribuídos
+        permissions: rolePermissions ?? [],
     });
 
     const submit = (e) => {
@@ -16,8 +14,6 @@ export default function Edit({ role, permissions, rolePermissions }) {
         put(route('roles.update', role.id));
     };
 
-    /* ------------------------------------------------------------------ */
-    /* agrupa permissões por prefixo                                       */
     const groupByPrefix = (perms = []) => {
         const groups = { ver: [], criar: [], editar: [], excluir: [] };
         perms.forEach((p) => {
@@ -31,9 +27,6 @@ export default function Edit({ role, permissions, rolePermissions }) {
     };
 
     const { ver, criar, editar, excluir } = groupByPrefix(permissions);
-
-    /* ------------------------------------------------------------------ */
-    /* marca / desmarca permissões                                         */
     const togglePermission = (id) =>
         setData(
             'permissions',
@@ -42,7 +35,6 @@ export default function Edit({ role, permissions, rolePermissions }) {
                 : [...data.permissions, id]
         );
 
-    /* componente para exibir cada coluna -------------------------------- */
     const Column = ({ title, list, color }) =>
         list.length > 0 && (
             <div>
@@ -68,7 +60,6 @@ export default function Edit({ role, permissions, rolePermissions }) {
             </div>
         );
 
-    /* ------------------------------------------------------------------ */
     return (
         <AuthenticatedLayout
             header={<h2 className="text-xl font-semibold text-gray-800">Editar Cargo</h2>}
@@ -79,7 +70,6 @@ export default function Edit({ role, permissions, rolePermissions }) {
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="bg-white shadow-sm sm:rounded-lg p-6">
                         <form onSubmit={submit} className="space-y-6">
-                            {/* Nome */}
                             <div>
                                 <label className="block mb-1 font-medium text-gray-700">
                                     Nome do Cargo
@@ -95,7 +85,6 @@ export default function Edit({ role, permissions, rolePermissions }) {
                                 )}
                             </div>
 
-                            {/* Permissões em colunas */}
                             <div>
                                 <label className="block mb-1 font-medium text-gray-700">
                                     Permissões
@@ -113,7 +102,6 @@ export default function Edit({ role, permissions, rolePermissions }) {
                                 )}
                             </div>
 
-                            {/* Botões */}
                             <div className="flex items-center gap-4">
                                 <button
                                     type="submit"

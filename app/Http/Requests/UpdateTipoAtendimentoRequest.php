@@ -21,13 +21,14 @@ class UpdateTipoAtendimentoRequest extends FormRequest
      */
     public function rules(): array
     {
-         return [
+        return [
             'nome' => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('tipo_atendimentos', 'nome')->ignore($this->route('tipo_atendimento')->id), 
+                Rule::unique('tipo_atendimentos', 'nome')->ignore($this->route('tipo_atendimento')->id),
             ],
+            'tem_formulario' => ['nullable', 'boolean'],
         ];
     }
 
