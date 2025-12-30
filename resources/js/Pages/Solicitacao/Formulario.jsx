@@ -90,11 +90,7 @@ export default function Formulario({ tipoAtendimento }) {
             return;
         }
 
-        post(route('solicitacoes.assinar.store'), {
-            preserveState: true,
-            onSuccess: () => {
-            },
-        });
+        post(route('solicitacoes.formulario.store'));
     };
 
 

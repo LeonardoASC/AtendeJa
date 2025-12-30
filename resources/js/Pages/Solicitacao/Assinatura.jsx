@@ -112,7 +112,7 @@ export default function Assinatura({ dadosSolicitacao, tipoAtendimento }) {
                     formData.append(key, value ?? '');
                 }
             });
-            post(route('solicitacoes.store'), formData, {
+            post(route('solicitacoes.assinar.store'), formData, {
                 forceFormData: true,
                 onFinish: () => setShouldSubmit(false),
             });

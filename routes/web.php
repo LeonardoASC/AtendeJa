@@ -22,6 +22,18 @@ Route::get('/', [SiteController::class, 'index'])->name('site.index');
 Route::get('/busca-cpf/consultar', [SiteController::class, 'consultarCpf'])->name('busca.cpf.search');
 
 Route::get('/senhas/{token}/ticket-virtual', [SenhaController::class, 'ticketVirtual'])->name('senhas.ticket-virtual')->whereUlid('token');
+
+Route::get('/solicitacoes', [SolicitacaoController::class, 'index'])->name('solicitacoes.index');
+Route::get('/solicitacoes/criar', [SolicitacaoController::class, 'create'])->name('solicitacoes.create');
+Route::post('/solicitacoes/formulario', [SolicitacaoController::class, 'formularioStore'])->name('solicitacoes.formulario.store');
+Route::get('/solicitacoes/assinar', [SolicitacaoController::class, 'assinarForm'])->name('solicitacoes.assinar.form');
+Route::post('/solicitacoes/assinar', [SolicitacaoController::class, 'assinarStore'])->name('solicitacoes.assinar.store');
+Route::get('/solicitacoes/foto', [SolicitacaoController::class, 'fotoForm'])->name('solicitacoes.foto.form');
+Route::post('/solicitacoes/foto', [SolicitacaoController::class, 'fotoStore'])->name('solicitacoes.foto.store');
+Route::get('/solicitacoes/finalizar', [SolicitacaoController::class, 'finalizar'])->name('solicitacoes.finalizar');
+Route::post('/solicitacoes', [SolicitacaoController::class, 'store'])->name('solicitacoes.store');
+Route::get('/solicitacoes/{solicitacao}/sucesso', [SolicitacaoController::class, 'sucesso'])->name('solicitacoes.sucesso');
+
 Route::middleware(['auth:admin', 'verified'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('permission:ver-dashboard');
     Route::get('/ranking', [DashboardController::class, 'ranking'])->name('dashboard.ranking')->middleware('permission:ver-dashboard');
@@ -44,11 +56,10 @@ Route::middleware(['auth:admin', 'verified'])->prefix('admin')->group(function (
     Route::post('/senhas/{senha}/cancelar', [SenhaController::class, 'cancelar'])->name('senhas.cancelar')->middleware('permission:editar-senhas');
     Route::post('/senhas/{senha}/chamar', [SenhaController::class, 'chamarSenha'])->name('senhas.chamarSenha')->middleware('permission:editar-senhas');
 
-    Route::get('/solicitacoes', [SolicitacaoController::class, 'index'])->name('solicitacoes.index');
-    Route::get('/solicitacoes/criar', [SolicitacaoController::class, 'create'])->name('solicitacoes.create');
-    Route::get('/solicitacoes/assinar', [SolicitacaoController::class, 'assinarForm'])->name('solicitacoes.assinar.form');
-    Route::post('/solicitacoes/assinar', [SolicitacaoController::class, 'assinarStore'])->name('solicitacoes.assinar.store');
-    Route::post('/solicitacoes', [SolicitacaoController::class, 'store'])->name('solicitacoes.store');
+    Route::get('/solicitacoes', [SolicitacaoController::class, 'index'])->name('admin.solicitacoes.index');
+    Route::get('/solicitacoes/criar', [SolicitacaoController::class, 'create'])->name('admin.solicitacoes.create');
+    Route::get('/solicitacoes/{solicitacao}/sucesso', [SolicitacaoController::class, 'sucesso'])->name('admin.solicitacoes.sucesso');
+    Route::post('/solicitacoes', [SolicitacaoController::class, 'store'])->name('admin.solicitacoes.store');
     Route::get('/solicitacoes/{solicitacao}/sucesso', [SolicitacaoController::class, 'sucesso'])->name('solicitacoes.sucesso');
 
     Route::get('/select-guiche', [GuicheController::class, 'selectGuiche'])->name('guiche.select')->middleware('permission:ver-guiche');
