@@ -174,14 +174,14 @@ export default function Formulario({ tipoAtendimento }) {
                                     <div className="w-full max-w-lg">
 
                                         <form onSubmit={handleSubmit} className="space-y-6">
-                                            <div className="bg-white/15 backdrop-blur-md rounded-2xl p-6 ring-1 ring-white/20 space-y-6">
+                                            <div className="bg-white/15 backdrop-blur-md rounded-2xl p-6 ring-1 ring-white/20 space-y-4">
                                                 <h3 className="text-xl font-bold text-white flex items-center gap-2">
                                                     <UserIcon className="h-6 w-6" />
-                                                    Seus Dados
+                                                    Informe seus dados abaixo
                                                 </h3>
 
                                                 <div>
-                                                    <label htmlFor="cpf" className="block text-white font-semibold mb-2">
+                                                    <label htmlFor="cpf" className="block text-white font-semibold mb-1">
                                                         CPF *
                                                     </label>
                                                     <input
@@ -254,7 +254,7 @@ export default function Formulario({ tipoAtendimento }) {
                                                     </div>
                                                 )}
 
-                                                <div className="flex flex-col gap-4 pt-4">
+                                                <div className="flex flex-col gap-4 pt-1">
                                                     <Link
                                                         href={route('solicitacoes.index')}
                                                         className="py-3 px-6 rounded-xl text-base font-semibold text-white/80 hover:text-white hover:bg-white/15 backdrop-blur transition-all hover:scale-105 text-center border-2 border-white/30"

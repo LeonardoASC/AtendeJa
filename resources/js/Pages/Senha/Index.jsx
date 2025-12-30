@@ -321,7 +321,7 @@ export default function Index({ tipoAtendimentos }) {
                         )}
 
                         {step === 2 && (
-                            <form onSubmit={submit} className="space-y-8 py-4">
+                            <form onSubmit={submit} className="space-y-4 py-1">
                                 <h2 className="text-3xl font-bold text-white">Informe seu CPF abaixo</h2>
 
                                 <div className="text-4xl font-mono text-white tracking-[0.4rem]">
