@@ -127,151 +127,186 @@ export default function Assinatura({ dadosSolicitacao, tipoAtendimento }) {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
-                    className="relative w-full max-w-4xl rounded-3xl bg-white/10 backdrop-blur-lg ring-1 ring-white/30 shadow-2xl overflow-hidden"
+                    className="relative w-full max-w-7xl rounded-3xl bg-white/10 backdrop-blur-lg ring-1 ring-white/30 shadow-2xl overflow-hidden"
                 >
-                    <div className="p-8 md:p-12">
-                        <div className="text-center space-y-4 mb-8">
-                            <div className="flex justify-center">
-                                <div className="p-4 rounded-full bg-gradient-to-br from-cyan-400 to-teal-300 shadow-lg">
-                                    <PencilSquareIcon className="h-16 w-16 text-white" />
-                                </div>
-                            </div>
-                            <h1 className="text-4xl md:text-5xl font-extrabold text-white leading-tight">
-                                Assine sua Solicitação
-                            </h1>
-                            <p className="text-xl text-white/90 max-w-2xl mx-auto">
-                                {tipoAtendimento?.nome}
-                            </p>
-                        </div>
-
-                        <div className="bg-white/15 backdrop-blur-md rounded-2xl p-6 ring-1 ring-white/20 mb-6">
-                            <h2 className="text-lg font-bold text-white mb-3">Resumo da Solicitação</h2>
-                            <div className="grid grid-cols-2 gap-3 text-sm">
-                                <div>
-                                    <span className="text-white/70">Nome:</span>
-                                    <p className="text-white font-medium">{dadosSolicitacao.nome}</p>
-                                </div>
-                                <div>
-                                    <span className="text-white/70">CPF:</span>
-                                    <p className="text-white font-medium">{dadosSolicitacao.cpf}</p>
-                                </div>
-                                {dadosSolicitacao.email && (
-                                    <div className="col-span-2">
-                                        <span className="text-white/70">E-mail:</span>
-                                        <p className="text-white font-medium">{dadosSolicitacao.email}</p>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            <div className="bg-white/15 backdrop-blur-md rounded-2xl p-6 md:p-8 ring-1 ring-white/20 space-y-4">
-                                <div className="flex items-center justify-between mb-4">
-                                    <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-                                        <PencilSquareIcon className="h-7 w-7" />
-                                        Assinatura Digital
-                                    </h2>
-                                    <button
-                                        type="button"
-                                        onClick={clearSignature}
-                                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 text-white text-sm font-semibold hover:bg-white/20 transition-all ring-1 ring-white/20"
-                                    >
-                                        <ArrowPathIcon className="h-5 w-5" />
-                                        Limpar
-                                    </button>
-                                </div>
-
-                                <p className="text-white/90 text-sm">
-                                    Use o dedo ou caneta stylus para assinar na área abaixo
-                                </p>
-
-                                <div className="relative">
-                                    <canvas
-                                        ref={canvasRef}
-                                        onMouseDown={startDrawing}
-                                        onMouseMove={draw}
-                                        onMouseUp={stopDrawing}
-                                        onMouseLeave={stopDrawing}
-                                        onTouchStart={startDrawing}
-                                        onTouchMove={draw}
-                                        onTouchEnd={stopDrawing}
-                                        className="w-full h-64 md:h-80 bg-white rounded-xl border-4 border-dashed border-white/30 cursor-crosshair touch-none"
-                                        style={{ touchAction: 'none' }}
-                                    />
-                                    {!hasDrawn && (
-                                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                            <p className="text-gray-400 text-lg font-medium">
-                                                Assine aqui
-                                            </p>
+                    <div className="p-4 md:p-6">
+                        <div className="">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mb-8">
+                                <div className="text-left space-y-4 px-4">
+                                    <div>
+                                        <p className="text-2xl lg:text-2xl font-extrabold text-white leading-tight text-center">Assine sua</p>
+                                        <p className="text-2xl lg:text-3xl font-extrabold text-white leading-tight text-center">SOLICITAÇÃO</p>
+                                        <div className='flex items-center justify-center gap-4'>
+                                            <p className="text-2xl lg:text-2xl font-extrabold text-white leading-tight text-center">AGORA!</p>
+                                            <img
+                                                src="https://prevmoc.mg.gov.br/imagens/logo/logo-principal.png"
+                                                alt="Logo Prevmoc"
+                                                className='h-8 bg-white rounded-full p-1 mb-2 object-contain'
+                                            />
                                         </div>
-                                    )}
-                                </div>
+                                    </div>
 
-                                <div className="bg-yellow-500/20 backdrop-blur-md rounded-lg p-4 border-l-4 border-yellow-400">
-                                    <p className="text-yellow-100 text-sm flex items-start gap-2">
-                                        <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                        <span>
-                                            Ao assinar, você concorda com os termos e confirma que as informações fornecidas são verdadeiras.
-                                        </span>
+                                    <p className="text-lg text-white/90">
+                                        Confirme sua solicitação com uma assinatura digital.
                                     </p>
+
+                                    <div className="space-y-4 text-white/90 text-lg">
+                                        <div className="">
+                                            <div className="flex items-center gap-3">
+                                                <span className="flex-shrink-0 flex items-center justify-center w-4 h-4 rounded-full bg-white/20 text-white font-bold">
+                                                    1
+                                                </span>
+                                                <p className="">
+                                                    Use o dedo ou caneta stylus para assinar
+                                                </p>
+                                            </div>
+
+                                            <div className="flex items-center gap-3">
+                                                <span className="flex-shrink-0 flex items-center justify-center w-4 h-4 rounded-full bg-white/20 text-white font-bold">
+                                                    2
+                                                </span>
+                                                <p className="">
+                                                    Certifique-se de que a assinatura está legível
+                                                </p>
+                                            </div>
+
+                                            <div className="flex items-center gap-3">
+                                                <span className="flex-shrink-0 flex items-center justify-center w-4 h-4 rounded-full bg-white/20 text-white font-bold">
+                                                    3
+                                                </span>
+                                                <p className="">
+                                                    Clique em "Confirmar e Enviar" para finalizar
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-col gap-2 px-4">
+                                    <div className="bg-white/15 backdrop-blur-md rounded-2xl p-6 ring-1 ring-white/20">
+                                        <h3 className="text-lg font-bold text-white mb-3">Resumo da Solicitação</h3>
+                                        <div className="grid grid-cols-1 gap-3 text-sm">
+                                            <div>
+                                                <span className="text-white/70">Nome:</span>
+                                                <p className="text-white font-medium">{dadosSolicitacao.nome}</p>
+                                            </div>
+                                            <div>
+                                                <span className="text-white/70">CPF:</span>
+                                                <p className="text-white font-medium">{dadosSolicitacao.cpf}</p>
+                                            </div>
+                                            {dadosSolicitacao.email && (
+                                                <div>
+                                                    <span className="text-white/70">E-mail:</span>
+                                                    <p className="text-white font-medium">{dadosSolicitacao.email}</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                            {errors.assinatura && (
-                                <div className="bg-red-500/20 backdrop-blur-md rounded-lg p-4 ring-1 ring-red-400/30">
-                                    <p className="text-white text-center">{errors.assinatura}</p>
+                            <div className="flex flex-col gap-2 items-center justify-center px-4">
+                                <div className="w-full">
+                                    <form onSubmit={handleSubmit} className="space-y-6">
+                                        <div className="bg-white/15 backdrop-blur-md rounded-2xl px-8 py-4 ring-1 ring-white/20 space-y-6">
+                                            <div className="flex items-center justify-between mb-6">
+                                                <h3 className="text-2xl font-bold text-white flex items-center gap-2">
+                                                    <PencilSquareIcon className="h-5 w-5" />
+                                                    Assine abaixo
+                                                </h3>
+                                                <div className="bg-yellow-500/20 backdrop-blur-md rounded-lg p-4 border-l-4 border-yellow-400">
+                                                    <p className="text-yellow-100 text-sm flex items-start gap-2">
+                                                        <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                        </svg>
+                                                        <span>
+                                                            Ao assinar, você concorda com os termos e confirma que as informações fornecidas são verdadeiras.
+                                                        </span>
+                                                    </p>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={clearSignature}
+                                                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 text-white text-sm font-semibold hover:bg-white/20 transition-all ring-1 ring-white/20"
+                                                >
+                                                    <ArrowPathIcon className="h-5 w-5" />
+                                                    Limpar
+                                                </button>
+                                            </div>
+
+                                            <div className="relative bg-white/5 backdrop-blur-md rounded-2xl p-4 ring-2 ring-white/30">
+                                                <canvas
+                                                    ref={canvasRef}
+                                                    onMouseDown={startDrawing}
+                                                    onMouseMove={draw}
+                                                    onMouseUp={stopDrawing}
+                                                    onMouseLeave={stopDrawing}
+                                                    onTouchStart={startDrawing}
+                                                    onTouchMove={draw}
+                                                    onTouchEnd={stopDrawing}
+                                                    className="w-full h-[200px] md:h-[250px] bg-white rounded-xl border-4 border-dashed border-cyan-300 cursor-crosshair touch-none shadow-2xl"
+                                                    style={{ touchAction: 'none' }}
+                                                />
+                                                {!hasDrawn && (
+                                                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                                        <div className="text-center">
+                                                            <PencilSquareIcon className="h-12 w-12 text-gray-300 mx-auto mb-2" />
+                                                            <p className="text-gray-400 text-xl font-medium">
+                                                                Assine aqui
+                                                            </p>
+                                                            <p className="text-gray-400 text-sm mt-1">
+                                                                Use o dedo ou caneta stylus
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {errors.assinatura && (
+                                                <div className="bg-red-500/20 backdrop-blur-md rounded-lg p-4 ring-1 ring-red-400/30">
+                                                    <p className="text-white text-center">{errors.assinatura}</p>
+                                                </div>
+                                            )}
+
+                                            <div className="flex justify-end gap-4 pt-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => window.history.back()}
+                                                    disabled={processing}
+                                                    className="py-2 px-4 rounded-xl text-lg font-semibold text-white/80 hover:text-white hover:bg-white/15 backdrop-blur transition-all hover:scale-105 text-center border-2 border-white/30 disabled:opacity-50"
+                                                >
+                                                    Voltar
+                                                </button>
+
+                                                <button
+                                                    type="submit"
+                                                    disabled={processing || !hasDrawn}
+                                                    className="py-2 px-4 rounded-xl bg-white border-4 border-double border-sky-700 font-bold text-teal-700 text-xl hover:bg-teal-600 hover:text-white hover:border-white transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-white/40 shadow-2xl hover:shadow-3xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                                                >
+                                                    {processing ? (
+                                                        <span className="inline-flex items-center gap-2">
+                                                            <svg className="animate-spin h-6 w-6" fill="none" viewBox="0 0 24 24">
+                                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                            </svg>
+                                                            Enviando...
+                                                        </span>
+                                                    ) : (
+                                                        <span className="inline-flex items-center gap-2">
+                                                            <CheckCircleIcon className="h-7 w-7" />
+                                                            Confirmar assinatura
+                                                        </span>
+                                                    )}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
                                 </div>
-                            )}
-
-                            <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                                <button
-                                    type="button"
-                                    onClick={() => window.history.back()}
-                                    disabled={processing}
-                                    className="flex-1 py-4 px-6 rounded-xl text-lg font-semibold text-white/80 hover:text-white hover:bg-white/15 backdrop-blur transition-all hover:scale-105 text-center border-2 border-white/30 disabled:opacity-50"
-                                >
-                                    Voltar
-                                </button>
-
-                                <button
-                                    type="submit"
-                                    disabled={processing || !hasDrawn}
-                                    className="flex-1 py-4 px-6 rounded-xl bg-white border-4 border-double border-sky-700 font-bold text-teal-700 text-lg hover:bg-teal-600 hover:text-white hover:border-white transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-white/40 shadow-2xl hover:shadow-3xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                                >
-                                    {processing ? (
-                                        <span className="inline-flex items-center gap-2">
-                                            <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                            </svg>
-                                            Enviando...
-                                        </span>
-                                    ) : (
-                                        <span className="inline-flex items-center gap-2">
-                                            <CheckCircleIcon className="h-6 w-6" />
-                                            Confirmar e Enviar
-                                        </span>
-                                    )}
-                                </button>
                             </div>
-
-                            <p className="text-white/70 text-sm text-center">
-                                Certifique-se de que sua assinatura está legível
-                            </p>
-                        </form>
+                        </div>
                     </div>
                 </motion.div>
 
-                <div className="mt-8 flex items-center justify-center gap-3">
-                    <img
-                        src="https://prevmoc.mg.gov.br/imagens/logo/logo-principal.png"
-                        alt="Logo Prevmoc"
-                        className="h-12 bg-white rounded-full p-1 object-contain"
-                    />
-                    <p className="text-white/80 text-sm">PREVMOC - Instituto de Previdência dos Servidores de Montes Claros</p>
-                </div>
             </div>
         </>
     );
