@@ -22,7 +22,7 @@ return new class extends Migration
             $table->text('assinatura')->nullable();
             $table->string('foto')->nullable();
             $table->json('dados_formulario')->nullable();
-            $table->enum('status', ['pendente', 'em_analise', 'aprovado', 'rejeitado', 'finalizado'])->default('pendente');
+            $table->enum('status', ['pendente', 'enviado'])->default('pendente');
             $table->foreignId('admin_id')->nullable()->constrained('admins')->onDelete('set null');
             $table->timestamps();
 

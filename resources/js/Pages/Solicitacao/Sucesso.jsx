@@ -82,7 +82,7 @@ export default function Sucesso({ solicitacao }) {
                             </div>
 
                             <div className="flex flex-col gap-2 items-center justify-center px-4">
-                                <div className="pt-4">
+                                <div className="w-4/5 pt-4">
                                     <div className="bg-white/15 backdrop-blur-md rounded-2xl p-6 ring-1 ring-white/20">
                                         <h3 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
                                             <DocumentTextIcon className="h-5 w-5" />

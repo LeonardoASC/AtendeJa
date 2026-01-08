@@ -16,16 +16,6 @@ class RolesAndPermissionsSeeder extends Seeder
             'guard_name' => 'admin',
         ]);
 
-        $operadorRole = Role::firstOrCreate([
-            'name' => 'Operador',
-            'guard_name' => 'admin',
-        ]);
-
-        $atendenteRole = Role::firstOrCreate([
-            'name' => 'Atendente',
-            'guard_name' => 'admin',
-        ]);
-    
         $permissions = [
             'ver-dashboard',
             'criar-dashboard',
@@ -71,6 +61,10 @@ class RolesAndPermissionsSeeder extends Seeder
             'criar-voucher',
             'editar-voucher',
             'excluir-voucher',
+            'ver-solicitacoes',
+            'criar-solicitacoes',
+            'editar-solicitacoes',
+            'excluir-solicitacoes',
         ];
         
 

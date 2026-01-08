@@ -27,6 +27,7 @@ class Solicitacao extends Model
 
     protected $casts = [
         'dados_formulario' => 'array',
+        'status' => 'string',
     ];
 
     /**

@@ -53,7 +53,7 @@ export default function Formulario({ tipoAtendimento }) {
                 })
                 .then(({ data: json }) => {
                     const first = Array.isArray(json?.data) ? json.data[0] : null;
-
+                    console.log('Resposta da busca por CPF:', json);
                     if (first?.NOME) {
                         setPessoa(first);
                         setData({

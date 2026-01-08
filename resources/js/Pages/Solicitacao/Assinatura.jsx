@@ -14,6 +14,7 @@ export default function Assinatura({ dadosSolicitacao, tipoAtendimento }) {
         assinatura: '',
     });
 
+
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -137,7 +138,7 @@ export default function Assinatura({ dadosSolicitacao, tipoAtendimento }) {
                                         <p className="text-2xl lg:text-2xl font-extrabold text-white leading-tight text-center">Assine sua</p>
                                         <p className="text-2xl lg:text-3xl font-extrabold text-white leading-tight text-center">SOLICITAÇÃO</p>
                                         <div className='flex items-center justify-center gap-4'>
-                                            <p className="text-2xl lg:text-2xl font-extrabold text-white leading-tight text-center">AGORA!</p>
+                                            <p className="text-2xl lg:text-2xl font-extrabold text-white leading-tight text-center">ABAIXO!</p>
                                             <img
                                                 src="https://prevmoc.mg.gov.br/imagens/logo/logo-principal.png"
                                                 alt="Logo Prevmoc"
@@ -190,16 +191,32 @@ export default function Assinatura({ dadosSolicitacao, tipoAtendimento }) {
                                                 <span className="text-white/70">Nome:</span>
                                                 <p className="text-white font-medium">{dadosSolicitacao.nome}</p>
                                             </div>
-                                            <div>
-                                                <span className="text-white/70">CPF:</span>
-                                                <p className="text-white font-medium">{dadosSolicitacao.cpf}</p>
-                                            </div>
-                                            {dadosSolicitacao.email && (
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                                 <div>
-                                                    <span className="text-white/70">E-mail:</span>
-                                                    <p className="text-white font-medium">{dadosSolicitacao.email}</p>
+                                                    <span className="text-white/70">CPF:</span>
+                                                    <p className="text-white font-medium">{dadosSolicitacao.cpf}</p>
                                                 </div>
-                                            )}
+                                                <div>
+                                                    <span className="text-white/70">Matrícula:</span>
+                                                    <p className="text-white font-medium">{dadosSolicitacao.matricula}</p>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <span className="text-white/70">Tipo de Atendimento:</span>
+                                                <p className="text-white font-medium">{tipoAtendimento.nome}</p>
+                                            </div>
+
+                                                                                        <div className='flex items-center justify-between '>
+                                                <div className='flex flex-col w-full'>
+                                                    <span className="text-white/70 ">E-mail:</span>
+                                                    <p className="text-white font-medium">{dadosSolicitacao.email || 'Email Não Cadastrado.'}</p>
+                                                </div>
+                                                {dadosSolicitacao.email === null && (
+                                                    <span className=" text-red-300 font-bold text-sm mt-1">
+                                                        Atenção: EMAIL NÃO CADASTRADO. Sem um e-mail cadastrado, você não receberá confirmação sobre sua solicitação.
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

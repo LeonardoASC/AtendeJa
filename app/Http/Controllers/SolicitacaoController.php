@@ -7,6 +7,7 @@ use App\Models\TipoAtendimento;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Log;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class SolicitacaoController extends Controller
 {
@@ -256,5 +257,52 @@ class SolicitacaoController extends Controller
                 'created_at' => $solicitacao->created_at->format('d/m/Y H:i'),
             ],
         ]);
+    }
+
+    public function atenderSolicitacao()
+    {
+        $solicitacoesPendentes = Solicitacao::with(['tipoAtendimento', 'admin'])
+            ->where('status', 'pendente')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $solicitacoesEnviadas = Solicitacao::with(['tipoAtendimento', 'admin'])
+            ->where('status', 'enviado')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return Inertia::render('Autenticado/Solicitacao/Index', [
+            'solicitacoesPendentes' => $solicitacoesPendentes,
+            'solicitacoesEnviadas' => $solicitacoesEnviadas,
+        ]);
+    }
+
+    /**
+     * Marca uma solicitação como enviada
+     */
+    public function marcarEnviado(Solicitacao $solicitacao)
+    {
+        $solicitacao->update([
+            'status' => 'enviado',
+            'admin_id' => auth('admin')->id(),
+        ]);
+
+        return redirect()->back()->with('success', 'Solicitação marcada como enviada.');
+    }
+
+    /**
+     * Gera PDF da solicitação
+     */
+    public function gerarPdf(Solicitacao $solicitacao)
+    {
+        $solicitacao->load('tipoAtendimento', 'admin');
+
+        $pdf = Pdf::loadView('relatorios.solicitacao', [
+            'solicitacao' => $solicitacao
+        ]);
+
+        $pdf->setPaper('a4', 'portrait');
+
+        return $pdf->download('solicitacao-' . $solicitacao->id . '.pdf');
     }
 }
