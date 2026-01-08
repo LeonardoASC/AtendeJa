@@ -19,6 +19,7 @@ const NAVIGATION_LINK = [
     { route: 'guiche.select', label: 'Guichês', perms: ['ver-guiche'], icon: HomeIcon },
     { route: 'senhas.index', label: 'Senhas', perms: ['ver-senhas'], icon: DocumentTextIcon },
     { route: 'senhas.telao', label: 'Telão', perms: ['ver-telao'], icon: HomeIcon },
+    // {route: 'atender.solicitacao', label: 'Solicitações', perms: ['ver-telao'], icon: HomeIcon },
     { route: 'relatorio.index', label: 'Relatórios', perms: ['ver-relatorios'], icon: NewspaperIcon },
     { route: 'tipo-atendimentos.index', label: 'Tipos de Atendimento', perms: ['ver-tipoAtendimento'], icon: NewspaperIcon },
     { route: 'guiches.index', label: 'Gerenciar Guichês', perms: ['ver-gerenciarGuiche'], icon: HomeIcon },
