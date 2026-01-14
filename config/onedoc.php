@@ -17,7 +17,7 @@ return [
             'campos' => [
                 [
                     'campo' => 'entrada',
-                    'valor' => 'Totem de atendimento',
+                    'valor' => 'Site',
                 ],
             ],
         ],
