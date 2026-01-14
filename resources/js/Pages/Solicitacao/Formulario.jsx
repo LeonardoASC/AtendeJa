@@ -55,6 +55,13 @@ export default function Formulario({ tipoAtendimento }) {
                     const first = Array.isArray(json?.data) ? json.data[0] : null;
                     console.log('Resposta da busca por CPF:', json);
                     if (first?.NOME) {
+                        
+                        if (tipoAtendimento.id === 3 && !first.EMAIL) {
+                            setPessoa(null);
+                            setLookupError('E-mail não cadastrado. Por favor, dirija-se à recepção para realizar a atualização cadastral antes de fazer a solicitação.');
+                            return;
+                        }
+
                         setPessoa(first);
                         setData({
                             ...data,
@@ -195,7 +202,26 @@ export default function Formulario({ tipoAtendimento }) {
                                                         required
                                                     />
                                                     {errors.cpf && <p className="mt-1 text-sm text-red-300">{errors.cpf}</p>}
-                                                    {lookupError && <p className="mt-1 text-sm text-red-300">{lookupError}</p>}
+                                                    {errors.email && (
+                                                        <div className="mt-2 p-3 bg-yellow-500/30 backdrop-blur-md rounded-lg border border-yellow-400/50">
+                                                            <p className="text-yellow-100 font-semibold flex items-start gap-2">
+                                                                <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                                                </svg>
+                                                                <span>{errors.email}</span>
+                                                            </p>
+                                                        </div>
+                                                    )}
+                                                    {lookupError && (
+                                                        <div className="mt-2 p-3 bg-red-500/30 backdrop-blur-md rounded-lg border border-red-400/50">
+                                                            <p className="text-red-100 font-semibold flex items-start gap-2">
+                                                                <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                                </svg>
+                                                                <span>{lookupError}</span>
+                                                            </p>
+                                                        </div>
+                                                    )}
                                                 </div>
 
                                                 {pessoa && (

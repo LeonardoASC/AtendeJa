@@ -19,15 +19,27 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->string('matricula')->nullable();
             $table->string('telefone')->nullable();
-            $table->text('assinatura')->nullable();
-            $table->string('foto')->nullable();
+            $table->string('anexo')->nullable();
             $table->json('dados_formulario')->nullable();
             $table->enum('status', ['pendente', 'enviado'])->default('pendente');
+
+            $table->string('onedoc_hash')->nullable();
+            $table->unsignedBigInteger('onedoc_id_emissao')->nullable();
+            $table->string('onedoc_codigo')->nullable();
+            $table->string('onedoc_numero')->nullable();
+            $table->string('onedoc_status')->nullable();
+            $table->json('onedoc_payload')->nullable();
+            $table->json('onedoc_response')->nullable();
+            $table->text('onedoc_error')->nullable();
+            $table->timestamp('onedoc_opened_at')->nullable();
+
             $table->foreignId('admin_id')->nullable()->constrained('admins')->onDelete('set null');
             $table->timestamps();
 
             $table->index(['cpf', 'created_at']);
             $table->index('status');
+            $table->index('onedoc_hash');
+            $table->index('onedoc_status');
         });
     }
 

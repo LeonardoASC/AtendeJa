@@ -53,8 +53,8 @@ export default function Index() {
         }
     }
 
-    const baixarPdf = (id) => {
-        window.open(route('solicitacoes.pdf', id), '_blank')
+    const visualizarPdf = (id) => {
+        window.open(route('solicitacoes.visualizar-pdf', id), '_blank')
     }
 
     return (
@@ -167,10 +167,10 @@ export default function Index() {
                                                                 Ver detalhes
                                                             </button>
                                                             <button
-                                                                onClick={() => baixarPdf(item.id)}
+                                                                onClick={() => visualizarPdf(item.id)}
                                                                 className="inline-flex items-center gap-1 rounded-xl bg-purple-500/10 px-3 py-1.5 text-sm text-purple-300 ring-1 ring-purple-400/20 hover:bg-purple-500/15"
                                                             >
-                                                                <ArrowDownTrayIcon className="h-4 w-4" />
+                                                                <EyeIcon className="h-4 w-4" />
                                                                 PDF
                                                             </button>
                                                             {item.status === 'pendente' && (
@@ -224,10 +224,10 @@ export default function Index() {
                                                         Ver
                                                     </button>
                                                     <button
-                                                        onClick={() => baixarPdf(item.id)}
+                                                        onClick={() => visualizarPdf(item.id)}
                                                         className="flex-1 inline-flex items-center justify-center gap-1 rounded-xl bg-purple-500/10 px-3 py-2 text-sm text-purple-300 ring-1 ring-purple-400/20"
                                                     >
-                                                        <ArrowDownTrayIcon className="h-4 w-4" />
+                                                        <EyeIcon className="h-4 w-4" />
                                                         PDF
                                                     </button>
                                                     {item.status === 'pendente' && (
@@ -352,31 +352,14 @@ export default function Index() {
                             </div>
                         )}
 
-                        {selectedSolicitacao.assinatura && (
+                        {selectedSolicitacao.anexo && (
                             <div className="border-t border-white/10 pt-4">
-                                <h4 className="text-sm font-semibold text-white mb-3">Assinatura</h4>
-                                <div className="rounded-xl bg-white p-4">
-                                    <img
-                                        src={selectedSolicitacao.assinatura}
-                                        alt="Assinatura"
-                                        className="max-h-32 mx-auto"
-                                    />
-                                </div>
-                            </div>
-                        )}
-
-                        {selectedSolicitacao.foto && (
-                            <div className="border-t border-white/10 pt-4">
-                                <h4 className="text-sm font-semibold text-white mb-3">Foto</h4>
-                                <div className="rounded-xl overflow-hidden bg-white/5 p-4">
-                                    <img
-                                        src={`/storage/${selectedSolicitacao.foto}`}
-                                        alt="Foto do solicitante"
-                                        className="max-h-64 mx-auto rounded-lg"
-                                        onError={(e) => {
-                                            e.target.onerror = null;
-                                            e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23ddd" width="200" height="200"/%3E%3Ctext fill="rgba(0,0,0,0.5)" font-family="sans-serif" font-size="16" dy="100" dx="50"%3ESem foto%3C/text%3E%3C/svg%3E';
-                                        }}
+                                <h4 className="text-sm font-semibold text-white mb-3">Anexo (Foto e Assinatura)</h4>
+                                <div className="rounded-xl overflow-hidden bg-white/5 border border-white/10">
+                                    <iframe
+                                        src={route('solicitacoes.visualizar-pdf', selectedSolicitacao.id)}
+                                        className="w-full h-[600px]"
+                                        title="PDF da Solicitação"
                                     />
                                 </div>
                             </div>

@@ -58,6 +58,7 @@ Route::middleware(['auth:admin', 'verified'])->prefix('admin')->group(function (
     Route::get('/atender-solicitacao', [SolicitacaoController::class, 'atenderSolicitacao'])->name('atender.solicitacao')->middleware('permission:ver-solicitacoes');
     Route::post('/solicitacoes/{solicitacao}/marcar-enviado', [SolicitacaoController::class, 'marcarEnviado'])->name('solicitacoes.marcar-enviado')->middleware('permission:editar-solicitacoes');
     Route::get('/solicitacoes/{solicitacao}/pdf', [SolicitacaoController::class, 'gerarPdf'])->name('solicitacoes.pdf')->middleware('permission:ver-solicitacoes');
+    Route::get('/solicitacoes/{solicitacao}/visualizar-pdf', [SolicitacaoController::class, 'visualizarPdf'])->name('solicitacoes.visualizar-pdf')->middleware('permission:ver-solicitacoes');
 
     Route::get('/select-guiche', [GuicheController::class, 'selectGuiche'])->name('guiche.select')->middleware('permission:ver-guiche');
     Route::get('/select-guiche/{guiche:slug}', [GuicheController::class, 'guichePanel'])->name('guiche.panel')->middleware('permission:ver-guiche');

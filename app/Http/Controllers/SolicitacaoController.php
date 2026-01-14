@@ -7,7 +7,9 @@ use App\Models\TipoAtendimento;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Jobs\OpenOneDocProtocolJob;
 
 class SolicitacaoController extends Controller
 {
@@ -65,7 +67,12 @@ class SolicitacaoController extends Controller
             'dados_formulario' => 'nullable|array',
         ]);
 
-        // Salvar na sessão
+        if ($validated['tipo_atendimento_id'] == 3 && empty($validated['email'])) {
+            return back()->withErrors([
+                'email' => 'E-mail não cadastrado. Por favor, dirija-se à recepção para realizar a atualização cadastral antes de fazer a solicitação.'
+            ])->withInput();
+        }
+
         session(['dados_solicitacao' => $validated]);
 
         return redirect()->route('solicitacoes.assinar.form');
@@ -166,6 +173,9 @@ class SolicitacaoController extends Controller
         }
 
         try {
+
+            $pdfPath = $this->gerarPdfAnexo($dadosSolicitacao);
+
             $solicitacao = Solicitacao::create([
                 'tipo_atendimento_id' => $dadosSolicitacao['tipo_atendimento_id'],
                 'nome' => $dadosSolicitacao['nome'],
@@ -174,10 +184,11 @@ class SolicitacaoController extends Controller
                 'matricula' => $dadosSolicitacao['matricula'] ?? null,
                 'telefone' => $dadosSolicitacao['telefone'] ?? null,
                 'dados_formulario' => $dadosSolicitacao['dados_formulario'] ?? null,
-                'assinatura' => $dadosSolicitacao['assinatura'],
-                'foto' => $dadosSolicitacao['foto'] ?? null,
+                'anexo' => $pdfPath,
                 'status' => 'pendente',
             ]);
+
+            OpenOneDocProtocolJob::dispatch($solicitacao->id);
 
             session()->forget('dados_solicitacao');
 
@@ -198,46 +209,57 @@ class SolicitacaoController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'tipo_atendimento_id' => 'required|exists:tipo_atendimentos,id',
+            'tipo_atendimento_id' => 'required|integer',
             'nome' => 'required|string|max:255',
-            'cpf' => 'required|string|size:11',
+            'cpf' => 'required|string|max:20',
             'email' => 'nullable|email|max:255',
             'matricula' => 'nullable|string|max:50',
-            'telefone' => 'nullable|string|max:20',
+            'telefone' => 'nullable|string|max:30',
             'dados_formulario' => 'nullable|array',
+            'observacoes' => 'nullable|string|max:1000',
             'assinatura' => 'required|string',
-            'foto' => 'nullable|file|image|max:5120',
+            'foto' => 'nullable',
         ]);
 
         try {
-            $fotoPath = null;
+
             if ($request->hasFile('foto')) {
                 $fotoPath = $request->file('foto')->store('SolicitacaoFoto', 'public');
+                $validated['foto'] = $fotoPath;
             }
 
+            $pdfPath = $this->gerarPdfAnexo($validated);
+
             $solicitacao = Solicitacao::create([
-                'tipo_atendimento_id' => $validated['tipo_atendimento_id'],
+                'tipo_atendimento_id' => (int) $validated['tipo_atendimento_id'],
                 'nome' => $validated['nome'],
-                'cpf' => $validated['cpf'],
+                'cpf' => preg_replace('/\D+/', '', $validated['cpf']),
                 'email' => $validated['email'] ?? null,
                 'matricula' => $validated['matricula'] ?? null,
                 'telefone' => $validated['telefone'] ?? null,
-                'dados_formulario' => $validated['dados_formulario'] ?? null,
-                'assinatura' => $validated['assinatura'],
-                'foto' => $fotoPath,
-                'status' => 'pendente',
+                'dados_formulario' => $validated['dados_formulario'] ?? [],
+                'observacoes' => $validated['observacoes'] ?? null,
+                'anexo' => $pdfPath,
+                'onedoc_status' => null,
             ]);
 
-            session()->forget('dados_solicitacao');
+            OpenOneDocProtocolJob::dispatch($solicitacao->id);
 
-            return redirect()->route('solicitacoes.sucesso', ['solicitacao' => $solicitacao->id]);
-        } catch (\Exception $e) {
+            return response()->json([
+                'success' => true,
+                'solicitacao_id' => $solicitacao->id,
+            ]);
+        } catch (\Throwable $e) {
             Log::error('Erro ao criar solicitação', [
                 'error' => $e->getMessage(),
-                'data' => $validated
+                'data' => $validated,
             ]);
 
-            return back()->withErrors(['error' => 'Ocorreu um erro ao processar sua solicitação. Tente novamente.'])->withInput();
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao criar solicitação.',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -304,5 +326,53 @@ class SolicitacaoController extends Controller
         $pdf->setPaper('a4', 'portrait');
 
         return $pdf->download('solicitacao-' . $solicitacao->id . '.pdf');
+    }
+
+    /**
+     * Visualiza o PDF anexo da solicitação
+     */
+    public function visualizarPdf(Solicitacao $solicitacao)
+    {
+        if (!$solicitacao->anexo || !Storage::disk('public')->exists($solicitacao->anexo)) {
+            abort(404, 'PDF não encontrado');
+        }
+
+        return response()->file(Storage::disk('public')->path($solicitacao->anexo));
+    }
+
+    private function gerarPdfAnexo(array $dados)
+    {
+        // Cria uma solicitação temporária para a view do PDF
+        $solicitacaoTemp = (object) [
+            'id' => 'TEMP',
+            'nome' => $dados['nome'],
+            'cpf' => $dados['cpf'],
+            'email' => $dados['email'] ?? null,
+            'matricula' => $dados['matricula'] ?? null,
+            'telefone' => $dados['telefone'] ?? null,
+            'dados_formulario' => $dados['dados_formulario'] ?? [],
+            'assinatura' => $dados['assinatura'],
+            'foto' => $dados['foto'] ?? null,
+            'status' => 'pendente',
+            'created_at' => now(),
+            'tipoAtendimento' => (object) [
+                'nome' => TipoAtendimento::find($dados['tipo_atendimento_id'])->nome ?? 'N/A'
+            ],
+            'admin' => null,
+        ];
+
+        $pdf = Pdf::loadView('relatorios.solicitacao', [
+            'solicitacao' => $solicitacaoTemp
+        ]);
+
+        $pdf->setPaper('a4', 'portrait');
+
+        // Salva o PDF no storage
+        $filename = 'solicitacao-' . time() . '-' . uniqid() . '.pdf';
+        $path = 'SolicitacaoAnexos/' . $filename;
+
+        \Storage::disk('public')->put($path, $pdf->output());
+
+        return $path;
     }
 }
