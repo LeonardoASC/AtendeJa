@@ -30,7 +30,7 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         $user = $request->user('admin') ?? $request->user('web');
-    
+
         return array_merge(parent::share($request), [
             'auth' => [
                 'user' => $user ? array_merge(
@@ -40,9 +40,10 @@ class HandleInertiaRequests extends Middleware
                 'permissions' => $user?->getAllPermissions()->pluck('name') ?? [],
             ],
             'flash' => [
-                'success' => fn () => $request->session()->get('success'),
-                'error' => fn () => $request->session()->get('error'),
+                'success' => fn() => $request->session()->get('success'),
+                'error' => fn() => $request->session()->get('error'),
             ],
+            'solicitacoesPendentesCount' => \App\Models\Solicitacao::where('status', 'pendente')->count(),
         ]);
     }
 }

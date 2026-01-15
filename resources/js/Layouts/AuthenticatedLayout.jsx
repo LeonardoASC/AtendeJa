@@ -24,9 +24,9 @@ const NAVIGATION_LINK = [
     { route: 'tipo-atendimentos.index', label: 'Tipos de Atendimento', perms: ['ver-tipoAtendimento'], icon: NewspaperIcon },
     { route: 'guiches.index', label: 'Gerenciar Guichês', perms: ['ver-gerenciarGuiche'], icon: HomeIcon },
     { route: 'vouchers.index', label: 'Vouchers', perms: ['ver-voucher'], icon: DocumentTextIcon },
-    {route: 'admins.index', label: 'Administradores', perms: ['ver-admin'], icon: UserCircleIcon},
-    {route: 'users.index', label: 'Usuários', perms: ['ver-usuarios'], icon: UserCircleIcon},
-    {route: 'roles.index', label: 'Cargos', perms: ['ver-cargos'], icon: UserCircleIcon},
+    { route: 'admins.index', label: 'Administradores', perms: ['ver-admin'], icon: UserCircleIcon },
+    { route: 'users.index', label: 'Usuários', perms: ['ver-usuarios'], icon: UserCircleIcon },
+    { route: 'roles.index', label: 'Cargos', perms: ['ver-cargos'], icon: UserCircleIcon },
 ];
 
 
@@ -73,7 +73,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                         >
                                             <span className="flex items-center gap-2">
                                                 {label}
-                                                {r === 'avaliacao-post.atender' && solicitacoesPendentesCount > 0 && (
+                                                {(r === 'avaliacao-post.atender' || r === 'atender.solicitacao') && solicitacoesPendentesCount > 0 && (
                                                     <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
                                                         {solicitacoesPendentesCount}
                                                     </span>
@@ -185,7 +185,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                 >
                                     <span className="flex items-center justify-between w-full">
                                         <span>{label}</span>
-                                        {r === 'avaliacao-post.atender' && solicitacoesPendentesCount > 0 && (
+                                        {(r === 'avaliacao-post.atender' || r === 'atender.solicitacao') && solicitacoesPendentesCount > 0 && (
                                             <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full ml-2">
                                                 {solicitacoesPendentesCount}
                                             </span>

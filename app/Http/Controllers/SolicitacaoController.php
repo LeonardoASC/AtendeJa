@@ -342,9 +342,12 @@ class SolicitacaoController extends Controller
 
     private function gerarPdfAnexo(array $dados)
     {
+        // Gera um ID temporário único baseado no timestamp
+        $idTemp = 'SOL-' . date('YmdHis') . '-' . substr(uniqid(), -4);
+
         // Cria uma solicitação temporária para a view do PDF
         $solicitacaoTemp = (object) [
-            'id' => 'TEMP',
+            'id' => $idTemp,
             'nome' => $dados['nome'],
             'cpf' => $dados['cpf'],
             'email' => $dados['email'] ?? null,
@@ -367,11 +370,10 @@ class SolicitacaoController extends Controller
 
         $pdf->setPaper('a4', 'portrait');
 
-        // Salva o PDF no storage
         $filename = 'solicitacao-' . time() . '-' . uniqid() . '.pdf';
         $path = 'SolicitacaoAnexos/' . $filename;
 
-        \Storage::disk('public')->put($path, $pdf->output());
+        Storage::disk('public')->put($path, $pdf->output());
 
         return $path;
     }
