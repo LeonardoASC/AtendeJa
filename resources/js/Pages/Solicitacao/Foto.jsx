@@ -19,6 +19,7 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
     const [previewUrl, setPreviewUrl] = useState(null);
     const [cameraError, setCameraError] = useState(null);
     const [isStarting, setIsStarting] = useState(false);
+    const [showTermsModal, setShowTermsModal] = useState(false);
 
     const { data, setData, post, processing, errors } = useForm({
         ...dadosSolicitacao,
@@ -113,7 +114,7 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
     };
 
 
-    const handleSubmit = (e) => {
+    const handleConfirmPhoto = (e) => {
         e.preventDefault();
 
         if (!data.foto) {
@@ -121,6 +122,11 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
             return;
         }
 
+        // Abre o modal de termos de uso
+        setShowTermsModal(true);
+    };
+
+    const handleSubmit = () => {
         const formData = new FormData();
 
         Object.entries(data).forEach(([key, value]) => {
@@ -244,7 +250,7 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
                                 </div>
 
                                 <div className="flex flex-col gap-2 px-4">
-                                    <form onSubmit={handleSubmit} className="space-y-6">
+                                    <form onSubmit={handleConfirmPhoto} className="space-y-6">
                                         <div className="bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-md rounded-3xl px-8 py-4 ring-2 ring-white/30 shadow-2xl space-y-6 border border-white/10">
                                             <div className="flex items-center justify-between mb-6">
                                                 <div className="flex items-center gap-3">
@@ -417,6 +423,101 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
                         </div>
                     </div>
                 </motion.div>
+
+                {showTermsModal && (
+                    <motion.div
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                    >
+                        <div
+                            className="absolute inset-0 bg-black/80"
+                            onClick={() => setShowTermsModal(false)}
+                        />
+
+                        <motion.div
+                            className="relative w-full max-w-3xl max-h-[90vh] bg-white rounded-lg shadow-2xl overflow-hidden flex flex-col"
+                            initial={{ scale: 0.95, y: 20 }}
+                            animate={{ scale: 1, y: 0 }}
+                            transition={{ duration: 0.2 }}
+                        >
+                            <div className="bg-white px-6 py-5 border-b border-gray-200">
+                                <h2 className="text-xl font-semibold text-gray-800 text-center">
+                                    Termo de uso do da solicitação
+                                </h2>
+                            </div>
+
+                            <div className="flex-1 overflow-y-auto px-6 py-6 bg-white">
+                                <div className="text-gray-700 space-y-4">
+                                    <div className="space-y-4 text-sm leading-relaxed">
+                                        <p className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm leading-relaxed text-gray-800">
+                                            <span className="font-semibold text-gray-900">Eu,</span>{" "}
+                                            <span className="font-semibold text-gray-900">{dadosSolicitacao.nome}</span>, portador do CPF nº{" "}
+                                            <span className="font-medium text-gray-900">{dadosSolicitacao.cpf}</span>, matrícula{" "}
+                                            <span className="font-medium text-gray-900">{dadosSolicitacao.matricula}</span>, na qualidade de{" "}
+                                            <span className="font-medium text-gray-900">
+                                                Servidor Inativo (aposentado e/ou pensionista)
+                                            </span>
+                                            , venho requerer a antecipação do recebimento da{" "}
+                                            <span className="font-medium text-gray-900">1ª parcela do Abono Anual (13º salário)</span>, na
+                                            forma da lei.
+                                        </p>
+
+                                        <p>
+                                            Declaro ainda ciência de que essa solicitação passará pela análise de setor competente, não
+                                            implicando em lançamento em folha de forma automática, ficando a meu critério entrar em
+                                            contato com o PREVMOC a partir da segunda quinzena do mês vigente para verificação do status
+                                            da minha solicitação.
+                                        </p>
+
+                                        <p>
+                                            Estou ciente de que os dados coletados serão tratados com segurança, respeitando os
+                                            princípios da finalidade, adequação e necessidade, e não serão compartilhados com terceiros
+                                            estranhos ao processo, exceto por obrigação legal ou regulatória.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div className="bg-white px-6 py-4 border-t border-gray-200">
+                                <div className="flex flex-col-reverse sm:flex-row gap-3 justify-center">
+                                    <motion.button
+                                        type="button"
+                                        onClick={() => setShowTermsModal(false)}
+                                        className="px-8 py-2.5 rounded-md text-base font-medium text-white bg-red-600 hover:bg-red-700 transition-colors shadow-sm"
+                                        whileHover={{ scale: 1.01 }}
+                                        whileTap={{ scale: 0.99 }}
+                                    >
+                                        Recusar
+                                    </motion.button>
+
+                                    <motion.button
+                                        type="button"
+                                        onClick={handleSubmit}
+                                        disabled={processing}
+                                        className="px-8 py-2.5 rounded-md text-base font-medium text-white bg-green-600 hover:bg-green-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                        whileHover={{ scale: 1.01 }}
+                                        whileTap={{ scale: 0.99 }}
+                                    >
+                                        {processing ? (
+                                            <span className="inline-flex items-center gap-2">
+                                                <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                                </svg>
+                                                Enviando...
+                                            </span>
+                                        ) : (
+                                            'FINALIZAR SOLICITAÇÃO'
+                                        )}
+                                    </motion.button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
 
             </div>
         </>
