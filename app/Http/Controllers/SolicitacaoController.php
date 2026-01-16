@@ -285,6 +285,7 @@ class SolicitacaoController extends Controller
     {
         $solicitacoesPendentes = Solicitacao::with(['tipoAtendimento', 'admin'])
             ->where('status', 'pendente')
+            ->whereNotNull('onedoc_error')
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -293,9 +294,12 @@ class SolicitacaoController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
+        $filaJobs = app('queue')->size();
+
         return Inertia::render('Autenticado/Solicitacao/Index', [
             'solicitacoesPendentes' => $solicitacoesPendentes,
             'solicitacoesEnviadas' => $solicitacoesEnviadas,
+            'filaJobs' => $filaJobs,
         ]);
     }
 

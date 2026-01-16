@@ -43,7 +43,7 @@ class HandleInertiaRequests extends Middleware
                 'success' => fn() => $request->session()->get('success'),
                 'error' => fn() => $request->session()->get('error'),
             ],
-            'solicitacoesPendentesCount' => \App\Models\Solicitacao::where('status', 'pendente')->count(),
+            'solicitacoesPendentesCount' => \App\Models\Solicitacao::where('status', 'pendente')->whereNotNull('onedoc_error')->count(),
         ]);
     }
 }

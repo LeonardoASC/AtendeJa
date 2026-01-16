@@ -19,7 +19,12 @@ class OpenOneDocProtocolJob implements ShouldQueue
     /**
      * Número de tentativas antes de marcar como falho
      */
-    public $tries = 1;
+    public $tries = 3;
+
+    /**
+     * Backoff em segundos entre tentativas (exponencial)
+     */
+    public $backoff = [60, 300, 900]; // 1 min, 5 min, 15 min
 
     /**
      * Timeout em segundos
@@ -48,6 +53,11 @@ class OpenOneDocProtocolJob implements ShouldQueue
             $service->openProtocolFromSolicitacao($solicitacao);
             $solicitacao->status = 'enviado';
             $solicitacao->save();
+
+            Log::info('OpenOneDocProtocolJob: Protocolo aberto com sucesso', [
+                'solicitacao_id' => $solicitacao->id,
+                'onedoc_numero' => $solicitacao->onedoc_numero,
+            ]);
         } catch (Throwable $e) {
             $solicitacao->onedoc_status = 'erro';
             $solicitacao->onedoc_error = $e->getMessage();
@@ -56,9 +66,31 @@ class OpenOneDocProtocolJob implements ShouldQueue
             Log::error('Erro ao abrir protocolo no 1Doc', [
                 'solicitacao_id' => $solicitacao->id,
                 'error' => $e->getMessage(),
+                'tentativa' => $this->attempts(),
+                'max_tentativas' => $this->tries,
             ]);
 
+            // Relança a exceção para que o Laravel tente novamente
             throw $e;
+        }
+    }
+
+    /**
+     * Chamado quando o job falha após todas as tentativas
+     */
+    public function failed(Throwable $exception): void
+    {
+        $solicitacao = Solicitacao::find($this->solicitacaoId);
+
+        if ($solicitacao) {
+            $solicitacao->onedoc_status = 'falha_permanente';
+            $solicitacao->onedoc_error = 'Falha após ' . $this->tries . ' tentativas: ' . $exception->getMessage();
+            $solicitacao->save();
+
+            Log::error('OpenOneDocProtocolJob: Falha permanente após todas as tentativas', [
+                'solicitacao_id' => $solicitacao->id,
+                'error' => $exception->getMessage(),
+            ]);
         }
     }
 }

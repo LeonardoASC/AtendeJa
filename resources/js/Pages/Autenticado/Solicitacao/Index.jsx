@@ -17,7 +17,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import Modal from '@/Components/ModalForm'
 
 export default function Index() {
-    const { solicitacoesPendentes = [], solicitacoesEnviadas = [] } = usePage().props || {}
+    const { solicitacoesPendentes = [], solicitacoesEnviadas = [], filaJobs = 0 } = usePage().props || {}
     const [activeTab, setActiveTab] = useState('pendente')
     const [selectedSolicitacao, setSelectedSolicitacao] = useState(null)
 
@@ -63,13 +63,23 @@ export default function Index() {
 
             <div className="min-h-screen bg-gradient-to-br from-neutral-800 via-neutral-900 to-black py-12">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <header className="mb-8">
+                    <header className="mb-8 flex items-center justify-between">
                         <div>
                             <h1 className="text-2xl font-bold tracking-tight text-white">Solicitações</h1>
-                            <p className="text-sm text-neutral-300/80">
-                                Gerencie as solicitações recebidas.
+                            <p className="text-sm max-w-md text-neutral-300/80">
+                                Solicitacões aqui apenas sao gerenciadas pelo operador quando ha falha no envio automático para 1DOC.
                             </p>
                         </div>
+                        {filaJobs > 0 && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="mt-4 max-w-md inline-flex items-center gap-2 rounded-full bg-green-500/20 px-3 py-1 text-sm font-medium text-green-300"
+                            >
+                                <ClockIcon className="h-4 w-4 animate-pulse" />
+                                Há {filaJobs} {filaJobs < 2 ? 'solicitação' : 'solicitações'} na fila de envio automático para 1DOC.
+                            </motion.div>
+                        )}
                     </header>
 
                     <div className="mb-6 flex gap-2 rounded-2xl bg-white/5 p-1 ring-1 ring-white/10 backdrop-blur">
