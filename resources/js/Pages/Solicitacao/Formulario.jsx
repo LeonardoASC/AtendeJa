@@ -53,15 +53,12 @@ export default function Formulario({ tipoAtendimento }) {
                 })
                 .then(({ data: json }) => {
                     const first = Array.isArray(json?.data) ? json.data[0] : null;
-                    console.log('Resposta da busca por CPF:', json);
                     if (first?.NOME) {
-                        
-                        if (tipoAtendimento.id === 3 && !first.EMAIL) {
+                        if (!first.EMAIL) {
                             setPessoa(null);
                             setLookupError('E-mail não cadastrado. Por favor, dirija-se à recepção para realizar a atualização cadastral antes de fazer a solicitação.');
                             return;
                         }
-
                         setPessoa(first);
                         setData({
                             ...data,
@@ -293,7 +290,7 @@ export default function Formulario({ tipoAtendimento }) {
                                                         disabled={processing || buscando || !pessoa}
                                                         className="py-3 px-6 rounded-xl bg-white border-4 border-double border-sky-700 font-bold text-teal-700 text-lg hover:bg-teal-600 hover:text-white hover:border-white transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-white/40 shadow-2xl hover:shadow-3xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                                                     >
-                                                        {processing ? 'Enviando...' : 'Enviar Solicitação'}
+                                                        {processing ? 'Enviando...' : 'Continuar'}
                                                     </button>
                                                 </div>
 

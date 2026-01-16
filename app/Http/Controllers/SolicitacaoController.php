@@ -67,7 +67,7 @@ class SolicitacaoController extends Controller
             'dados_formulario' => 'nullable|array',
         ]);
 
-        if ($validated['tipo_atendimento_id'] == 3 && empty($validated['email'])) {
+        if (empty($validated['email'])) {
             return back()->withErrors([
                 'email' => 'E-mail não cadastrado. Por favor, dirija-se à recepção para realizar a atualização cadastral antes de fazer a solicitação.'
             ])->withInput();

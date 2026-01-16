@@ -234,7 +234,7 @@ export default function Assinatura({ dadosSolicitacao, tipoAtendimento }) {
                                                 <button
                                                     type="button"
                                                     onClick={clearSignature}
-                                                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 text-white text-sm font-semibold hover:bg-white/20 transition-all ring-1 ring-white/20"
+                                                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/30 text-white text-sm font-semibold hover:bg-white/20 transition-all ring-1 ring-white/20"
                                                 >
                                                     <ArrowPathIcon className="h-5 w-5" />
                                                     Limpar
@@ -299,7 +299,7 @@ export default function Assinatura({ dadosSolicitacao, tipoAtendimento }) {
                                                             Enviando...
                                                         </span>
                                                     ) : (
-                                                        <span className="inline-flex items-center gap-2">
+                                                        <span className="flex items-center justify-center gap-2">
                                                             <CheckCircleIcon className="h-7 w-7" />
                                                             Confirmar assinatura
                                                         </span>
