@@ -154,7 +154,7 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
         <>
             <Head title="Foto - Solicitação" />
 
-            <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-r from-blue-900 via-cyan-700 to-teal-500 py-8 px-4">
+            <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-r from-blue-900 via-cyan-700 to-teal-500 p-4">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -368,53 +368,41 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
                                                 </motion.div>
                                             )}
 
-                                            <div className="flex justify-between gap-4">
+
+                                            <div className="flex justify-end gap-4">
                                                 <motion.button
                                                     type="button"
-                                                    onClick={switchCamera}
-                                                    disabled={processing || isStarting}
-                                                    className="flex items-center px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500/20 to-teal-500/20 text-white text-sm font-semibold hover:from-cyan-500/30 hover:to-teal-500/30 transition-all ring-2 ring-white/30 disabled:opacity-50 shadow-lg hover:shadow-xl"
-                                                    title="Trocar câmera"
+                                                    onClick={() => window.history.back()}
+                                                    disabled={processing}
+                                                    className="py-3 px-6 rounded-xl text-lg font-semibold text-white/80 hover:text-white hover:bg-white/15 backdrop-blur transition-all hover:scale-105 text-center border-2 border-white/30 disabled:opacity-50 shadow-lg"
                                                     whileHover={{ scale: 1.05 }}
                                                     whileTap={{ scale: 0.95 }}
                                                 >
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-switch-camera-icon lucide-switch-camera"><path d="M11 19H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5" /><path d="M13 5h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-5" /><circle cx="12" cy="12" r="3" /><path d="m18 22-3-3 3-3" /><path d="m6 2 3 3-3 3" /></svg>
+                                                    Voltar
                                                 </motion.button>
-                                                <div className="flex justify-end gap-4">
-                                                    <motion.button
-                                                        type="button"
-                                                        onClick={() => window.history.back()}
-                                                        disabled={processing}
-                                                        className="py-3 px-6 rounded-xl text-lg font-semibold text-white/80 hover:text-white hover:bg-white/15 backdrop-blur transition-all hover:scale-105 text-center border-2 border-white/30 disabled:opacity-50 shadow-lg"
-                                                        whileHover={{ scale: 1.05 }}
-                                                        whileTap={{ scale: 0.95 }}
-                                                    >
-                                                        Voltar
-                                                    </motion.button>
 
-                                                    <motion.button
-                                                        type="submit"
-                                                        disabled={processing || !data.foto}
-                                                        className="py-2 px-6 rounded-xl bg-gradient-to-r from-white to-cyan-100 border-4 border-double border-sky-700 font-bold text-teal-700 text-xl hover:from-cyan-100 hover:to-white hover:border-white transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-white/40 shadow-2xl hover:shadow-3xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                                                        whileHover={{ scale: 1.05 }}
-                                                        whileTap={{ scale: 0.95 }}
-                                                    >
-                                                        {processing ? (
-                                                            <span className="flex items-center gap-2">
-                                                                <svg className="animate-spin h-6 w-6" fill="none" viewBox="0 0 24 24">
-                                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                                                                </svg>
-                                                                Enviando...
-                                                            </span>
-                                                        ) : (
-                                                            <span className="flex items-center gap-2">
-                                                                <CheckCircleIcon className="h-7 w-7" />
-                                                                Confirmar foto
-                                                            </span>
-                                                        )}
-                                                    </motion.button>
-                                                </div>
+                                                <motion.button
+                                                    type="submit"
+                                                    disabled={processing || !data.foto}
+                                                    className="py-2 px-6 rounded-xl bg-gradient-to-r from-white to-cyan-100 border-4 border-double border-sky-700 font-bold text-teal-700 text-xl hover:from-cyan-100 hover:to-white hover:border-white transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-white/40 shadow-2xl hover:shadow-3xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                                                    whileHover={{ scale: 1.05 }}
+                                                    whileTap={{ scale: 0.95 }}
+                                                >
+                                                    {processing ? (
+                                                        <span className="flex items-center gap-2">
+                                                            <svg className="animate-spin h-6 w-6" fill="none" viewBox="0 0 24 24">
+                                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                                            </svg>
+                                                            Enviando...
+                                                        </span>
+                                                    ) : (
+                                                        <span className="flex items-center gap-2">
+                                                            <CheckCircleIcon className="h-7 w-7" />
+                                                            Confirmar foto
+                                                        </span>
+                                                    )}
+                                                </motion.button>
                                             </div>
                                         </div>
                                     </form>
