@@ -13,7 +13,7 @@ export default function Show({ senha }) {
             <Head title="Senha Gerada" />
 
 
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-cyan-700 to-teal-600 p-6">
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-cyan-700 to-teal-600 p-2">
                 <div className="pointer-events-none fixed inset-0 opacity-30">
                     <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-cyan-400 blur-3xl" />
                     <div className="absolute -bottom-16 -right-16 h-72 w-72 rounded-full bg-teal-400 blur-3xl" />
@@ -46,7 +46,7 @@ export default function Show({ senha }) {
                     <div className="px-6 py-6 md:px-10 md:pb-8 md:pt-0">
                         <div className="text-center space-y-2 mb-6">
                             <div className="flex items-center justify-center">
-                                <div className="h-16 w-16 rounded-full bg-white/90 p-2 ring-2 ring-white/40 shadow-xl">
+                                <div className="h-14 w-14 rounded-full bg-white/90 p-2 ring-2 ring-white/40 shadow-xl">
                                     <img
                                         src="https://prevmoc.mg.gov.br/imagens/logo/logo-principal.png"
                                         alt="Logo PREVMOC"
@@ -56,7 +56,7 @@ export default function Show({ senha }) {
                             </div>
 
                             <div>
-                                <h1 className="text-3xl md:text-4xl font-extrabold text-white">
+                                <h1 className="text-3xl font-extrabold text-white">
                                     ✓ Senha Gerada com Sucesso!
                                 </h1>
                                 <p className="text-sm text-white/90">
@@ -66,8 +66,8 @@ export default function Show({ senha }) {
                         </div>
 
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-                            <div className="space-y-4">
-                                <div className="rounded-xl bg-white/15 backdrop-blur ring-1 ring-white/30 p-5 text-left space-y-3">
+                            <div className="space-y-2">
+                                <div className="rounded-xl bg-white/15 backdrop-blur ring-1 ring-white/30 px-4 py-2 text-left space-y-3">
                                     <div className="flex items-center gap-2 mb-2">
                                         <div className="h-8 w-8 rounded-full bg-cyan-400/20 flex items-center justify-center">
                                             <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -102,7 +102,7 @@ export default function Show({ senha }) {
                                 </div>
 
                                 <div className="grid grid-cols-1 gap-3 text-white">
-                                    <div className="rounded-xl bg-white/15 backdrop-blur ring-1 ring-white/25 p-4 shadow-lg text-left">
+                                    <div className="rounded-xl bg-white/15 backdrop-blur ring-1 ring-white/25 px-4 py-2 shadow-lg text-left">
                                         <div className="flex items-center gap-2 mb-2">
                                             <svg className="w-5 h-5 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -112,7 +112,7 @@ export default function Show({ senha }) {
                                         <p className="text-lg font-bold">{senha?.tipo}</p>
                                     </div>
 
-                                    <div className="rounded-xl bg-white/15 backdrop-blur ring-1 ring-white/25 p-4 shadow-lg text-left">
+                                    <div className="rounded-xl bg-white/15 backdrop-blur ring-1 ring-white/25 px-4 py-2 shadow-lg text-left">
                                         <div className="flex items-center gap-2 mb-2">
                                             <svg className="w-5 h-5 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
@@ -139,7 +139,7 @@ export default function Show({ senha }) {
                                         <p className="text-xs uppercase tracking-widest text-white/80 font-semibold">
                                             Atendimento para
                                         </p>
-                                        <h2 className="text-2xl md:text-5xl font-extrabold text-white drop-shadow-lg leading-tight">
+                                        <h2 className="text-2xl md:text-4xl font-extrabold text-white drop-shadow-lg leading-tight">
                                             {senha?.nome}
                                         </h2>
                                     </div>
