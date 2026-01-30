@@ -27,6 +27,20 @@ export default function Formulario({ tipoAtendimento }) {
         dados_formulario: {},
     });
 
+    const handleDigit = (digit) => {
+        if (data.cpf.length < 11) {
+            setData('cpf', data.cpf + digit);
+        }
+    };
+
+    const handleBackspace = () => {
+        setData('cpf', data.cpf.slice(0, -1));
+    };
+
+    const handleClear = () => {
+        setData('cpf', '');
+    };
+
     const formatCPF = (value) => {
         const numbers = value.replace(/\D/g, '');
         return numbers.slice(0, 11);
@@ -185,19 +199,58 @@ export default function Formulario({ tipoAtendimento }) {
                                                 </h3>
 
                                                 <div>
-                                                    <label htmlFor="cpf" className="block text-white font-semibold mb-1">
-                                                        CPF *
-                                                    </label>
-                                                    <input
-                                                        id="cpf"
-                                                        type="text"
-                                                        value={data.cpf}
-                                                        onChange={(e) => setData('cpf', formatCPF(e.target.value))}
-                                                        className="w-full px-4 py-2 rounded-lg bg-white/90 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/50 transition"
-                                                        placeholder="Digite apenas os números do CPF"
-                                                        maxLength={11}
-                                                        required
-                                                    />
+                                                    <div className='flex items-center justify-between'>
+                                                        <label htmlFor="cpf" className="text-white font-semibold text-sm py-2">
+                                                            CPF*
+                                                        </label>
+                                                        <div className="flex items-center justify-between text-white text-lg font-mono bg-white/10 rounded-lg  flex-1 ml-4">
+                                                            <span className="flex-1 text-center text-xl">{formatCPFDisplay(data.cpf)}</span>
+                                                            {data.cpf.length === 11 && (
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={handleClear}
+                                                                    className="ml-2 text-sky-300 bg-sky-600 rounded-lg px-2 hover:text-sky-100 text-lg font-bold"
+                                                                >
+                                                                    Limpar
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                    {data.cpf.length < 11 && (
+                                                        <div className="grid grid-cols-3 gap-2 mt-2">
+                                                            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
+                                                                <button
+                                                                    type="button"
+                                                                    key={n}
+                                                                    onClick={() => handleDigit(n.toString())}
+                                                                    className="py-4 rounded-lg text-xl font-semibold bg-white/10 text-white hover:bg-white/20 backdrop-blur-md transition-all hover:scale-105"
+                                                                >
+                                                                    {n}
+                                                                </button>
+                                                            ))}
+                                                            <button
+                                                                type="button"
+                                                                onClick={handleBackspace}
+                                                                className="py-4 rounded-lg text-lg font-semibold bg-yellow-500/20 text-yellow-100 hover:bg-yellow-500/30 backdrop-blur-md transition-all hover:scale-105"
+                                                            >
+                                                                ⌫
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => handleDigit('0')}
+                                                                className="py-4 rounded-lg text-xl font-semibold bg-white/10 text-white hover:bg-white/20 backdrop-blur-md transition-all hover:scale-105"
+                                                            >
+                                                                0
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                onClick={handleClear}
+                                                                className="py-4 rounded-lg text-lg font-semibold bg-red-500/20 text-red-100 hover:bg-red-500/30 backdrop-blur-md transition-all hover:scale-105"
+                                                            >
+                                                                C
+                                                            </button>
+                                                        </div>
+                                                    )}
                                                     {errors.cpf && <p className="mt-1 text-sm text-red-300">{errors.cpf}</p>}
                                                     {errors.email && (
                                                         <div className="mt-2 p-3 bg-yellow-500/30 backdrop-blur-md rounded-lg border border-yellow-400/50">

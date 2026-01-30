@@ -163,7 +163,7 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
                 >
                     <div className="p-4 md:px-6">
                         <div className="">
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mb-8">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start ">
                                 <div className="text-left space-y-4 px-4">
                                     <div>
                                         <p className="text-2xl lg:text-2xl font-extrabold text-white leading-tight text-center">Tire uma</p>
@@ -198,7 +198,7 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
                                                     2
                                                 </span>
                                                 <p className="">
-                                                    Certifique-se de boa iluminação
+                                                    Certifique-se de estar com documento em mãos para identificação
                                                 </p>
                                             </div>
 
@@ -262,25 +262,12 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
                                                 </div>
 
                                                 <div className="flex gap-3">
-                                                    <motion.button
-                                                        type="button"
-                                                        onClick={switchCamera}
-                                                        disabled={processing || isStarting}
-                                                        className="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-cyan-500/20 to-teal-500/20 text-white text-sm font-semibold hover:from-cyan-500/30 hover:to-teal-500/30 transition-all ring-2 ring-white/30 disabled:opacity-50 shadow-lg hover:shadow-xl"
-                                                        title="Trocar câmera"
-                                                        whileHover={{ scale: 1.05 }}
-                                                        whileTap={{ scale: 0.95 }}
-                                                    >
-                                                        <ArrowsRightLeftIcon className="h-5 w-5" />
-                                                        Trocar
-                                                    </motion.button>
-
                                                     {previewUrl ? (
                                                         <motion.button
                                                             type="button"
                                                             onClick={resetPhoto}
                                                             disabled={processing}
-                                                            className="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-red-500/20 to-pink-500/20 text-white text-sm font-semibold hover:from-red-500/30 hover:to-pink-500/30 transition-all ring-2 ring-white/30 disabled:opacity-50 shadow-lg hover:shadow-xl"
+                                                            className="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-red-500/20 to-pink-500/20 text-white  font-semibold hover:from-red-500/30 hover:to-pink-500/30 transition-all ring-2 ring-white/30 disabled:opacity-50 shadow-lg hover:shadow-xl"
                                                             whileHover={{ scale: 1.05 }}
                                                             whileTap={{ scale: 0.95 }}
                                                         >
@@ -292,7 +279,7 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
                                                             type="button"
                                                             onClick={capture}
                                                             disabled={processing || isStarting || !!cameraError}
-                                                            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-white to-cyan-100 text-teal-700 text-sm font-bold hover:from-cyan-100 hover:to-white transition-all ring-2 ring-white/50 disabled:opacity-50 shadow-lg hover:shadow-xl"
+                                                            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-white to-cyan-100 text-teal-700  font-bold hover:from-cyan-100 hover:to-white transition-all ring-2 ring-white/50 disabled:opacity-50 shadow-lg hover:shadow-xl"
                                                             whileHover={{ scale: 1.05 }}
                                                             whileTap={{ scale: 0.95 }}
                                                         >
@@ -360,7 +347,7 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
 
                                             {cameraError && (
                                                 <motion.div
-                                                    className="bg-gradient-to-r from-red-500/20 to-pink-500/20 backdrop-blur-md rounded-xl p-4 border-l-4 border-red-400 shadow-lg"
+                                                    className="bg-gradient-to-r from-red-500/20 to-pink-500/20 backdrop-blur-md rounded-xl p-2 border-l-4 border-red-400 shadow-lg"
                                                     initial={{ opacity: 0, x: -20 }}
                                                     animate={{ opacity: 1, x: 0 }}
                                                 >
@@ -381,40 +368,53 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
                                                 </motion.div>
                                             )}
 
-                                            <div className="flex justify-end gap-4 pt-4">
+                                            <div className="flex justify-between gap-4">
                                                 <motion.button
                                                     type="button"
-                                                    onClick={() => window.history.back()}
-                                                    disabled={processing}
-                                                    className="py-3 px-6 rounded-xl text-lg font-semibold text-white/80 hover:text-white hover:bg-white/15 backdrop-blur transition-all hover:scale-105 text-center border-2 border-white/30 disabled:opacity-50 shadow-lg"
+                                                    onClick={switchCamera}
+                                                    disabled={processing || isStarting}
+                                                    className="flex items-center px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500/20 to-teal-500/20 text-white text-sm font-semibold hover:from-cyan-500/30 hover:to-teal-500/30 transition-all ring-2 ring-white/30 disabled:opacity-50 shadow-lg hover:shadow-xl"
+                                                    title="Trocar câmera"
                                                     whileHover={{ scale: 1.05 }}
                                                     whileTap={{ scale: 0.95 }}
                                                 >
-                                                    Voltar
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-switch-camera-icon lucide-switch-camera"><path d="M11 19H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5" /><path d="M13 5h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-5" /><circle cx="12" cy="12" r="3" /><path d="m18 22-3-3 3-3" /><path d="m6 2 3 3-3 3" /></svg>
                                                 </motion.button>
+                                                <div className="flex justify-end gap-4">
+                                                    <motion.button
+                                                        type="button"
+                                                        onClick={() => window.history.back()}
+                                                        disabled={processing}
+                                                        className="py-3 px-6 rounded-xl text-lg font-semibold text-white/80 hover:text-white hover:bg-white/15 backdrop-blur transition-all hover:scale-105 text-center border-2 border-white/30 disabled:opacity-50 shadow-lg"
+                                                        whileHover={{ scale: 1.05 }}
+                                                        whileTap={{ scale: 0.95 }}
+                                                    >
+                                                        Voltar
+                                                    </motion.button>
 
-                                                <motion.button
-                                                    type="submit"
-                                                    disabled={processing || !data.foto}
-                                                    className="py-2 px-6 rounded-xl bg-gradient-to-r from-white to-cyan-100 border-4 border-double border-sky-700 font-bold text-teal-700 text-xl hover:from-cyan-100 hover:to-white hover:border-white transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-white/40 shadow-2xl hover:shadow-3xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                                                    whileHover={{ scale: 1.05 }}
-                                                    whileTap={{ scale: 0.95 }}
-                                                >
-                                                    {processing ? (
-                                                        <span className="flex items-center gap-2">
-                                                            <svg className="animate-spin h-6 w-6" fill="none" viewBox="0 0 24 24">
-                                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                                                            </svg>
-                                                            Enviando...
-                                                        </span>
-                                                    ) : (
-                                                        <span className="flex items-center gap-2">
-                                                            <CheckCircleIcon className="h-7 w-7" />
-                                                            Confirmar foto
-                                                        </span>
-                                                    )}
-                                                </motion.button>
+                                                    <motion.button
+                                                        type="submit"
+                                                        disabled={processing || !data.foto}
+                                                        className="py-2 px-6 rounded-xl bg-gradient-to-r from-white to-cyan-100 border-4 border-double border-sky-700 font-bold text-teal-700 text-xl hover:from-cyan-100 hover:to-white hover:border-white transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-white/40 shadow-2xl hover:shadow-3xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                                                        whileHover={{ scale: 1.05 }}
+                                                        whileTap={{ scale: 0.95 }}
+                                                    >
+                                                        {processing ? (
+                                                            <span className="flex items-center gap-2">
+                                                                <svg className="animate-spin h-6 w-6" fill="none" viewBox="0 0 24 24">
+                                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                                                </svg>
+                                                                Enviando...
+                                                            </span>
+                                                        ) : (
+                                                            <span className="flex items-center gap-2">
+                                                                <CheckCircleIcon className="h-7 w-7" />
+                                                                Confirmar foto
+                                                            </span>
+                                                        )}
+                                                    </motion.button>
+                                                </div>
                                             </div>
                                         </div>
                                     </form>
