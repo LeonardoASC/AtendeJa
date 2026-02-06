@@ -287,12 +287,12 @@ class SolicitacaoController extends Controller
             ->where('status', 'pendente')
             ->whereNotNull('onedoc_error')
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate(10);
 
         $solicitacoesEnviadas = Solicitacao::with(['tipoAtendimento', 'admin'])
             ->where('status', 'enviado')
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate(10);
 
         $filaJobs = app('queue')->size();
 

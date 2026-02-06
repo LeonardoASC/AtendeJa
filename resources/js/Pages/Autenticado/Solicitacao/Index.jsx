@@ -17,16 +17,25 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import Modal from '@/Components/ModalForm'
 
 export default function Index() {
-    const { solicitacoesPendentes = [], solicitacoesEnviadas = [], filaJobs = 0 } = usePage().props || {}
+    const { solicitacoesPendentes = { data: [] }, solicitacoesEnviadas = { data: [] }, filaJobs = 0 } = usePage().props || {}
     const [activeTab, setActiveTab] = useState('pendente')
     const [selectedSolicitacao, setSelectedSolicitacao] = useState(null)
 
     const tabs = [
-        { id: 'pendente', label: 'Pendentes', count: solicitacoesPendentes.length },
-        { id: 'enviado', label: 'Enviados', count: solicitacoesEnviadas.length }
+        { id: 'pendente', label: 'Pendentes', count: solicitacoesPendentes?.total || 0 },
+        { id: 'enviado', label: 'Enviados', count: solicitacoesEnviadas?.total || 0 }
     ]
 
-    const currentList = activeTab === 'pendente' ? solicitacoesPendentes : solicitacoesEnviadas
+    const currentList = activeTab === 'pendente' ? solicitacoesPendentes?.data || [] : solicitacoesEnviadas?.data || []
+    const currentPagination = activeTab === 'pendente' ? solicitacoesPendentes : solicitacoesEnviadas
+
+    const handlePageChange = (url) => {
+        if (!url) return
+        router.get(url, {}, {
+            preserveState: true,
+            preserveScroll: true,
+        })
+    }
 
     const formatDate = (dateString) => {
         if (!dateString) return '-'
@@ -104,7 +113,7 @@ export default function Index() {
                     </div>
 
                     <section className="mt-6">
-                        {currentList.length === 0 ? (
+                        {currentList?.length === 0 ? (
                             <div className="rounded-2xl border border-dashed border-white/15 bg-white/5 p-10 text-center text-slate-200 backdrop-blur">
                                 <p>
                                     Nenhuma solicitação{' '}
@@ -141,7 +150,7 @@ export default function Index() {
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-white/10">
-                                            {currentList.map((item) => (
+                                            {currentList?.map((item) => (
                                                 <tr key={item.id} className="hover:bg-white/5">
                                                     <td className="px-6 py-4 text-sm font-medium text-white">
                                                         {item.nome}
@@ -254,6 +263,71 @@ export default function Index() {
                                         </div>
                                     ))}
                                 </div>
+
+                                {currentPagination?.links && currentPagination.links.length > 3 && (
+                                    <div className="border-t border-white/10 bg-white/[0.02] px-6 py-4">
+                                        <div className="flex items-center justify-between">
+                                            <div className="text-sm text-neutral-400">
+                                                Mostrando{' '}
+                                                <span className="font-medium text-white">{currentPagination.from || 0}</span>
+                                                {' '}até{' '}
+                                                <span className="font-medium text-white">{currentPagination.to || 0}</span>
+                                                {' '}de{' '}
+                                                <span className="font-medium text-white">{currentPagination.total || 0}</span>
+                                                {' '}resultados
+                                            </div>
+
+                                            <div className="flex gap-1">
+                                                {currentPagination.links.map((link, index) => {
+                                                    if (index === 0) {
+                                                        return (
+                                                            <button
+                                                                key={index}
+                                                                onClick={() => handlePageChange(link.url)}
+                                                                disabled={!link.url}
+                                                                className={`px-3 py-1.5 text-sm rounded-lg transition-all ${!link.url
+                                                                        ? 'text-neutral-600 cursor-not-allowed'
+                                                                        : 'text-neutral-300 hover:bg-white/10 hover:text-white'
+                                                                    }`}
+                                                            >
+                                                                ← Anterior
+                                                            </button>
+                                                        )
+                                                    }
+
+                                                    if (index === currentPagination.links.length - 1) {
+                                                        return (
+                                                            <button
+                                                                key={index}
+                                                                onClick={() => handlePageChange(link.url)}
+                                                                disabled={!link.url}
+                                                                className={`px-3 py-1.5 text-sm rounded-lg transition-all ${!link.url
+                                                                        ? 'text-neutral-600 cursor-not-allowed'
+                                                                        : 'text-neutral-300 hover:bg-white/10 hover:text-white'
+                                                                    }`}
+                                                            >
+                                                                Próximo →
+                                                            </button>
+                                                        )
+                                                    }
+
+                                                    return (
+                                                        <button
+                                                            key={index}
+                                                            onClick={() => handlePageChange(link.url)}
+                                                            disabled={link.active}
+                                                            className={`px-3 py-1.5 text-sm rounded-lg transition-all ${link.active
+                                                                    ? 'bg-blue-500 text-white font-medium'
+                                                                    : 'text-neutral-300 hover:bg-white/10 hover:text-white'
+                                                                }`}
+                                                            dangerouslySetInnerHTML={{ __html: link.label }}
+                                                        />
+                                                    )
+                                                })}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </section>
