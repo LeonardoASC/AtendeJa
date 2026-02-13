@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Jobs\OpenOneDocProtocolJob;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SolicitacaoConfirmadaMail;
 
 class SolicitacaoController extends Controller
 {
@@ -189,6 +191,11 @@ class SolicitacaoController extends Controller
             ]);
 
             OpenOneDocProtocolJob::dispatch($solicitacao->id);
+
+            if (!empty($solicitacao->email)) {
+                $solicitacao->load('tipoAtendimento');
+                Mail::to($solicitacao->email)->send(new SolicitacaoConfirmadaMail($solicitacao));
+            }
 
             session()->forget('dados_solicitacao');
 
