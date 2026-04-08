@@ -11,15 +11,27 @@ import {
     PhoneIcon,
     IdentificationIcon,
     EyeIcon,
-    ArrowDownTrayIcon
+    FunnelIcon
 } from '@heroicons/react/24/outline'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import Modal from '@/Components/ModalForm'
 
 export default function Index() {
-    const { solicitacoesPendentes = { data: [] }, solicitacoesEnviadas = { data: [] }, filaJobs = 0 } = usePage().props || {}
+    const {
+        solicitacoesPendentes = { data: [] },
+        solicitacoesEnviadas = { data: [] },
+        tiposAtendimento = [],
+        filtros = {},
+        filaJobs = 0
+    } = usePage().props || {}
     const [activeTab, setActiveTab] = useState('pendente')
     const [selectedSolicitacao, setSelectedSolicitacao] = useState(null)
+    const [filtrosForm, setFiltrosForm] = useState({
+        busca: filtros.busca || '',
+        tipo_atendimento_id: filtros.tipo_atendimento_id || '',
+        data_inicio: filtros.data_inicio || '',
+        data_fim: filtros.data_fim || '',
+    })
 
     const tabs = [
         { id: 'pendente', label: 'Pendentes', count: solicitacoesPendentes?.total || 0 },
@@ -34,6 +46,40 @@ export default function Index() {
         router.get(url, {}, {
             preserveState: true,
             preserveScroll: true,
+        })
+    }
+
+    const atualizarFiltro = (campo, valor) => {
+        setFiltrosForm((prev) => ({ ...prev, [campo]: valor }))
+    }
+
+    const aplicarFiltros = () => {
+        const parametros = {
+            busca: filtrosForm.busca?.trim() || undefined,
+            tipo_atendimento_id: filtrosForm.tipo_atendimento_id || undefined,
+            data_inicio: filtrosForm.data_inicio || undefined,
+            data_fim: filtrosForm.data_fim || undefined,
+        }
+
+        router.get(route('atender.solicitacao'), parametros, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        })
+    }
+
+    const limparFiltros = () => {
+        setFiltrosForm({
+            busca: '',
+            tipo_atendimento_id: '',
+            data_inicio: '',
+            data_fim: '',
+        })
+
+        router.get(route('atender.solicitacao'), {}, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
         })
     }
 
@@ -90,6 +136,63 @@ export default function Index() {
                             </motion.div>
                         )}
                     </header>
+
+                    <section className="mb-6 rounded-2xl bg-white/5 p-4 ring-1 ring-white/10 backdrop-blur sm:p-5">
+                        <div className="mb-4 flex items-center gap-2">
+                            <FunnelIcon className="h-5 w-5 text-cyan-300" />
+                            <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-200">Filtros</h2>
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-5">
+                            <input
+                                type="text"
+                                value={filtrosForm.busca}
+                                onChange={(e) => atualizarFiltro('busca', e.target.value)}
+                                placeholder="Buscar por nome, CPF, matrícula ou e-mail"
+                                className="xl:col-span-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-neutral-500 focus:border-cyan-400/60 focus:outline-none"
+                            />
+
+                            <select
+                                value={filtrosForm.tipo_atendimento_id}
+                                onChange={(e) => atualizarFiltro('tipo_atendimento_id', e.target.value)}
+                                className="rounded-xl border border-white/10 bg-neutral-900 px-3 py-2 text-sm text-white focus:border-cyan-400/60 focus:outline-none"
+                            >
+                                <option value="">Todos os tipos</option>
+                                {tiposAtendimento.map((tipo) => (
+                                    <option key={tipo.id} value={tipo.id}>{tipo.nome}</option>
+                                ))}
+                            </select>
+
+                            <input
+                                type="date"
+                                value={filtrosForm.data_inicio}
+                                onChange={(e) => atualizarFiltro('data_inicio', e.target.value)}
+                                className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus:border-cyan-400/60 focus:outline-none"
+                            />
+
+                            <input
+                                type="date"
+                                value={filtrosForm.data_fim}
+                                onChange={(e) => atualizarFiltro('data_fim', e.target.value)}
+                                className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus:border-cyan-400/60 focus:outline-none"
+                            />
+                        </div>
+
+                        <div className="mt-4 flex flex-wrap items-center gap-2">
+                            <button
+                                onClick={aplicarFiltros}
+                                className="rounded-xl bg-white/10  px-4 py-2 text-sm font-medium text-white hover:bg-cyan-700"
+                            >
+                                Aplicar filtros
+                            </button>
+                            <button
+                                onClick={limparFiltros}
+                                className="rounded-xl bg-white/10 px-4 py-2 text-sm font-medium text-neutral-200 ring-1 ring-white/20 hover:bg-white/15"
+                            >
+                                Limpar
+                            </button>
+                        </div>
+                    </section>
 
                     <div className="mb-6 flex gap-2 rounded-2xl bg-white/5 p-1 ring-1 ring-white/10 backdrop-blur">
                         {tabs.map((tab) => (
@@ -286,8 +389,8 @@ export default function Index() {
                                                                 onClick={() => handlePageChange(link.url)}
                                                                 disabled={!link.url}
                                                                 className={`px-3 py-1.5 text-sm rounded-lg transition-all ${!link.url
-                                                                        ? 'text-neutral-600 cursor-not-allowed'
-                                                                        : 'text-neutral-300 hover:bg-white/10 hover:text-white'
+                                                                    ? 'text-neutral-600 cursor-not-allowed'
+                                                                    : 'text-neutral-300 hover:bg-white/10 hover:text-white'
                                                                     }`}
                                                             >
                                                                 ← Anterior
@@ -302,8 +405,8 @@ export default function Index() {
                                                                 onClick={() => handlePageChange(link.url)}
                                                                 disabled={!link.url}
                                                                 className={`px-3 py-1.5 text-sm rounded-lg transition-all ${!link.url
-                                                                        ? 'text-neutral-600 cursor-not-allowed'
-                                                                        : 'text-neutral-300 hover:bg-white/10 hover:text-white'
+                                                                    ? 'text-neutral-600 cursor-not-allowed'
+                                                                    : 'text-neutral-300 hover:bg-white/10 hover:text-white'
                                                                     }`}
                                                             >
                                                                 Próximo →
@@ -317,8 +420,8 @@ export default function Index() {
                                                             onClick={() => handlePageChange(link.url)}
                                                             disabled={link.active}
                                                             className={`px-3 py-1.5 text-sm rounded-lg transition-all ${link.active
-                                                                    ? 'bg-blue-500 text-white font-medium'
-                                                                    : 'text-neutral-300 hover:bg-white/10 hover:text-white'
+                                                                ? 'bg-blue-500 text-white font-medium'
+                                                                : 'text-neutral-300 hover:bg-white/10 hover:text-white'
                                                                 }`}
                                                             dangerouslySetInnerHTML={{ __html: link.label }}
                                                         />

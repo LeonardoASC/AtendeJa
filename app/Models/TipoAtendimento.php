@@ -17,6 +17,11 @@ class TipoAtendimento extends Model
         'tem_formulario' => 'boolean',
     ];
 
+    public function scopeComFormulario($query)
+    {
+        return $query->where('tem_formulario', true);
+    }
+
     public function senhas()
     {
         return $this->hasMany(Senha::class);

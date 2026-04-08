@@ -20,7 +20,7 @@ class SolicitacaoController extends Controller
      */
     public function index()
     {
-        $tiposAtendimento = TipoAtendimento::where('tem_formulario', true)
+        $tiposAtendimento = TipoAtendimento::comFormulario()
             ->orderBy('nome')
             ->get();
 
@@ -288,24 +288,60 @@ class SolicitacaoController extends Controller
         ]);
     }
 
-    public function atenderSolicitacao()
+    public function atenderSolicitacao(Request $request)
     {
-        $solicitacoesPendentes = Solicitacao::with(['tipoAtendimento', 'admin'])
+        $filtros = [
+            'busca' => trim((string) $request->query('busca', '')),
+            'tipo_atendimento_id' => $request->query('tipo_atendimento_id'),
+            'data_inicio' => $request->query('data_inicio'),
+            'data_fim' => $request->query('data_fim'),
+        ];
+
+        $consultaBase = Solicitacao::with(['tipoAtendimento', 'admin'])
+            ->when($filtros['busca'] !== '', function ($query) use ($filtros) {
+                $termo = $filtros['busca'];
+
+                $query->where(function ($subQuery) use ($termo) {
+                    $subQuery->where('nome', 'like', "%{$termo}%")
+                        ->orWhere('cpf', 'like', "%{$termo}%")
+                        ->orWhere('matricula', 'like', "%{$termo}%")
+                        ->orWhere('email', 'like', "%{$termo}%");
+                });
+            })
+            ->when(!empty($filtros['tipo_atendimento_id']), function ($query) use ($filtros) {
+                $query->where('tipo_atendimento_id', $filtros['tipo_atendimento_id']);
+            })
+            ->when(!empty($filtros['data_inicio']), function ($query) use ($filtros) {
+                $query->whereDate('created_at', '>=', $filtros['data_inicio']);
+            })
+            ->when(!empty($filtros['data_fim']), function ($query) use ($filtros) {
+                $query->whereDate('created_at', '<=', $filtros['data_fim']);
+            });
+
+        $solicitacoesPendentes = (clone $consultaBase)
             ->where('status', 'pendente')
             ->whereNotNull('onedoc_error')
             ->orderBy('created_at', 'desc')
-            ->paginate(20);
+            ->paginate(20, ['*'], 'pendentes_page')
+            ->withQueryString();
 
-        $solicitacoesEnviadas = Solicitacao::with(['tipoAtendimento', 'admin'])
+        $solicitacoesEnviadas = (clone $consultaBase)
             ->where('status', 'enviado')
             ->orderBy('created_at', 'desc')
-            ->paginate(20);
+            ->paginate(20, ['*'], 'enviadas_page')
+            ->withQueryString();
+
+        $tiposAtendimento = TipoAtendimento::comFormulario()
+            ->orderBy('nome')
+            ->get(['id', 'nome']);
 
         $filaJobs = app('queue')->size();
 
         return Inertia::render('Autenticado/Solicitacao/Index', [
             'solicitacoesPendentes' => $solicitacoesPendentes,
             'solicitacoesEnviadas' => $solicitacoesEnviadas,
+            'tiposAtendimento' => $tiposAtendimento,
+            'filtros' => $filtros,
             'filaJobs' => $filaJobs,
         ]);
     }
