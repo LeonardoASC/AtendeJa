@@ -101,6 +101,17 @@ export default function Servicos({ servicos = [] }) {
                                 )}
                             </div>
                         </div>
+                        <div className="mt-8 text-center">
+                            <Link
+                                href={route('senhas.index')}
+                                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-base font-semibold text-white/80 hover:text-white hover:bg-white/15 backdrop-blur transition-all hover:scale-105"
+                            >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                                </svg>
+                                Voltar para o início
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </main>
