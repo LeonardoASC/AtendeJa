@@ -22,6 +22,7 @@ const NAVIGATION_LINK = [
     { route: 'atender.solicitacao', label: 'Solicitações', perms: ['ver-solicitacoes'], icon: HomeIcon },
     { route: 'relatorio.index', label: 'Relatórios', perms: ['ver-relatorios'], icon: NewspaperIcon },
     { route: 'tipo-atendimentos.index', label: 'Tipos de Atendimento', perms: ['ver-tipoAtendimento'], icon: NewspaperIcon },
+    { route: 'avaliacoes.index', label: 'Avaliacoes', perms: ['ver-avaliacoes'], icon: NewspaperIcon },
     { route: 'guiches.index', label: 'Gerenciar Guichês', perms: ['ver-gerenciarGuiche'], icon: HomeIcon },
     { route: 'vouchers.index', label: 'Vouchers', perms: ['ver-voucher'], icon: DocumentTextIcon },
     { route: 'admins.index', label: 'Administradores', perms: ['ver-admin'], icon: UserCircleIcon },

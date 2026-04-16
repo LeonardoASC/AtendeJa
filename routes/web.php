@@ -7,6 +7,8 @@ use Inertia\Inertia;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AvaliacaoController;
+use App\Http\Controllers\AvaliacaoPublicaController;
 use App\Http\Controllers\TipoAtendimentoController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\DashboardController;
@@ -28,6 +30,11 @@ Route::middleware(['auth:admin', 'verified'])->prefix('admin')->group(function (
     Route::get('/telao', [SenhaController::class, 'telao'])->name('senhas.telao')->middleware('permission:ver-telao');
     Route::get('/senhas/perguntas-frequentes', [SenhaController::class, 'perguntasFrequentes'])->name('senhas.perguntas-frequentes');
 
+    Route::get('/avaliar', [AvaliacaoPublicaController::class, 'index'])->name('avaliacoes.publico.index');
+    Route::get('/avaliar/{servicoAvaliacao:slug}', [AvaliacaoPublicaController::class, 'show'])->name('avaliacoes.publico.show');
+    Route::post('/avaliar/{servicoAvaliacao:slug}', [AvaliacaoPublicaController::class, 'store'])->name('avaliacoes.publico.store')->middleware('throttle:120,1');
+    Route::get('/avaliar/{servicoAvaliacao:slug}/sucesso', [AvaliacaoPublicaController::class, 'sucesso'])->name('avaliacoes.publico.sucesso');
+
     Route::resource('tipo-atendimentos', TipoAtendimentoController::class)->middleware('permission:ver-tipoAtendimento');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -37,6 +44,11 @@ Route::middleware(['auth:admin', 'verified'])->prefix('admin')->group(function (
     Route::resource('users', UserController::class)->middleware('permission:ver-usuarios');
     Route::resource('admins', AdminController::class)->middleware('permission:ver-admin');
     Route::resource('roles', RoleController::class)->middleware('permission:ver-cargos');
+    Route::get('/avaliacoes', [AvaliacaoController::class, 'index'])->name('avaliacoes.index')->middleware('permission:ver-avaliacoes');
+    Route::post('/avaliacoes', [AvaliacaoController::class, 'store'])->name('avaliacoes.store')->middleware('permission:ver-avaliacoes');
+    Route::put('/avaliacoes/{servicoAvaliacao}', [AvaliacaoController::class, 'update'])->name('avaliacoes.update')->middleware('permission:ver-avaliacoes');
+    Route::delete('/avaliacoes/{servicoAvaliacao}', [AvaliacaoController::class, 'destroy'])->name('avaliacoes.destroy')->middleware('permission:ver-avaliacoes');
+    Route::post('/avaliacoes/reordenar', [AvaliacaoController::class, 'reordenar'])->name('avaliacoes.reordenar')->middleware('permission:ver-avaliacoes');
 
     Route::resource('senhas', SenhaController::class)->middleware('permission:ver-senhas');
     Route::post('/senhas/chamar', [SenhaController::class, 'chamar'])->name('senhas.chamar')->middleware('permission:editar-senhas');

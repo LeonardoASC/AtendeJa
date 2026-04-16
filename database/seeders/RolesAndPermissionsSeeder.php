@@ -65,8 +65,12 @@ class RolesAndPermissionsSeeder extends Seeder
             'criar-solicitacoes',
             'editar-solicitacoes',
             'excluir-solicitacoes',
+            'ver-avaliacoes',
+            'criar-avaliacoes',
+            'editar-avaliacoes',
+            'excluir-avaliacoes',
         ];
-        
+
 
         foreach ($permissions as $permission) {
             $perm = Permission::firstOrCreate([
