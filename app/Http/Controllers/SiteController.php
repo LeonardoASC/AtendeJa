@@ -10,8 +10,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
 use App\Http\Requests\BuscaCpfRequest;
-
-
+use Illuminate\Support\Facades\Log;
 
 class SiteController extends Controller
 {
@@ -30,6 +29,18 @@ class SiteController extends Controller
         try {
             $res = $this->chamadaApi()->get($url, ['CPF' => $cpf]);
 
+            $logConsultaCpf = [
+                'cpf'          => $cpf,
+                'status_http'  => $res->status(),
+                'sucesso'      => $res->successful(),
+                'corpo'        => $res->json() ?? $res->body(),
+            ];
+
+            Log::info("Consulta CPF:\n" . json_encode(
+                $logConsultaCpf,
+                JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+            ));
+
             if (!$res->successful()) {
                 return response()->json([
                     'data'  => [],
@@ -38,7 +49,7 @@ class SiteController extends Controller
             }
 
             $data = collect($res->json())
-                ->reject(fn ($i) => isset($i['ID_CLIENTE']) || isset($i['DATA_CADASTRO'])) // remove header
+                ->reject(fn($i) => isset($i['ID_CLIENTE']) || isset($i['DATA_CADASTRO']))
                 ->map(function ($i) {
                     $email = $i['EMAIL'] ?? null;
                     if (is_array($email)) $email = $email[0] ?? null;
@@ -50,11 +61,10 @@ class SiteController extends Controller
                         'EMAIL'     => $email,
                     ];
                 })
-                ->filter(fn ($i) => $i['NOME'] || $i['MATRICULA'] || $i['CPF'] || $i['EMAIL'])
+                ->filter(fn($i) => $i['NOME'] || $i['MATRICULA'] || $i['CPF'] || $i['EMAIL'])
                 ->values();
 
             return response()->json(['data' => $data], 200);
-
         } catch (\Throwable $e) {
             return response()->json([
                 'data'  => [],
@@ -66,10 +76,10 @@ class SiteController extends Controller
     private function chamadaApi()
     {
         $returnApi = Http::withHeaders([
-                'Authorization' => 'Bearer '.env('JG_TOKEN'),
-                'Accept'        => 'application/json',
-                'User-Agent'    => 'curl/7.88.1',
-            ])
+            'Authorization' => 'Bearer ' . env('JG_TOKEN'),
+            'Accept'        => 'application/json',
+            'User-Agent'    => 'curl/7.88.1',
+        ])
             ->timeout(20);
 
         if (app()->environment('local')) {
