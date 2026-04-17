@@ -249,7 +249,7 @@ export default function Index({ tipoAtendimentos }) {
                                         </Link>
                                         <Link
                                             // href={route('avaliacoes.publico.index')}
-                                            href='/admin/avaliar/a'
+                                            href='/admin/avaliar/atendimento-presencial'
                                             className="w-full max-w-sm py-4 px-6 rounded-2xl bg-white border-4 border-double border-sky-700 font-bold text-teal-700 text-2xl hover:bg-teal-600 hover:text-white hover:border-white transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-white/40 shadow-2xl hover:shadow-3xl transform hover:scale-105"
                                         >
                                             <div className="flex flex-col items-center gap-3">
