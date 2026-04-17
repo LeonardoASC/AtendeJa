@@ -25,7 +25,7 @@ export default function Publica({ servico, niveis = [] }) {
         })
     }
 
-    const passos = ['Inicio', 'Servico', 'Avaliacao', 'Concluido']
+    const passos = ['Início', 'Serviço', 'Avaliação', 'Concluído']
 
     const obterIconeNivel = (nota) => {
         if (nota === 1) return { Icone: Angry, classe: 'text-rose-400' }
@@ -77,7 +77,7 @@ export default function Publica({ servico, niveis = [] }) {
                     <div className="px-8 pb-8">
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
                             <div className="text-left space-y-4 lg:col-span-1">
-                                <h1 className="text-4xl lg:text-2xl font-extrabold text-white leading-tight">Avalie o servico</h1>
+                                <h1 className="text-4xl lg:text-2xl font-extrabold text-white leading-tight">Avalie o serviço</h1>
                                 <h2 className="text-3xl lg:text-4xl font-bold text-white/95 capitalize border border-dotted text-center rounded-lg bg-white/10">{servico.nome}</h2>
                                 {servico.descricao ? <p className="text-lg text-white/90">{servico.descricao}</p> : null}
 
@@ -85,15 +85,15 @@ export default function Publica({ servico, niveis = [] }) {
                                     <p className="text-xl font-semibold text-white">Como avaliar:</p>
                                     <div className="flex items-center gap-3">
                                         <span className="flex-shrink-0 flex items-center justify-center w-8 h-8  rounded-full bg-white/20 text-white font-bold">1</span>
-                                        <p className="pt-1 text-base/5">Escolha uma carinha que representa sua experiencia</p>
+                                        <p className="pt-1 text-base/5">Escolha uma carinha que representa sua experiência</p>
                                     </div>
                                     <div className="flex items-center gap-3">
                                         <span className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-white/20 text-white font-bold">2</span>
-                                        <p className="pt-1 text-base/5">Se quiser, escreva um comentario rapido</p>
+                                        <p className="pt-1 text-base/5">Se quiser, escreva um comentário rápido</p>
                                     </div>
                                     <div className="flex items-center gap-3">
                                         <span className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-white/20 text-white font-bold">3</span>
-                                        <p className="pt-1 text-base/5">Clique em enviar avaliacao</p>
+                                        <p className="pt-1 text-base/5">Clique em enviar avaliação</p>
                                     </div>
                                 </div>
 
@@ -106,7 +106,7 @@ export default function Publica({ servico, niveis = [] }) {
 
                             <form onSubmit={enviar} className="space-y-6 rounded-2xl bg-white/10 p-5 ring-1 ring-white/20 backdrop-blur lg:col-span-2">
                                 <div>
-                                    <label className="block text-lg font-semibold text-white">Avalie o serviço com as informacoes abaixo</label>
+                                    <label className="block text-lg font-semibold text-white">Avalie o serviço com as informações abaixo</label>
                                     <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-5">
                                         {niveis.map((nivel, index) => {
                                             const ativo = Number(data.nota) === Number(nivel.nota)
@@ -143,12 +143,12 @@ export default function Publica({ servico, niveis = [] }) {
                                         className="inline-flex items-center gap-2 rounded-xl border border-white/40 bg-white/10 px-4 py-2.5 text-sm font-medium text-white hover:bg-white/20"
                                     >
                                         <MessageSquarePlus className="h-4 w-4" />
-                                        {data.comentario ? 'Editar comentario' : 'Adicionar comentario'}
+                                        {data.comentario ? 'Editar comentário' : 'Adicionar comentário'}
                                     </button>
 
                                     {data.comentario ? (
                                         <p className="mt-3 rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-sm text-white/90 truncate line-clamp-2">
-                                            Comentario salvo: "{data.comentario}"
+                                            Comentário salvo: "{data.comentario}"
                                         </p>
                                     ) : null}
 
@@ -156,19 +156,27 @@ export default function Publica({ servico, niveis = [] }) {
                                 </div>
 
                                 <div className="flex items-center justify-between gap-3">
-                                    <Link
+                                    {/* <Link
                                         href={route('avaliacoes.publico.index')}
                                         className="rounded-xl border border-white/40 px-4 py-2 text-sm font-medium text-white hover:bg-white/10"
                                     >
-                                        Trocar servico
-                                    </Link>
+                                        Trocar serviço
+                                    </Link> */}
+                                    {/* botão de voltar para a página anterior*/}
+                                    <button
+                                        type="button"
+                                        onClick={() => window.history.back()}
+                                        className="rounded-xl border border-white/40 px-4 py-2 text-sm font-medium text-white hover:bg-white/10"
+                                    >
+                                        Voltar
+                                    </button>
 
                                     <button
                                         type="submit"
                                         disabled={processing || !data.nota}
                                         className="rounded-xl bg-white px-5 py-2 text-sm font-semibold text-teal-700 hover:bg-teal-50 disabled:opacity-60"
                                     >
-                                        {processing ? 'Enviando...' : 'Enviar solicitacao'}
+                                        {processing ? 'Enviando...' : 'Enviar solicitação'}
                                     </button>
                                 </div>
                             </form>
@@ -180,7 +188,7 @@ export default function Publica({ servico, niveis = [] }) {
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
                         <div className="w-full max-w-lg rounded-2xl border border-white/30 bg-white/20 p-5 shadow-2xl backdrop-blur">
                             <div className="mb-4 flex items-center justify-between">
-                                <h3 className="text-lg font-semibold text-white">Adicionar comentario</h3>
+                                <h3 className="text-lg font-semibold text-white">Adicionar comentário</h3>
                                 <button
                                     type="button"
                                     onClick={() => setModalComentarioAberto(false)}
@@ -195,7 +203,7 @@ export default function Publica({ servico, niveis = [] }) {
                                 value={comentarioTemporario}
                                 onChange={(e) => setComentarioTemporario(e.target.value)}
                                 className="w-full rounded-xl border border-white/30 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/70 focus:border-white focus:outline-none"
-                                placeholder="Escreva aqui um comentario sobre seu atendimento."
+                                placeholder="Escreva aqui um comentário sobre seu atendimento."
                             />
 
                             <div className="mt-4 flex justify-end gap-2">
@@ -211,7 +219,7 @@ export default function Publica({ servico, niveis = [] }) {
                                     onClick={salvarComentario}
                                     className="rounded-xl bg-white px-4 py-2 text-sm font-semibold text-teal-700 hover:bg-teal-50"
                                 >
-                                    Salvar comentario
+                                    Salvar comentário
                                 </button>
                             </div>
                         </div>
