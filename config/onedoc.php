@@ -8,18 +8,10 @@ return [
 
     'enviar_anexo' => filter_var(env('ONEDOC_ENVIAR_ANEXO', true), FILTER_VALIDATE_BOOLEAN),
 
-    'protocolos' => [
-        'adiantamento_13' => [
-            'enabled' => true,
-            'tipo_atendimento_id' => (int) env('ONEDOC_13_TIPO_ATENDIMENTO_ID', 0),
-            'destino_id_setor' => (int) env('ONEDOC_13_DESTINO_ID_SETOR', 0),
-            'id_assunto' => (int) env('ONEDOC_13_ID_ASSUNTO', 0),
-            'campos' => [
-                [
-                    'campo' => 'entrada',
-                    'valor' => 'Site',
-                ],
-            ],
+    'campos_padrao' => [
+        [
+            'campo' => 'entrada',
+            'valor' => 'Site',
         ],
     ],
 ];

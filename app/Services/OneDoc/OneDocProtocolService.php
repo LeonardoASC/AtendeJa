@@ -3,6 +3,7 @@
 namespace App\Services\OneDoc;
 
 use App\Models\Solicitacao;
+use App\Models\TipoAtendimento;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -16,20 +17,12 @@ class OneDocProtocolService
     /**
      * Descobre se esta solicitação deve abrir algum protocolo e qual config usar.
      */
-    public function resolveProtocolKeyForSolicitacao(Solicitacao $solicitacao): ?string
+    public function resolveTipoAtendimentoForSolicitacao(Solicitacao $solicitacao): ?TipoAtendimento
     {
-        foreach (config('onedoc.protocolos', []) as $key => $cfg) {
-            if (!($cfg['enabled'] ?? false)) {
-                continue;
-            }
-
-            $tipoId = (int) ($cfg['tipo_atendimento_id'] ?? 0);
-            if ($tipoId > 0 && (int) $solicitacao->tipo_atendimento_id === $tipoId) {
-                return $key;
-            }
-        }
-
-        return null;
+        return TipoAtendimento::query()
+            ->select(['id', 'nome', 'onedoc_enabled', 'onedoc_destino_id_setor', 'onedoc_id_assunto'])
+            ->whereKey($solicitacao->tipo_atendimento_id)
+            ->first();
     }
 
     /**
@@ -42,25 +35,25 @@ class OneDocProtocolService
             'tipo_atendimento_id' => $solicitacao->tipo_atendimento_id,
         ]);
 
-        $protocolKey = $this->resolveProtocolKeyForSolicitacao($solicitacao);
+        $tipoAtendimento = $this->resolveTipoAtendimentoForSolicitacao($solicitacao);
 
-        if (!$protocolKey) {
+        if (!$tipoAtendimento || !$tipoAtendimento->onedoc_enabled) {
             Log::warning('Protocolo SKIPPED - Nenhuma config encontrada');
             return [
                 'skipped' => true,
-                'reason' => 'Nenhuma configuração de protocolo encontrada para esse tipo_atendimento_id.',
+                'reason' => 'OneDoc desabilitado para esse tipo_atendimento_id.',
             ];
         }
 
-        Log::info('Protocol key resolvido', ['protocol_key' => $protocolKey]);
+        $protocolName = (string) ($tipoAtendimento->nome ?? 'desconhecido');
 
-        $cfg = config("onedoc.protocolos.$protocolKey");
+        Log::info('Protocolo resolvido', ['protocol_name' => $protocolName]);
 
-        $destinoIdSetor = (int) ($cfg['destino_id_setor'] ?? 0);
-        $idAssunto = (int) ($cfg['id_assunto'] ?? 0);
+        $destinoIdSetor = (int) ($tipoAtendimento->onedoc_destino_id_setor ?? 0);
+        $idAssunto = (int) ($tipoAtendimento->onedoc_id_assunto ?? 0);
 
         if ($destinoIdSetor <= 0 || $idAssunto <= 0) {
-            throw new \RuntimeException("Config do 1Doc incompleta para [$protocolKey]. Verifique destino_id_setor e id_assunto.");
+            throw new \RuntimeException("Config do 1Doc incompleta para [$protocolName]. Verifique destino_id_setor e id_assunto.");
         }
 
         Log::info('Configuração validada', [
@@ -73,7 +66,7 @@ class OneDocProtocolService
 
         $conteudo = $this->buildConteudo($solicitacao);
 
-        $campos = $cfg['campos'] ?? [];
+        $campos = config('onedoc.campos_padrao', []);
         if (!is_array($campos)) {
             $campos = [];
         }
@@ -113,7 +106,7 @@ class OneDocProtocolService
         }
 
         Log::info('OneDoc payload (multipart fields) pronto', [
-            'protocol_key' => $protocolKey,
+            'protocol_name' => $protocolName,
             'fields' => $fields,
         ]);
 
@@ -161,8 +154,7 @@ class OneDocProtocolService
 
         return implode("\n", [
             "Solicitação criada pelo Totem de atendimento.",
-            // "ID interno: {$s->id}",
-            // "Tipo de atendimento (ID): {$s->tipo_atendimento_id}",
+            "Serviço: {$s->tipoAtendimento->nome}",
             "Nome: {$s->nome}",
             "CPF: {$s->cpf}",
             "E-mail: {$email}",

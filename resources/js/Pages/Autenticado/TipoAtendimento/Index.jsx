@@ -70,6 +70,9 @@ export default function Index() {
                                                     Nome do atendimento
                                                 </th>
                                                 <th className="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider text-neutral-300">
+                                                    OneDoc
+                                                </th>
+                                                <th className="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider text-neutral-300">
                                                     Tem Formulário
                                                 </th>
                                                 <th className="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wider text-neutral-300">
@@ -82,6 +85,39 @@ export default function Index() {
                                                 <tr key={item.id} className="hover:bg-white/5">
                                                     <td className="px-6 py-4 text-sm font-medium text-white">
                                                         {item.nome}
+                                                    </td>
+                                                    <td className="px-6 py-4 text-center ">
+                                                        {item.onedoc_enabled ? (
+                                                            <>
+                                                                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-xs font-medium text-emerald-300">
+                                                                    Ativo
+                                                                </span>
+                                                                {item.onedoc_id_assunto ? (
+                                                                    <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-green-500/20 px-2.5 py-0.5 text-xs font-medium text-green-300">
+                                                                        Id assunto: {item.onedoc_id_assunto}
+                                                                    </span>
+                                                                ) : (
+                                                                    <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-yellow-500/20 px-2.5 py-0.5 text-xs font-medium text-yellow-300">
+                                                                        Configurar IDs
+                                                                    </span>
+                                                                )}
+                                                                {item.onedoc_destino_id_setor ? (
+                                                                    <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-green-500/20 px-2.5 py-0.5 text-xs font-medium text-green-300">
+                                                                        Id setor: {item.onedoc_destino_id_setor}
+                                                                    </span>
+                                                                ) : (
+                                                                    <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-yellow-500/20 px-2.5 py-0.5 text-xs font-medium text-yellow-300">
+                                                                        Configurar IDs
+                                                                    </span>
+                                                                )}
+
+                                                            </>
+                                                        ) : (
+                                                            <span className="inline-flex items-center gap-1 rounded-full bg-gray-500/20 px-2.5 py-0.5 text-xs font-medium text-gray-400">
+                                                                Inativo
+                                                            </span>
+                                                        )}
+
                                                     </td>
                                                     <td className="px-6 py-4 text-center">
                                                         {item.tem_formulario ? (
@@ -179,6 +215,9 @@ function TipoAtendimentoForm({ initialData = null, onCancel, onSuccess, mode = '
     const { data, setData, post, put, processing, errors, reset, clearErrors } = useForm({
         nome: initialData?.nome ?? '',
         tem_formulario: initialData?.tem_formulario ?? false,
+        onedoc_enabled: initialData?.onedoc_enabled ?? false,
+        onedoc_destino_id_setor: initialData?.onedoc_destino_id_setor ?? '',
+        onedoc_id_assunto: initialData?.onedoc_id_assunto ?? '',
     })
 
     const submit = (e) => {
@@ -186,7 +225,7 @@ function TipoAtendimentoForm({ initialData = null, onCancel, onSuccess, mode = '
         const opts = {
             preserveScroll: true,
             onSuccess: () => {
-                reset('nome')
+                reset('nome', 'tem_formulario', 'onedoc_enabled', 'onedoc_destino_id_setor', 'onedoc_id_assunto')
                 onSuccess?.()
             },
         }
@@ -200,8 +239,8 @@ function TipoAtendimentoForm({ initialData = null, onCancel, onSuccess, mode = '
 
     return (
         <form onSubmit={submit} className="space-y-6">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                <div className="sm:col-span-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div>
                     <label className="mb-1 block text-sm font-medium text-gray-700">Nome do Atendimento</label>
                     <input
                         type="text"
@@ -214,7 +253,7 @@ function TipoAtendimentoForm({ initialData = null, onCancel, onSuccess, mode = '
                     {errors.nome && <p className="mt-1 text-xs text-rose-700">{errors.nome}</p>}
                 </div>
 
-                <div className="sm:col-span-1">
+                <div>
                     <label className="mb-1 block text-sm font-medium text-gray-700">Tem Formulário de Solicitação?</label>
                     <div className="flex items-center gap-3 pt-2">
                         <label className="flex items-center gap-2 cursor-pointer">
@@ -228,6 +267,47 @@ function TipoAtendimentoForm({ initialData = null, onCancel, onSuccess, mode = '
                         </label>
                     </div>
                     <p className="mt-1 text-xs text-gray-500">Marque se este tipo requer preenchimento de formulário de solicitação</p>
+                </div>
+
+                <div>
+                    <label className="mb-1 block text-sm font-medium text-gray-700">Enviar para OneDoc?</label>
+                    <div className="flex items-center gap-3 pt-2">
+                        <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                                type="checkbox"
+                                checked={data.onedoc_enabled}
+                                onChange={(e) => setData('onedoc_enabled', e.target.checked)}
+                                className="h-5 w-5 rounded border-white/20 bg-white/10 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0"
+                            />
+                            <span className="text-sm text-gray-300">Habilitar integração OneDoc</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label className="mb-1 block text-sm font-medium text-gray-700">Destino ID Setor (OneDoc)</label>
+                    <input
+                        type="number"
+                        value={data.onedoc_destino_id_setor}
+                        onChange={(e) => setData('onedoc_destino_id_setor', e.target.value)}
+                        disabled={!data.onedoc_enabled}
+                        className={`w-full rounded-2xl border px-3 py-2.5 text-sm text-black placeholder:text-neutral-400 shadow-sm focus:outline-none focus:ring-2 bg-white/5 backdrop-blur disabled:opacity-50 ${errors.onedoc_destino_id_setor ? 'border-rose-400/40 ring-rose-400/30' : 'border-white/10 ring-white/10'}`}
+                        placeholder="Ex.: 151"
+                    />
+                    {errors.onedoc_destino_id_setor && <p className="mt-1 text-xs text-rose-700">{errors.onedoc_destino_id_setor}</p>}
+                </div>
+
+                <div>
+                    <label className="mb-1 block text-sm font-medium text-gray-700">ID Assunto (OneDoc)</label>
+                    <input
+                        type="number"
+                        value={data.onedoc_id_assunto}
+                        onChange={(e) => setData('onedoc_id_assunto', e.target.value)}
+                        disabled={!data.onedoc_enabled}
+                        className={`w-full rounded-2xl border px-3 py-2.5 text-sm text-black placeholder:text-neutral-400 shadow-sm focus:outline-none focus:ring-2 bg-white/5 backdrop-blur disabled:opacity-50 ${errors.onedoc_id_assunto ? 'border-rose-400/40 ring-rose-400/30' : 'border-white/10 ring-white/10'}`}
+                        placeholder="Ex.: 4980"
+                    />
+                    {errors.onedoc_id_assunto && <p className="mt-1 text-xs text-rose-700">{errors.onedoc_id_assunto}</p>}
                 </div>
             </div>
 

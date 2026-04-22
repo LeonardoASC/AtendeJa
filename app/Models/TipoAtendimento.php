@@ -9,12 +9,21 @@ class TipoAtendimento extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nome', 'tem_formulario'];
+    protected $fillable = [
+        'nome',
+        'tem_formulario',
+        'onedoc_enabled',
+        'onedoc_destino_id_setor',
+        'onedoc_id_assunto',
+    ];
 
     protected $table = 'tipo_atendimentos';
 
     protected $casts = [
         'tem_formulario' => 'boolean',
+        'onedoc_enabled' => 'boolean',
+        'onedoc_destino_id_setor' => 'integer',
+        'onedoc_id_assunto' => 'integer',
     ];
 
     public function scopeComFormulario($query)
