@@ -59,6 +59,8 @@ Route::middleware(['auth:admin', 'verified'])->prefix('admin')->group(function (
     Route::get('/solicitacoes', [SolicitacaoController::class, 'index'])->name('solicitacoes.index')->middleware('permission:criar-solicitacoes');
     Route::get('/solicitacoes/criar', [SolicitacaoController::class, 'create'])->name('solicitacoes.create')->middleware('permission:criar-solicitacoes');
     Route::post('/solicitacoes/formulario', [SolicitacaoController::class, 'formularioStore'])->name('solicitacoes.formulario.store')->middleware('permission:criar-solicitacoes');
+    Route::get('/solicitacoes/dados-api', [SolicitacaoController::class, 'dadosApiForm'])->name('solicitacoes.dados-api.form')->middleware('permission:criar-solicitacoes');
+    Route::post('/solicitacoes/dados-api', [SolicitacaoController::class, 'dadosApiStore'])->name('solicitacoes.dados-api.store')->middleware('permission:criar-solicitacoes');
     Route::get('/solicitacoes/assinar', [SolicitacaoController::class, 'assinarForm'])->name('solicitacoes.assinar.form')->middleware('permission:criar-solicitacoes');
     Route::post('/solicitacoes/assinar', [SolicitacaoController::class, 'assinarStore'])->name('solicitacoes.assinar.store')->middleware('permission:criar-solicitacoes');
     Route::get('/solicitacoes/foto', [SolicitacaoController::class, 'fotoForm'])->name('solicitacoes.foto.form')->middleware('permission:criar-solicitacoes');

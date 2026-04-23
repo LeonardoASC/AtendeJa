@@ -36,10 +36,10 @@ class SiteController extends Controller
                 'corpo'        => $res->json() ?? $res->body(),
             ];
 
-            // Log::info("Consulta CPF:\n" . json_encode(
-            //     $logConsultaCpf,
-            //     JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
-            // ));
+            Log::info("Consulta CPF:\n" . json_encode(
+                $logConsultaCpf,
+                JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+            ));
 
             if (!$res->successful()) {
                 return response()->json([
@@ -54,11 +54,14 @@ class SiteController extends Controller
                     $email = $i['EMAIL'] ?? null;
                     if (is_array($email)) $email = $email[0] ?? null;
 
+                    $payloadNormalizado = $this->normalizarPayloadApiLegada($i);
+
                     return [
                         'NOME'      => $i['NOME'] ?? null,
                         'MATRICULA' => $i['MATRICULA'] ?? null,
                         'CPF'       => isset($i['CPF']) ? preg_replace('/\D/', '', $i['CPF']) : null,
                         'EMAIL'     => $email,
+                        'DADOS_API' => $payloadNormalizado,
                     ];
                 })
                 ->filter(fn($i) => $i['NOME'] || $i['MATRICULA'] || $i['CPF'] || $i['EMAIL'])
@@ -87,5 +90,28 @@ class SiteController extends Controller
         }
 
         return $returnApi;
+    }
+
+    private function normalizarPayloadApiLegada($valor)
+    {
+        if (is_array($valor)) {
+            if ($valor === []) {
+                return null;
+            }
+
+            $normalizado = [];
+            foreach ($valor as $chave => $item) {
+                $normalizado[$chave] = $this->normalizarPayloadApiLegada($item);
+            }
+
+            return $normalizado;
+        }
+
+        if (is_string($valor)) {
+            $trimmed = trim($valor);
+            return $trimmed === '' ? null : $trimmed;
+        }
+
+        return $valor;
     }
 }

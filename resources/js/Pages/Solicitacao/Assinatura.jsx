@@ -14,7 +14,6 @@ export default function Assinatura({ dadosSolicitacao, tipoAtendimento }) {
         assinatura: '',
     });
 
-
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -203,10 +202,10 @@ export default function Assinatura({ dadosSolicitacao, tipoAtendimento }) {
                                             </div>
                                             <div>
                                                 <span className="text-white/70">Tipo de Atendimento:</span>
-                                                <p className="text-white font-medium">{tipoAtendimento.nome}</p>
+                                                <p className="text-white font-medium capitalize">{tipoAtendimento.nome}</p>
                                             </div>
 
-                                                                                        <div className='flex items-center justify-between '>
+                                            <div className='flex items-center justify-between '>
                                                 <div className='flex flex-col w-full'>
                                                     <span className="text-white/70 ">E-mail:</span>
                                                     <p className="text-white font-medium">{dadosSolicitacao.email || 'Email Não Cadastrado.'}</p>

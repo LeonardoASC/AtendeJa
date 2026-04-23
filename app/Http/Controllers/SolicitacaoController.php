@@ -12,6 +12,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Jobs\OpenOneDocProtocolJob;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SolicitacaoConfirmadaMail;
+use Illuminate\Support\Str;
 
 class SolicitacaoController extends Controller
 {
@@ -77,6 +78,66 @@ class SolicitacaoController extends Controller
 
         session(['dados_solicitacao' => $validated]);
 
+        $tipoAtendimento = TipoAtendimento::find($validated['tipo_atendimento_id']);
+
+        if ($this->deveExibirEtapaDadosApi($tipoAtendimento)) {
+            return redirect()->route('solicitacoes.dados-api.form');
+        }
+
+        return redirect()->route('solicitacoes.assinar.form');
+    }
+
+    public function dadosApiForm()
+    {
+        $dadosSolicitacao = session('dados_solicitacao');
+
+        if (!$dadosSolicitacao) {
+            return redirect()->route('solicitacoes.index')
+                ->with('error', 'Sessão expirada. Por favor, preencha o formulário novamente.');
+        }
+
+        $tipoAtendimento = TipoAtendimento::find($dadosSolicitacao['tipo_atendimento_id']);
+
+        if (!$this->deveExibirEtapaDadosApi($tipoAtendimento)) {
+            return redirect()->route('solicitacoes.assinar.form');
+        }
+
+        return Inertia::render('Solicitacao/DadosApi', [
+            'dadosSolicitacao' => $dadosSolicitacao,
+            'tipoAtendimento' => $tipoAtendimento,
+        ]);
+    }
+
+    public function dadosApiStore()
+    {
+        $dadosSolicitacao = session('dados_solicitacao');
+
+        if (!$dadosSolicitacao) {
+            return redirect()->route('solicitacoes.index')
+                ->with('error', 'Sessão expirada. Por favor, preencha o formulário novamente.');
+        }
+
+        $validated = request()->validate([
+            'recadastramento' => 'nullable|array',
+            'recadastramento.alteracoesCampos' => 'nullable|array',
+            'recadastramento.novosDependentes' => 'nullable|array',
+            'recadastramento.dependentesParaRemover' => 'nullable|array',
+            'recadastramento.resumo' => 'nullable|array',
+        ]);
+
+        $dadosSolicitacao['recadastramento'] = $validated['recadastramento'] ?? [
+            'alteracoesCampos' => [],
+            'novosDependentes' => [],
+            'dependentesParaRemover' => [],
+            'resumo' => [
+                'totalCamposAlterados' => 0,
+                'totalNovosDependentes' => 0,
+                'totalDependentesParaRemover' => 0,
+            ],
+        ];
+
+        session(['dados_solicitacao' => $dadosSolicitacao]);
+
         return redirect()->route('solicitacoes.assinar.form');
     }
 
@@ -99,6 +160,22 @@ class SolicitacaoController extends Controller
         session(['dados_solicitacao' => $validated]);
 
         return redirect()->route('solicitacoes.foto.form');
+    }
+
+    private function deveExibirEtapaDadosApi(?TipoAtendimento $tipoAtendimento): bool
+    {
+        $nomeTipo = $this->normalizarIdentificadorTipo($tipoAtendimento?->nome);
+        $nomeAlvo = $this->normalizarIdentificadorTipo('RECADASTRAMENTO / PROVA DE VIDA');
+
+        return $nomeTipo === $nomeAlvo;
+    }
+
+    private function normalizarIdentificadorTipo(?string $nome): string
+    {
+        $normalizado = Str::upper(Str::ascii(trim((string) $nome)));
+
+        // Remove separadores e pontuação para comparar apenas conteúdo semântico.
+        return preg_replace('/[^A-Z0-9]+/', '', $normalizado) ?? '';
     }
 
     public function assinarForm(Request $request)
@@ -175,8 +252,21 @@ class SolicitacaoController extends Controller
         }
 
         try {
+            $tipoAtendimento = TipoAtendimento::find($dadosSolicitacao['tipo_atendimento_id']);
+            $isRecadastramento = $this->deveExibirEtapaDadosApi($tipoAtendimento);
 
-            $pdfPath = $this->gerarPdfAnexo($dadosSolicitacao);
+            $pdfPath = $isRecadastramento
+                ? $this->gerarPdfRecadastramentoAnexo($dadosSolicitacao)
+                : $this->gerarPdfAnexo($dadosSolicitacao);
+
+            $dadosFormulario = $dadosSolicitacao['dados_formulario'] ?? [];
+            if (!is_array($dadosFormulario)) {
+                $dadosFormulario = [];
+            }
+
+            if (!empty($dadosSolicitacao['recadastramento'])) {
+                $dadosFormulario['_recadastramento'] = $dadosSolicitacao['recadastramento'];
+            }
 
             $solicitacao = Solicitacao::create([
                 'tipo_atendimento_id' => $dadosSolicitacao['tipo_atendimento_id'],
@@ -185,7 +275,7 @@ class SolicitacaoController extends Controller
                 'email' => $dadosSolicitacao['email'] ?? null,
                 'matricula' => $dadosSolicitacao['matricula'] ?? null,
                 'telefone' => $dadosSolicitacao['telefone'] ?? null,
-                'dados_formulario' => $dadosSolicitacao['dados_formulario'] ?? null,
+                'dados_formulario' => $dadosFormulario,
                 'anexo' => $pdfPath,
                 'status' => 'pendente',
             ]);
@@ -418,6 +508,40 @@ class SolicitacaoController extends Controller
         $pdf->setPaper('a4', 'portrait');
 
         $filename = 'solicitacao-' . time() . '-' . uniqid() . '.pdf';
+        $path = 'SolicitacaoAnexos/' . $filename;
+
+        Storage::disk('public')->put($path, $pdf->output());
+
+        return $path;
+    }
+
+    private function gerarPdfRecadastramentoAnexo(array $dados): string
+    {
+        $recadastramento = $dados['recadastramento'] ?? null;
+        if (!is_array($recadastramento)) {
+            $recadastramento = [];
+        }
+
+        $alteracoesCampos = $recadastramento['alteracoesCampos'] ?? [];
+        $novosDependentes = $recadastramento['novosDependentes'] ?? [];
+        $dependentesParaRemover = $recadastramento['dependentesParaRemover'] ?? [];
+
+        $pdf = Pdf::loadView('relatorios.solicitacao-recadastramento', [
+            'dadosBasicos' => [
+                'nome' => $dados['nome'] ?? '',
+                'email' => $dados['email'] ?? '',
+                'cpf' => $dados['cpf'] ?? '',
+                'telefone' => $dados['telefone'] ?? '',
+            ],
+            'alteracoesCampos' => is_array($alteracoesCampos) ? $alteracoesCampos : [],
+            'novosDependentes' => is_array($novosDependentes) ? $novosDependentes : [],
+            'dependentesParaRemover' => is_array($dependentesParaRemover) ? $dependentesParaRemover : [],
+            'geradoEm' => now(),
+        ]);
+
+        $pdf->setPaper('a4', 'portrait');
+
+        $filename = 'solicitacao-recadastramento-' . time() . '-' . uniqid() . '.pdf';
         $path = 'SolicitacaoAnexos/' . $filename;
 
         Storage::disk('public')->put($path, $pdf->output());

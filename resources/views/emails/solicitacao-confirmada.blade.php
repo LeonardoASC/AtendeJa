@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confirmação de Solicitação</title>
+    <title>{{ $isRecadastramento ? 'Confirmacao de Recadastramento / Prova de Vida' : 'Confirmacao de Solicitacao' }}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -59,28 +59,35 @@
 
 <body>
     <div class="header">
-        <h1>Confirmação de Solicitação</h1>
+        <h1>{{ $isRecadastramento ? 'Confirmacao de Recadastramento / Prova de Vida' : 'Confirmacao de Solicitacao' }}</h1>
     </div>
 
     <div class="content">
         <p>Prezado(a) servidor(a), {{ $solicitacao->nome }}</p>
-        <p>Informamos que sua solicitação de adiantamento da primeira parcela do 13º salário foi registrada com sucesso
-            em nosso sistema.</p>
-        <p>Nos casos em que não houver nenhuma pendência, a solicitação é aprovada automaticamente e o valor será
-            creditado na próxima folha de pagamento, conforme os prazos estabelecidos pela instituição.</p>
-        <p>Caso seja identificada qualquer inconsistência ou impedimento, o setor de Recursos Humanos entrará em contato
-            para prestar os devidos esclarecimentos.</p>
-        <p>Recomendamos acompanhar eventuais comunicações pelos canais oficiais.</p>
+
+        @if ($isRecadastramento)
+            <p>Informamos que sua solicitacao de recadastramento / prova de vida foi registrada com sucesso em nosso sistema.</p>
+            <p>Os dados enviados serao analisados e processados pela equipe responsavel.</p>
+            <p>Se for identificada alguma pendencia ou necessidade de complemento de informacoes, voce sera contatado pelos canais cadastrados.</p>
+            <p>Recomendamos acompanhar eventuais comunicacoes pelos canais oficiais.</p>
+        @else
+            <p>Informamos que sua solicitacao de adiantamento da primeira parcela do 13o salario foi registrada com sucesso em nosso sistema.</p>
+            <p>Nos casos em que nao houver nenhuma pendencia, a solicitacao e aprovada automaticamente e o valor sera creditado na proxima folha de pagamento, conforme os prazos estabelecidos pela instituicao.</p>
+            <p>Caso seja identificada qualquer inconsistencia ou impedimento, o setor de Recursos Humanos entrara em contato para prestar os devidos esclarecimentos.</p>
+            <p>Recomendamos acompanhar eventuais comunicacoes pelos canais oficiais.</p>
+        @endif
+
         <div class="info">
-            <strong>Dados da Solicitação:</strong><br>
+            <strong>Dados da Solicitacao:</strong><br>
             <strong>Protocolo:</strong> #{{ $solicitacao->id }}<br>
             <strong>Nome:</strong> {{ $solicitacao->nome }}<br>
+            <strong>Servico:</strong> {{ $solicitacao->tipoAtendimento->nome ?? '-' }}<br>
             <strong>Data:</strong> {{ $solicitacao->created_at->format('d/m/Y H:i') }}
         </div>
     </div>
 
     <div class="footer">
-        <p><em>Este é um e-mail automático. Por favor, não responda.</em></p>
+        <p><em>Este e um e-mail automatico. Por favor, nao responda.</em></p>
     </div>
 </body>
 

@@ -70,24 +70,25 @@ export default function Formulario({ tipoAtendimento }) {
                     if (first?.NOME) {
                         if (!first.EMAIL) {
                             setPessoa(null);
+                            setData('dados_formulario', {});
                             setLookupError('E-mail não cadastrado. Por favor, dirija-se à recepção para realizar a atualização cadastral antes de fazer a solicitação.');
                             return;
                         }
                         setPessoa(first);
-                        setData({
-                            ...data,
-                            nome: first.NOME || '',
-                            matricula: first.MATRICULA || '',
-                            email: first.EMAIL ? String(first.EMAIL).toLowerCase() : '',
-                        });
+                        setData('nome', first.NOME || '');
+                        setData('matricula', first.MATRICULA || '');
+                        setData('email', first.EMAIL ? String(first.EMAIL).toLowerCase() : '');
+                        setData('dados_formulario', first.DADOS_API || {});
                     } else {
                         setPessoa(null);
+                        setData('dados_formulario', {});
                         setLookupError('CPF não encontrado no sistema. Não é possível fazer a solicitação.');
                     }
                 })
                 .catch((err) => {
                     if (axios.isCancel(err)) return;
                     setPessoa(null);
+                    setData('dados_formulario', {});
                     setLookupError('Não foi possível consultar o CPF no momento.');
                 })
                 .finally(() => setBuscando(false));
@@ -96,6 +97,7 @@ export default function Formulario({ tipoAtendimento }) {
         } else {
             setPessoa(null);
             setLookupError(null);
+            setData('dados_formulario', {});
         }
     }, [data.cpf]);
 
@@ -321,6 +323,7 @@ export default function Formulario({ tipoAtendimento }) {
                                                                 )}
                                                             </div>
                                                         </div>
+
                                                     </div>
                                                 )}
 

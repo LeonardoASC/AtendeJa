@@ -5,8 +5,6 @@ import {
     CameraIcon,
     ArrowPathIcon,
     CheckCircleIcon,
-    ArrowsRightLeftIcon,
-    PhotoIcon,
     ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
 
@@ -21,9 +19,15 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
     const [isStarting, setIsStarting] = useState(false);
     const [showTermsModal, setShowTermsModal] = useState(false);
 
+    const isRecadastramento = (tipoAtendimento?.nome || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-zA-Z0-9]+/g, '')
+        .toUpperCase() === 'RECADASTRAMENTOPROVADEVIDA';
+
     const { data, setData, post, processing, errors } = useForm({
         ...dadosSolicitacao,
-        foto: null, // File
+        foto: null,
     });
 
     const stopCamera = () => {
@@ -69,12 +73,6 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const switchCamera = async () => {
-        const next = facingMode === 'user' ? 'environment' : 'user';
-        setFacingMode(next);
-        await startCamera(next);
-    };
-
     const capture = () => {
         const video = videoRef.current;
         const canvas = canvasRef.current;
@@ -113,7 +111,6 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
         await startCamera();
     };
 
-
     const handleConfirmPhoto = (e) => {
         e.preventDefault();
 
@@ -122,7 +119,6 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
             return;
         }
 
-        // Abre o modal de termos de uso
         setShowTermsModal(true);
     };
 
@@ -152,7 +148,7 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
 
     return (
         <>
-            <Head title="Foto - Solicitação" />
+            <Head title="Foto - Solicitacao" />
 
             <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-r from-blue-900 via-cyan-700 to-teal-500 p-4">
                 <motion.div
@@ -168,18 +164,18 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
                                     <div>
                                         <p className="text-2xl lg:text-2xl font-extrabold text-white leading-tight text-center">Tire uma</p>
                                         <p className="text-2xl lg:text-3xl font-extrabold text-white leading-tight text-center">FOTO</p>
-                                        <div className='flex items-center justify-center gap-4'>
+                                        <div className="flex items-center justify-center gap-4">
                                             <p className="text-2xl lg:text-2xl font-extrabold text-white leading-tight text-center">PARA CONTINUAR!</p>
                                             <img
                                                 src="https://prevmoc.mg.gov.br/imagens/logo/logo-principal.png"
                                                 alt="Logo Prevmoc"
-                                                className='h-8 bg-white rounded-full p-1 mb-2 object-contain'
+                                                className="h-8 bg-white rounded-full p-1 mb-2 object-contain"
                                             />
                                         </div>
                                     </div>
 
                                     <p className="text-lg text-white/90">
-                                        Tire uma foto para completar sua solicitação.
+                                        Tire uma foto para completar sua solicitacao.
                                     </p>
 
                                     <div className="space-y-4 text-white/90 text-lg">
@@ -189,7 +185,7 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
                                                     1
                                                 </span>
                                                 <p className="">
-                                                    Centralize o rosto na câmera
+                                                    Centralize o rosto na camera
                                                 </p>
                                             </div>
 
@@ -198,7 +194,7 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
                                                     2
                                                 </span>
                                                 <p className="">
-                                                    Certifique-se de estar com documento em mãos para identificação
+                                                    Certifique-se de estar com documento em maos para identificacao
                                                 </p>
                                             </div>
 
@@ -214,7 +210,7 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
                                     </div>
 
                                     <div className="bg-white/15 backdrop-blur-md rounded-2xl p-6 ring-1 ring-white/20">
-                                        <h3 className="text-lg font-bold text-white mb-3">Resumo da Solicitação</h3>
+                                        <h3 className="text-lg font-bold text-white mb-3">Resumo da Solicitacao</h3>
                                         <div className="grid grid-cols-1 gap-3 text-sm">
                                             <div>
                                                 <span className="text-white/70">Nome:</span>
@@ -226,22 +222,22 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
                                                     <p className="text-white font-medium">{dadosSolicitacao.cpf}</p>
                                                 </div>
                                                 <div>
-                                                    <span className="text-white/70">Matrícula:</span>
+                                                    <span className="text-white/70">Matricula:</span>
                                                     <p className="text-white font-medium">{dadosSolicitacao.matricula}</p>
                                                 </div>
                                             </div>
                                             <div>
                                                 <span className="text-white/70">Tipo de Atendimento:</span>
-                                                <p className="text-white font-medium">{tipoAtendimento.nome}</p>
+                                                <p className="text-white font-medium capitalize">{tipoAtendimento.nome}</p>
                                             </div>
-                                            <div className='flex items-center justify-between '>
-                                                <div className='flex flex-col w-full'>
+                                            <div className="flex items-center justify-between ">
+                                                <div className="flex flex-col w-full">
                                                     <span className="text-white/70 ">E-mail:</span>
-                                                    <p className="text-white font-medium">{dadosSolicitacao.email || 'Email Não Cadastrado.'}</p>
+                                                    <p className="text-white font-medium">{dadosSolicitacao.email || 'Email Nao Cadastrado.'}</p>
                                                 </div>
                                                 {dadosSolicitacao.email === null && (
                                                     <span className=" text-red-300 font-bold text-sm mt-1">
-                                                        Atenção: EMAIL NÃO CADASTRADO. Sem um e-mail cadastrado, você não receberá confirmação sobre sua solicitação.
+                                                        Atencao: EMAIL NAO CADASTRADO. Sem um e-mail cadastrado, voce nao recebera confirmacao sobre sua solicitacao.
                                                     </span>
                                                 )}
                                             </div>
@@ -254,10 +250,9 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
                                         <div className="bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-md rounded-3xl px-8 py-4 ring-2 ring-white/30 shadow-2xl space-y-6 border border-white/10">
                                             <div className="flex items-center justify-between mb-6">
                                                 <div className="flex items-center gap-3">
-
                                                     <div>
                                                         <h3 className="text-2xl font-bold text-white">Foto do Solicitante</h3>
-                                                        <p className="text-sm text-white/70">Foto do solicitante para identificação</p>
+                                                        <p className="text-sm text-white/70">Foto do solicitante para identificacao</p>
                                                     </div>
                                                 </div>
 
@@ -267,7 +262,7 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
                                                             type="button"
                                                             onClick={resetPhoto}
                                                             disabled={processing}
-                                                            className="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-red-500/20 to-pink-500/20 text-white  font-semibold hover:from-red-500/30 hover:to-pink-500/30 transition-all ring-2 ring-white/30 disabled:opacity-50 shadow-lg hover:shadow-xl"
+                                                            className="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-red-500/20 to-pink-500/20 text-white font-semibold hover:from-red-500/30 hover:to-pink-500/30 transition-all ring-2 ring-white/30 disabled:opacity-50 shadow-lg hover:shadow-xl"
                                                             whileHover={{ scale: 1.05 }}
                                                             whileTap={{ scale: 0.95 }}
                                                         >
@@ -279,7 +274,7 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
                                                             type="button"
                                                             onClick={capture}
                                                             disabled={processing || isStarting || !!cameraError}
-                                                            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-white to-cyan-100 text-teal-700  font-bold hover:from-cyan-100 hover:to-white transition-all ring-2 ring-white/50 disabled:opacity-50 shadow-lg hover:shadow-xl"
+                                                            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-white to-cyan-100 text-teal-700 font-bold hover:from-cyan-100 hover:to-white transition-all ring-2 ring-white/50 disabled:opacity-50 shadow-lg hover:shadow-xl"
                                                             whileHover={{ scale: 1.05 }}
                                                             whileTap={{ scale: 0.95 }}
                                                         >
@@ -296,7 +291,7 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
                                                     {previewUrl ? (
                                                         <motion.img
                                                             src={previewUrl}
-                                                            alt="Prévia da foto"
+                                                            alt="Previa da foto"
                                                             className="w-full aspect-square object-cover"
                                                             initial={{ scale: 0.8, opacity: 0 }}
                                                             animate={{ scale: 1, opacity: 1 }}
@@ -324,7 +319,7 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
                                                                         Posicione seu rosto aqui
                                                                     </p>
                                                                     <p className="text-white/60 text-sm mt-1">
-                                                                        Centralize e sorria! 😊
+                                                                        Centralize e sorria!
                                                                     </p>
                                                                 </div>
                                                             </div>
@@ -367,7 +362,6 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
                                                     <p className="text-white text-center">{errors.error}</p>
                                                 </motion.div>
                                             )}
-
 
                                             <div className="flex justify-end gap-4">
                                                 <motion.button
@@ -432,42 +426,65 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
                         >
                             <div className="bg-white px-6 py-5 border-b border-gray-200">
                                 <h2 className="text-xl font-semibold text-gray-800 text-center">
-                                    Termo de uso do da solicitação
+                                    Termo de uso da solicitacao
                                 </h2>
                             </div>
 
                             <div className="flex-1 overflow-y-auto px-6 py-6 bg-white">
                                 <div className="text-gray-700 space-y-4">
                                     <div className="space-y-4 text-sm leading-relaxed">
-                                        <p className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm leading-relaxed text-gray-800">
-                                            <span className="font-semibold text-gray-900">Eu,</span>{" "}
-                                            <span className="font-semibold text-gray-900">{dadosSolicitacao.nome}</span>, portador do CPF nº{" "}
-                                            <span className="font-medium text-gray-900">{dadosSolicitacao.cpf}</span>, matrícula{" "}
-                                            <span className="font-medium text-gray-900">{dadosSolicitacao.matricula}</span>, na qualidade de{" "}
-                                            <span className="font-medium text-gray-900">
-                                                Servidor Inativo (aposentado e/ou pensionista)
-                                            </span>
-                                            , venho requerer a antecipação do recebimento da{" "}
-                                            <span className="font-medium text-gray-900">1ª parcela do Abono Anual (13º salário)</span>, na
-                                            forma da lei.
-                                        </p>
+                                        {isRecadastramento ? (
+                                            <>
+                                                <p className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm leading-relaxed text-gray-800">
+                                                    <span className="font-semibold text-gray-900">Eu,</span>{' '}
+                                                    <span className="font-semibold text-gray-900">{dadosSolicitacao.nome}</span>, portador do CPF n{' '}
+                                                    <span className="font-medium text-gray-900">{dadosSolicitacao.cpf}</span>, matricula{' '}
+                                                    <span className="font-medium text-gray-900">{dadosSolicitacao.matricula}</span>, declaro que estou realizando a solicitacao de{' '}
+                                                    <span className="font-medium text-gray-900">recadastramento / prova de vida</span>,
+                                                    confirmando a veracidade dos dados informados e das alteracoes apresentadas neste fluxo.
+                                                </p>
+
+                                                <p>
+                                                    Declaro ciencia de que esta solicitacao podera passar por analise do setor competente,
+                                                    inclusive para validacao cadastral, conferencia documental e confirmacao das informacoes enviadas.
+                                                </p>
+
+                                                <p>
+                                                    Estou ciente de que, caso sejam identificadas inconsistencias, ausencia de documentos ou
+                                                    necessidade de complementacao, poderei ser contatado pelos canais cadastrados para regularizacao.
+                                                </p>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <p className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm leading-relaxed text-gray-800">
+                                                    <span className="font-semibold text-gray-900">Eu,</span>{' '}
+                                                    <span className="font-semibold text-gray-900">{dadosSolicitacao.nome}</span>, portador do CPF n{' '}
+                                                    <span className="font-medium text-gray-900">{dadosSolicitacao.cpf}</span>, matricula{' '}
+                                                    <span className="font-medium text-gray-900">{dadosSolicitacao.matricula}</span>, na qualidade de{' '}
+                                                    <span className="font-medium text-gray-900">
+                                                        Servidor Inativo (aposentado e/ou pensionista)
+                                                    </span>
+                                                    , venho requerer a antecipacao do recebimento da{' '}
+                                                    <span className="font-medium text-gray-900">1a parcela do Abono Anual (13o salario)</span>, na forma da lei.
+                                                </p>
+
+                                                <p>
+                                                    Declaro ainda ciencia de que essa solicitacao passara pela analise de setor competente, nao
+                                                    implicando em lancamento em folha de forma automatica, ficando a meu criterio entrar em
+                                                    contato com o PREVMOC a partir da segunda quinzena do mes vigente para verificacao do status
+                                                    da minha solicitacao.
+                                                </p>
+                                            </>
+                                        )}
 
                                         <p>
-                                            Declaro ainda ciência de que essa solicitação passará pela análise de setor competente, não
-                                            implicando em lançamento em folha de forma automática, ficando a meu critério entrar em
-                                            contato com o PREVMOC a partir da segunda quinzena do mês vigente para verificação do status
-                                            da minha solicitação.
-                                        </p>
-
-                                        <p>
-                                            Estou ciente de que os dados coletados serão tratados com segurança, respeitando os
-                                            princípios da finalidade, adequação e necessidade, e não serão compartilhados com terceiros
-                                            estranhos ao processo, exceto por obrigação legal ou regulatória.
+                                            Estou ciente de que os dados coletados serao tratados com seguranca, respeitando os
+                                            principios da finalidade, adequacao e necessidade, e nao serao compartilhados com terceiros
+                                            estranhos ao processo, exceto por obrigacao legal ou regulatoria.
                                         </p>
                                     </div>
                                 </div>
                             </div>
-
 
                             <div className="bg-white px-6 py-4 border-t border-gray-200">
                                 <div className="flex flex-col-reverse sm:flex-row gap-3 justify-center">
@@ -498,7 +515,7 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
                                                 Enviando...
                                             </span>
                                         ) : (
-                                            'FINALIZAR SOLICITAÇÃO'
+                                            'FINALIZAR SOLICITACAO'
                                         )}
                                     </motion.button>
                                 </div>
@@ -506,7 +523,6 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
                         </motion.div>
                     </motion.div>
                 )}
-
             </div>
         </>
     );

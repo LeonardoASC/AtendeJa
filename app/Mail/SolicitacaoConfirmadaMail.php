@@ -8,12 +8,14 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Str;
 
 class SolicitacaoConfirmadaMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     public $solicitacao;
+    public bool $isRecadastramento;
 
     /**
      * Create a new message instance.
@@ -21,6 +23,9 @@ class SolicitacaoConfirmadaMail extends Mailable
     public function __construct(Solicitacao $solicitacao)
     {
         $this->solicitacao = $solicitacao;
+        $this->isRecadastramento = $this->isRecadastramentoTipo(
+            $solicitacao->tipoAtendimento->nome ?? null
+        );
     }
 
     /**
@@ -29,7 +34,9 @@ class SolicitacaoConfirmadaMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Confirmação de Solicitação - ' . $this->solicitacao->tipoAtendimento->nome,
+            subject: $this->isRecadastramento
+                ? 'Confirmacao de Recadastramento / Prova de Vida'
+                : 'Confirmacao de Solicitacao - ' . ($this->solicitacao->tipoAtendimento->nome ?? 'Solicitacao'),
         );
     }
 
@@ -51,5 +58,14 @@ class SolicitacaoConfirmadaMail extends Mailable
     public function attachments(): array
     {
         return [];
+    }
+
+    private function isRecadastramentoTipo(?string $nome): bool
+    {
+        $normalizado = Str::upper(Str::ascii(trim((string) $nome)));
+        $normalizado = preg_replace('/[^A-Z0-9]+/', '', $normalizado) ?? '';
+        $alvo = preg_replace('/[^A-Z0-9]+/', '', Str::upper(Str::ascii('RECADASTRAMENTO / PROVA DE VIDA'))) ?? '';
+
+        return $normalizado === $alvo;
     }
 }
