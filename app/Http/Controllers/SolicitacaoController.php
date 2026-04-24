@@ -76,7 +76,7 @@ class SolicitacaoController extends Controller
             ])->withInput();
         }
 
-        session(['dados_solicitacao' => $validated]);
+        $this->atualizarDadosSolicitacao($validated);
 
         $tipoAtendimento = TipoAtendimento::find($validated['tipo_atendimento_id']);
 
@@ -125,18 +125,18 @@ class SolicitacaoController extends Controller
             'recadastramento.resumo' => 'nullable|array',
         ]);
 
-        $dadosSolicitacao['recadastramento'] = $validated['recadastramento'] ?? [
-            'alteracoesCampos' => [],
-            'novosDependentes' => [],
-            'dependentesParaRemover' => [],
-            'resumo' => [
-                'totalCamposAlterados' => 0,
-                'totalNovosDependentes' => 0,
-                'totalDependentesParaRemover' => 0,
+        $this->atualizarDadosSolicitacao([
+            'recadastramento' => $validated['recadastramento'] ?? [
+                'alteracoesCampos' => [],
+                'novosDependentes' => [],
+                'dependentesParaRemover' => [],
+                'resumo' => [
+                    'totalCamposAlterados' => 0,
+                    'totalNovosDependentes' => 0,
+                    'totalDependentesParaRemover' => 0,
+                ],
             ],
-        ];
-
-        session(['dados_solicitacao' => $dadosSolicitacao]);
+        ]);
 
         return redirect()->route('solicitacoes.assinar.form');
     }
@@ -146,18 +146,18 @@ class SolicitacaoController extends Controller
      */
     public function assinarStore(Request $request)
     {
+        $dadosSolicitacao = session('dados_solicitacao');
+
+        if (!$dadosSolicitacao) {
+            return redirect()->route('solicitacoes.index')
+                ->with('error', 'Sessao expirada. Por favor, preencha o formulario novamente.');
+        }
+
         $validated = $request->validate([
-            'tipo_atendimento_id' => 'required|exists:tipo_atendimentos,id',
-            'nome' => 'required|string|max:255',
-            'cpf' => 'required|string|size:11',
-            'email' => 'nullable|email|max:255',
-            'matricula' => 'nullable|string|max:50',
-            'telefone' => 'nullable|string|max:20',
-            'dados_formulario' => 'nullable|array',
             'assinatura' => 'required|string',
         ]);
 
-        session(['dados_solicitacao' => $validated]);
+        $this->atualizarDadosSolicitacao($validated);
 
         return redirect()->route('solicitacoes.foto.form');
     }
@@ -233,8 +233,9 @@ class SolicitacaoController extends Controller
 
         $path = $request->file('foto')->store('SolicitacaoFoto', 'public');
 
-        $dadosSolicitacao['foto'] = $path;
-        session(['dados_solicitacao' => $dadosSolicitacao]);
+        $this->atualizarDadosSolicitacao([
+            'foto' => $path,
+        ]);
 
         return redirect()->route('solicitacoes.finalizar');
     }
@@ -547,5 +548,11 @@ class SolicitacaoController extends Controller
         Storage::disk('public')->put($path, $pdf->output());
 
         return $path;
+    }
+
+    private function atualizarDadosSolicitacao(array $dados): void
+    {
+        $atuais = session('dados_solicitacao', []);
+        session(['dados_solicitacao' => array_merge($atuais, $dados)]);
     }
 }

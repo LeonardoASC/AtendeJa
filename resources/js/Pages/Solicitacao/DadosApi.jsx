@@ -25,7 +25,7 @@ export default function DadosApi({ dadosSolicitacao, tipoAtendimento }) {
     return (
         <>
             <Head title="Revisao dos Dados da API" />
-            <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-r from-blue-900 via-cyan-700 to-teal-500 py-8 px-4">
+            <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-r from-blue-900 via-cyan-700 to-teal-500 py-2 px-4">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -35,7 +35,14 @@ export default function DadosApi({ dadosSolicitacao, tipoAtendimento }) {
                     <div className="px-8 py-4">
                         <div className="flex items-center justify-center">
                             <div className="mb-6 bg-white/10 backdrop-blur-md rounded-2xl py-3 px-5 ring-1 ring-white/20 ">
-                                <h2 className="text-lg font-bold text-white mb-3">Resumo da Solicitacao</h2>
+                                <div className='flex gap-2'>
+                                    <h2 className="text-lg font-bold text-white mb-3">Resumo da Solicitacao</h2>
+                                    <img
+                                        src="https://prevmoc.mg.gov.br/imagens/logo/logo-principal.png"
+                                        alt="Logo Prevmoc"
+                                        className='h-8 bg-white rounded-full p-1 mb-2 object-contain'
+                                    />
+                                </div>
                                 <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-sm text-center">
                                     <div>
                                         <span className="text-white/70">Nome:</span>
@@ -62,7 +69,7 @@ export default function DadosApi({ dadosSolicitacao, tipoAtendimento }) {
                             onReviewDataChange={(payload) => setData('recadastramento', payload)}
                         />
 
-                        <form onSubmit={handleContinuar} className="mt-4 flex flex-col sm:flex-row gap-3 sm:justify-end">
+                        <form onSubmit={handleContinuar} className="mt-4 flex flex-col sm:flex-row gap-3 sm:justify-end items-center">
                             <Link
                                 href={route('solicitacoes.create', { tipo: dadosSolicitacao?.tipo_atendimento_id })}
                                 className="py-3 px-6 rounded-xl text-base font-semibold text-white/80 hover:text-white hover:bg-white/15 backdrop-blur transition-all text-center border-2 border-white/30"

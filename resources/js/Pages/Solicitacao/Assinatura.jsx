@@ -9,8 +9,7 @@ export default function Assinatura({ dadosSolicitacao, tipoAtendimento }) {
     const [hasDrawn, setHasDrawn] = useState(false);
     const [context, setContext] = useState(null);
 
-    const { data, setData, post, processing, errors } = useForm({
-        ...dadosSolicitacao,
+    const { setData, post, processing, errors, transform } = useForm({
         assinatura: '',
     });
 
@@ -86,8 +85,6 @@ export default function Assinatura({ dadosSolicitacao, tipoAtendimento }) {
         setData('assinatura', '');
     };
 
-    const [shouldSubmit, setShouldSubmit] = useState(false);
-
     const handleSubmit = (e) => {
         e.preventDefault();
 
@@ -99,25 +96,12 @@ export default function Assinatura({ dadosSolicitacao, tipoAtendimento }) {
         const canvas = canvasRef.current;
         const signatureData = canvas.toDataURL('image/png');
         setData('assinatura', signatureData);
-        setShouldSubmit(true);
-    };
+        transform(() => ({
+            assinatura: signatureData,
+        }));
 
-    useEffect(() => {
-        if (shouldSubmit && data.assinatura) {
-            const formData = new FormData();
-            Object.entries(data).forEach(([key, value]) => {
-                if (Array.isArray(value) || typeof value === 'object') {
-                    formData.append(key, JSON.stringify(value));
-                } else {
-                    formData.append(key, value ?? '');
-                }
-            });
-            post(route('solicitacoes.assinar.store'), formData, {
-                forceFormData: true,
-                onFinish: () => setShouldSubmit(false),
-            });
-        }
-    }, [shouldSubmit, data.assinatura]);
+        post(route('solicitacoes.assinar.store'));
+    };
 
     return (
         <>

@@ -26,7 +26,6 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
         .toUpperCase() === 'RECADASTRAMENTOPROVADEVIDA';
 
     const { data, setData, post, processing, errors } = useForm({
-        ...dadosSolicitacao,
         foto: null,
     });
 
@@ -123,24 +122,6 @@ export default function Foto({ dadosSolicitacao, tipoAtendimento }) {
     };
 
     const handleSubmit = () => {
-        const formData = new FormData();
-
-        Object.entries(data).forEach(([key, value]) => {
-            if (value === null || value === undefined || value === '') return;
-
-            if (value instanceof File) {
-                formData.append(key, value);
-                return;
-            }
-
-            if (Array.isArray(value) || typeof value === 'object') {
-                formData.append(key, JSON.stringify(value));
-                return;
-            }
-
-            formData.append(key, value);
-        });
-
         post(route('solicitacoes.foto.store'), {
             preserveScroll: true,
         });

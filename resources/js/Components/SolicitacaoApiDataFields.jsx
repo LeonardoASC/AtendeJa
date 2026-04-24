@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 
 export default function SolicitacaoApiDataFields({ dadosFormulario = {}, onReviewDataChange }) {
@@ -14,6 +14,8 @@ export default function SolicitacaoApiDataFields({ dadosFormulario = {}, onRevie
     const [novoDependenteDraft, setNovoDependenteDraft] = useState(null);
     const [errosNovoDependente, setErrosNovoDependente] = useState({});
     const [camposTocadosNovoDependente, setCamposTocadosNovoDependente] = useState({});
+    const modalInputRef = useRef(null);
+    const modalTextareaRef = useRef(null);
     const camposPorPasso = 8;
 
     const templateDependente = {
@@ -110,6 +112,16 @@ export default function SolicitacaoApiDataFields({ dadosFormulario = {}, onRevie
         return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
     };
 
+    const formatarTelefone = (value = '') => {
+        const digits = somenteDigitos(value).slice(0, 11);
+
+        if (digits.length <= 2) return digits;
+        if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+        if (digits.length <= 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+
+        return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+    };
+
     const formatarDataBr = (value = '') => {
         const digits = somenteDigitos(value).slice(0, 8);
 
@@ -140,6 +152,26 @@ export default function SolicitacaoApiDataFields({ dadosFormulario = {}, onRevie
         }
 
         return valor;
+    };
+
+    const obterUltimaChaveNormalizada = (key = '') => String(key)
+        .toUpperCase()
+        .split('.')
+        .pop()
+        .replace(/\[\d+\]/g, '');
+
+    const normalizarValorCampoApi = (key, valor) => {
+        const chaveFinal = obterUltimaChaveNormalizada(key);
+
+        if (chaveFinal === 'CPF') {
+            return formatarCpf(valor);
+        }
+
+        if (['TEL_CELULAR', 'TEL_OUTRO', 'TEL_RESIDENCIAL'].includes(chaveFinal)) {
+            return formatarTelefone(valor);
+        }
+
+        return formatInputValue(valor);
     };
 
     const validarNovoDependente = (dependente) => {
@@ -234,7 +266,7 @@ export default function SolicitacaoApiDataFields({ dadosFormulario = {}, onRevie
                 return flattenApiData(value, compoundKey);
             }
 
-            return [{ key: compoundKey, value: formatInputValue(value) }];
+            return [{ key: compoundKey, value: normalizarValorCampoApi(compoundKey, value) }];
         });
     };
 
@@ -456,6 +488,22 @@ export default function SolicitacaoApiDataFields({ dadosFormulario = {}, onRevie
         setModalAberto(true);
     };
 
+    const handleValorModalChange = (key, value) => {
+        const chaveFinal = obterUltimaChaveNormalizada(key);
+
+        if (chaveFinal === 'CPF') {
+            setValorModal(formatarCpf(value));
+            return;
+        }
+
+        if (['TEL_CELULAR', 'TEL_OUTRO', 'TEL_RESIDENCIAL'].includes(chaveFinal)) {
+            setValorModal(formatarTelefone(value));
+            return;
+        }
+
+        setValorModal(value);
+    };
+
     const fecharModalCampo = () => {
         setModalAberto(false);
         setCampoSelecionado(null);
@@ -629,6 +677,24 @@ export default function SolicitacaoApiDataFields({ dadosFormulario = {}, onRevie
     const isCampoSexoNoModal = Boolean(
         campoSelecionado && String(campoSelecionado.key || '').toUpperCase().split('.').pop() === 'SEXO'
     );
+
+    useEffect(() => {
+        if (!modalAberto || isCampoSexoNoModal) {
+            return;
+        }
+
+        const target = usarCampoTextoSimplesNoModal ? modalInputRef.current : modalTextareaRef.current;
+
+        if (!target) {
+            return;
+        }
+
+        target.focus();
+        if (typeof target.setSelectionRange === 'function') {
+            const length = String(target.value || '').length;
+            target.setSelectionRange(length, length);
+        }
+    }, [modalAberto, isCampoSexoNoModal, usarCampoTextoSimplesNoModal, valorModal]);
 
     if (!temCampos) return null;
 
@@ -839,15 +905,17 @@ export default function SolicitacaoApiDataFields({ dadosFormulario = {}, onRevie
                                 </select>
                             ) : usarCampoTextoSimplesNoModal ? (
                                 <input
+                                    ref={modalInputRef}
                                     type="text"
                                     value={valorModal}
-                                    onChange={(event) => setValorModal(event.target.value)}
+                                    onChange={(event) => handleValorModalChange(campoSelecionado.key, event.target.value)}
                                     className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-200"
                                 />
                             ) : (
                                 <textarea
+                                    ref={modalTextareaRef}
                                     value={valorModal}
-                                    onChange={(event) => setValorModal(event.target.value)}
+                                    onChange={(event) => handleValorModalChange(campoSelecionado.key, event.target.value)}
                                     rows={4}
                                     className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-200"
                                 />
