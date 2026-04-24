@@ -102,6 +102,11 @@
             margin: 14px 0 6px;
         }
 
+        .helper-text {
+            margin-top: 6px;
+            color: #444;
+        }
+
         ul {
             margin: 8px 0 0 18px;
             padding: 0;
@@ -116,6 +121,39 @@
             font-size: 10px;
             color: #666;
             margin-top: 20px;
+        }
+
+        .signature-line {
+            margin: 30px auto 20px auto;
+            max-width: 350px;
+        }
+
+        .signature-line-border {
+            border-top: 1px solid #000;
+            padding-top: 5px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .photo-container {
+            border: 1px solid #000;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f9f9f9;
+            margin-top: 20px;
+        }
+
+        .photo-container img {
+            max-width: 100%;
+            max-height: 200px;
+        }
+
+        .photo-placeholder {
+            font-size: 16px;
+            color: #999;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -162,11 +200,15 @@
                     <th>Telefone</th>
                     <td>{{ $dadosBasicos['telefone'] ?: '-' }}</td>
                 </tr>
+                <tr>
+                    <th>Matricula</th>
+                    <td>{{ $dadosBasicos['matricula'] ?: '-' }}</td>
+                </tr>
             </tbody>
         </table>
 
-        <div class="section-title">Campos Alterados</div>
-        @if (!empty($alteracoesCampos))
+        <div class="section-title">Alteracoes de Dados Pessoais - ({{ $dadosBasicos['nome'] ?: '-' }})</div>
+        @if (!empty($alteracoesDadosPessoais))
             <table>
                 <thead>
                     <tr>
@@ -176,7 +218,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($alteracoesCampos as $alteracao)
+                    @foreach ($alteracoesDadosPessoais as $alteracao)
                         <tr>
                             <td>{{ $alteracao['campo'] ?? ($alteracao['chave'] ?? '-') }}</td>
                             <td>{{ $alteracao['valorAnterior'] ?? '-' }}</td>
@@ -186,10 +228,45 @@
                 </tbody>
             </table>
         @else
-            <p class="empty-state">Nenhum campo alterado.</p>
+            <p class="empty-state">Nenhuma alteracao de dados pessoais.</p>
         @endif
 
-        <div class="section-title">Novos Dependentes</div>
+        <div class="section-title">Alteracoes nos Dados dos Dependentes</div>
+        @if (!empty($alteracoesDependentesAgrupadas))
+            <p class="helper-text">
+                Abaixo estao separadas, por dependente, as informacoes que foram revisadas ou alteradas.
+            </p>
+            @foreach ($alteracoesDependentesAgrupadas as $grupoDependente)
+                <div class="dependente-title">
+                    {{ $grupoDependente['titulo'] }}
+                    @if (!empty($grupoDependente['nome']))
+                        - {{ $grupoDependente['nome'] }}
+                    @endif
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 25%;">Campo alterado</th>
+                            <th style="width: 37.5%;">Como estava antes</th>
+                            <th style="width: 37.5%;">Como ficou informado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($grupoDependente['alteracoes'] as $alteracao)
+                            <tr>
+                                <td>{{ $alteracao['campo'] ?? ($alteracao['chave'] ?? '-') }}</td>
+                                <td>{{ $alteracao['valorAnterior'] ?? '-' }}</td>
+                                <td>{{ $alteracao['valorNovo'] ?? '-' }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endforeach
+        @else
+            <p class="empty-state">Nenhuma alteracao em dados de dependentes.</p>
+        @endif
+
+        <div class="section-title">Inclusao de Novos Dependentes</div>
         @if (!empty($novosDependentes))
             @foreach ($novosDependentes as $index => $dependente)
                 <div class="dependente-title">Dependente {{ $index + 1 }}</div>
@@ -210,7 +287,7 @@
             <p class="empty-state">Nenhum novo dependente incluido.</p>
         @endif
 
-        <div class="section-title">Dependentes Marcados Para Remocao</div>
+        <div class="section-title">Exclusao de Dependentes</div>
         @if (!empty($dependentesParaRemover))
             <ul>
                 @foreach ($dependentesParaRemover as $item)
@@ -219,6 +296,33 @@
             </ul>
         @else
             <p class="empty-state">Nenhum dependente marcado para remocao.</p>
+        @endif
+
+        @if ($assinatura)
+            <div class="signature-line">
+                <div style="text-align: center; margin-bottom: 10px;">
+                    <img src="{{ $assinatura }}" alt="Assinatura" style="max-height: 60px;">
+                </div>
+                <div class="signature-line-border">
+                    {{ $dadosBasicos['nome'] ?: 'Assinatura do solicitante' }}
+                </div>
+            </div>
+        @else
+            <div class="signature-line">
+                <div class="signature-line-border">
+                    {{ $dadosBasicos['nome'] ?: 'Assinatura do solicitante' }}
+                </div>
+            </div>
+        @endif
+
+        @if ($foto)
+            <div class="photo-container">
+                <img src="{{ $foto }}" alt="Foto do solicitante">
+            </div>
+        @else
+            <div class="photo-container">
+                <div class="photo-placeholder">[FOTO]</div>
+            </div>
         @endif
 
         <footer class="footer">

@@ -526,6 +526,18 @@ class SolicitacaoController extends Controller
         $alteracoesCampos = $recadastramento['alteracoesCampos'] ?? [];
         $novosDependentes = $recadastramento['novosDependentes'] ?? [];
         $dependentesParaRemover = $recadastramento['dependentesParaRemover'] ?? [];
+        $dadosFormulario = $dados['dados_formulario'] ?? [];
+        if (!is_array($dadosFormulario)) {
+            $dadosFormulario = [];
+        }
+        $alteracoesClassificadas = $this->classificarAlteracoesRecadastramento(
+            is_array($alteracoesCampos) ? $alteracoesCampos : []
+        );
+        $alteracoesDependentesAgrupadas = $this->agruparAlteracoesDependentes(
+            $alteracoesClassificadas['dependentes'],
+            $dadosFormulario
+        );
+        $fotoPath = !empty($dados['foto']) ? public_path('storage/' . $dados['foto']) : null;
 
         $pdf = Pdf::loadView('relatorios.solicitacao-recadastramento', [
             'dadosBasicos' => [
@@ -533,10 +545,16 @@ class SolicitacaoController extends Controller
                 'email' => $dados['email'] ?? '',
                 'cpf' => $dados['cpf'] ?? '',
                 'telefone' => $dados['telefone'] ?? '',
+                'matricula' => $dados['matricula'] ?? '',
             ],
             'alteracoesCampos' => is_array($alteracoesCampos) ? $alteracoesCampos : [],
+            'alteracoesDadosPessoais' => $alteracoesClassificadas['dadosPessoais'],
+            'alteracoesDependentes' => $alteracoesClassificadas['dependentes'],
+            'alteracoesDependentesAgrupadas' => $alteracoesDependentesAgrupadas,
             'novosDependentes' => is_array($novosDependentes) ? $novosDependentes : [],
             'dependentesParaRemover' => is_array($dependentesParaRemover) ? $dependentesParaRemover : [],
+            'assinatura' => $dados['assinatura'] ?? null,
+            'foto' => $fotoPath && file_exists($fotoPath) ? $fotoPath : null,
             'geradoEm' => now(),
         ]);
 
@@ -554,5 +572,76 @@ class SolicitacaoController extends Controller
     {
         $atuais = session('dados_solicitacao', []);
         session(['dados_solicitacao' => array_merge($atuais, $dados)]);
+    }
+
+    private function classificarAlteracoesRecadastramento(array $alteracoesCampos): array
+    {
+        $dadosPessoais = [];
+        $dependentes = [];
+
+        foreach ($alteracoesCampos as $alteracao) {
+            $chave = Str::upper((string) ($alteracao['chave'] ?? ''));
+            $ehDependente = str_contains($chave, 'DEPENDENTES') || str_contains($chave, 'DEPENDENTE');
+
+            if ($ehDependente) {
+                $dependentes[] = $alteracao;
+                continue;
+            }
+
+            $dadosPessoais[] = $alteracao;
+        }
+
+        return [
+            'dadosPessoais' => $dadosPessoais,
+            'dependentes' => $dependentes,
+        ];
+    }
+
+    private function agruparAlteracoesDependentes(array $alteracoesDependentes, array $dadosFormulario): array
+    {
+        $dependentesOriginais = $this->extrairDependentesOriginais($dadosFormulario);
+        $grupos = [];
+
+        foreach ($alteracoesDependentes as $alteracao) {
+            $chave = Str::upper((string) ($alteracao['chave'] ?? ''));
+            preg_match('/DEPENDENTES?\[(\d+)\]/', $chave, $matches);
+            $indice = isset($matches[1]) ? (int) $matches[1] : null;
+            $chaveGrupo = $indice !== null ? (string) $indice : 'sem-indice';
+
+            if (!isset($grupos[$chaveGrupo])) {
+                $nomeOriginal = $indice !== null ? ($dependentesOriginais[$indice]['NOME'] ?? null) : null;
+
+                $grupos[$chaveGrupo] = [
+                    'indice' => $indice,
+                    'titulo' => $indice !== null ? 'Dependente ' . ($indice + 1) : 'Dependente',
+                    'nome' => $nomeOriginal,
+                    'alteracoes' => [],
+                ];
+            }
+
+            $grupos[$chaveGrupo]['alteracoes'][] = $alteracao;
+
+            $campoFinal = $this->extrairUltimoSegmentoChave($chave);
+            if ($campoFinal === 'NOME') {
+                $grupos[$chaveGrupo]['nome'] = $alteracao['valorNovo'] ?: ($alteracao['valorAnterior'] ?? $grupos[$chaveGrupo]['nome']);
+            }
+        }
+
+        return array_values($grupos);
+    }
+
+    private function extrairDependentesOriginais(array $dadosFormulario): array
+    {
+        $dependentes = $dadosFormulario['DEPENDENTES'] ?? $dadosFormulario['dependentes'] ?? [];
+
+        return is_array($dependentes) ? $dependentes : [];
+    }
+
+    private function extrairUltimoSegmentoChave(string $chave): string
+    {
+        $segmentos = explode('.', $chave);
+        $ultimo = end($segmentos);
+
+        return preg_replace('/\[\d+\]/', '', (string) $ultimo) ?? '';
     }
 }

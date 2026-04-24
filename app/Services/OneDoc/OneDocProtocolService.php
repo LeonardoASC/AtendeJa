@@ -148,7 +148,7 @@ class OneDocProtocolService
 
     private function buildConteudo(Solicitacao $s): string
     {
-        $tel = $s->telefone ?: '-';
+        $tel = $this->resolverTelefoneSolicitacao($s);
         $email = $s->email ?: '-';
         $mat = $s->matricula ?: '-';
 
@@ -162,6 +162,29 @@ class OneDocProtocolService
             "Telefone: {$tel}",
             "Anexo PDF: contém foto e assinatura do solicitante",
         ]);
+    }
+
+    private function resolverTelefoneSolicitacao(Solicitacao $s): string
+    {
+        $dadosFormulario = is_array($s->dados_formulario) ? $s->dados_formulario : [];
+
+        foreach (['TEL_CELULAR', 'TEL_RESIDENCIAL', 'TEL_OUTRO'] as $campo) {
+            $valor = $dadosFormulario[$campo] ?? null;
+
+            if (is_array($valor)) {
+                $valor = reset($valor);
+            }
+
+            $valorNormalizado = is_scalar($valor) ? trim((string) $valor) : '';
+
+            if ($valorNormalizado !== '') {
+                return $valorNormalizado;
+            }
+        }
+
+        $telefoneFallback = trim((string) ($s->telefone ?? ''));
+
+        return $telefoneFallback !== '' ? $telefoneFallback : '-';
     }
 
     private function buildAnexos(Solicitacao $s): array
