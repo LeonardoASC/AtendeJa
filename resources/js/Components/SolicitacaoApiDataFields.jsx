@@ -31,6 +31,57 @@ export default function SolicitacaoApiDataFields({ dadosFormulario = {}, onRevie
 
     const capacidadeOptions = ['VALIDO', 'INVALIDO'];
 
+    const estadoCivilOptions = [
+        { value: '1', label: 'Nao Informado' },
+        { value: '2', label: 'CASADO (A)' },
+        { value: '3', label: 'DIVORCIADO (A)' },
+        { value: '4', label: 'Nao Informado' },
+        { value: '5', label: 'SEPARADO (A) JUDICIALMENTE' },
+        { value: '6', label: 'SOLTEIRO (A)' },
+        { value: '7', label: 'UNIAO ESTAVEL' },
+        { value: '8', label: 'VIUVO (A)' },
+    ];
+
+    const racaCorOptions = [
+        { value: '1', label: 'Indigena' },
+        { value: '2', label: 'Branca' },
+        { value: '4', label: 'Preta' },
+        { value: '6', label: 'Amarela' },
+        { value: '8', label: 'Parda' },
+        { value: '9', label: 'Nao Informado' },
+    ];
+
+    const capacidadeCodigoOptions = [
+        { value: '1', label: 'Valido' },
+        { value: '2', label: 'Invalido' },
+    ];
+
+    const vinculoCodigoOptions = [
+        { value: '1', label: 'CONJUGE' },
+        { value: '2', label: 'COMPANHEIRO(A)' },
+        { value: '3', label: 'FILHO(A) NAO EMANCIPADO MENOR DE 21 ANOS' },
+        { value: '4', label: 'FILHO(A) INVALIDO(A)' },
+        { value: '5', label: 'PAI/MAE COM DEPENDENCIA ECONOMICA' },
+        { value: '6', label: 'IRMAO/IRMA NAO EMANCIPADO(A) MENOR DE 21 ANOS COM DEPENDENCIA ECONOMICA' },
+        { value: '7', label: 'IRMAO/IRMA INVALIDO(A) COM DEPENDENCIA ECONOMICA' },
+        { value: '8', label: 'ENTEADO NAO EMANCIPADO MENOR DE 21 ANOS COM DEPENDENCIA ECONOMICA' },
+        { value: '9', label: 'ENTEADO INVALIDO COM DEPENDENCIA ECONOMICA' },
+        { value: '10', label: 'MENOR TUTELADO NAO EMANCIPADO MENOR DE 21 ANOS COM DEPENDENCIA ECONOMICA' },
+        { value: '11', label: 'MENOR TUTELADO INVALIDO COM DEPENDENCIA ECONOMICA' },
+        { value: '15', label: 'FILHO(A) MAIOR DE 21 ANOS' },
+        { value: '21', label: 'Filho ou enteado ate 21 anos, ou maior, se incapacitado fisica e/ou mentalmente' },
+        { value: '22', label: 'Filho ou enteado ate 24 anos, se universitario ou cursando escola tecnica de 2o grau' },
+        { value: '23', label: 'OUTROS' },
+        { value: '24', label: 'Irmao, neto ou bisneto sem arrimo ate 21 anos, ou incapaz fisica/mentalmente' },
+        { value: '25', label: 'Irmao, neto ou bisneto sem arrimo ate 24 anos, em universidade ou escola tecnica' },
+        { value: '26', label: 'Filho ou enteado ate 18 anos, ou maior, se incapacitado fisica e/ou mentalmente' },
+        { value: '27', label: 'Pessoa absolutamente incapaz da qual o contribuinte seja tutor ou curador' },
+        { value: '28', label: 'Neto(a)' },
+        { value: '29', label: 'Pais, avos, bisavos, que receberam rendimentos tributaveis' },
+        { value: '30', label: 'Menor pobre ate 21 anos que o contribuinte crie, eduque e detenha guarda judicial' },
+        { value: '31', label: 'EX-CONJUGE' },
+    ];
+
     const vinculoOptions = [
         'COMPANHEIRO(A)',
         'CONJUGE',
@@ -85,6 +136,35 @@ export default function SolicitacaoApiDataFields({ dadosFormulario = {}, onRevie
         'DEPENDENTES',
         'RESPONSAVEIS_LEGAIS',
     ]);
+
+    const camposBloqueadosResponsavelLegal = new Set([
+        'GRAU_INSTRUCAO',
+        'RG',
+        'ORGAO_EXPEDIDOR',
+        'UF_RG',
+        'DATA_EXP',
+        'RESP_LEGAL_TIPO',
+        'RESP_LEGAL_RECEBIMENTOS',
+        'RESP_LEGAL_DATA_INICIO',
+        'RESP_LEGAL_DATA_FIM',
+    ]);
+
+    const isCampoBloqueadoResponsavelLegal = (key = '') => {
+        const chaveNormalizada = String(key || '')
+            .toUpperCase()
+            .replace(/^(?:\[\d+\]\.?)*/, '');
+
+        if (!/^RESPONS/.test(chaveNormalizada)) {
+            return false;
+        }
+
+        const ultimaChaveNormalizada = chaveNormalizada
+            .split('.')
+            .pop()
+            .replace(/\[\d+\]/g, '');
+
+        return camposBloqueadosResponsavelLegal.has(ultimaChaveNormalizada);
+    };
 
     const formatInputValue = (value) => {
         if (value === null || value === undefined) return '';
@@ -143,6 +223,93 @@ export default function SolicitacaoApiDataFields({ dadosFormulario = {}, onRevie
 
         const data = new Date(ano, mes - 1, dia);
         return data.getFullYear() === ano && data.getMonth() === (mes - 1) && data.getDate() === dia;
+    };
+
+    const parseDataBr = (value = '') => {
+        if (Array.isArray(value)) return null;
+
+        const texto = String(value ?? '').trim();
+        if (!texto || texto === '[]') return null;
+
+        const match = texto.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+        if (!match) return null;
+
+        const dia = Number(match[1]);
+        const mes = Number(match[2]);
+        const ano = Number(match[3]);
+
+        const data = new Date(ano, mes - 1, dia);
+        if (
+            Number.isNaN(data.getTime()) ||
+            data.getFullYear() !== ano ||
+            data.getMonth() !== mes - 1 ||
+            data.getDate() !== dia
+        ) {
+            return null;
+        }
+
+        return data;
+    };
+
+    const getHojeSemHorario = () => {
+        const hoje = new Date();
+        return new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+    };
+
+    const isDataFimDependenciaExpirada = (valor = '') => {
+        const dataFimDependencia = parseDataBr(valor);
+
+        if (!dataFimDependencia) return false;
+
+        return dataFimDependencia < getHojeSemHorario();
+    };
+
+    const isDependenteAtivo = (dependente) => {
+        const dataFim = String(
+            dependente?.DATA_FIM_DEPENDENCIA ??
+            dependente?.data_fim_dependencia ??
+            ''
+        ).trim();
+
+        if (!dataFim) return true;
+
+        return !isDataFimDependenciaExpirada(dataFim);
+    };
+
+    const filtrarDependentesAtivos = (dados = {}) => {
+        if (!dados || typeof dados !== 'object' || Array.isArray(dados)) {
+            return dados;
+        }
+
+        const dependentesOriginais = dados.DEPENDENTES ?? dados.dependentes;
+
+        if (!Array.isArray(dependentesOriginais)) {
+            return dados;
+        }
+
+        const dependentesFiltrados = dependentesOriginais.filter(isDependenteAtivo);
+
+        return {
+            ...dados,
+            ...(Array.isArray(dados.DEPENDENTES) ? { DEPENDENTES: dependentesFiltrados } : {}),
+            ...(Array.isArray(dados.dependentes) ? { dependentes: dependentesFiltrados } : {}),
+        };
+    };
+
+    const isDataFimDependente = (key = '') => {
+        const chave = obterUltimaChaveNormalizada(key);
+        return chave === 'DATA_FIM_DEPENDENCIA' || chave === 'DATA_FIM_DEPENDENTE';
+    };
+
+    const isSecaoDependente = (titulo = '') => titulo === 'Dependentes' || titulo.startsWith('Dependente ');
+
+    const isSecaoDependenteExpirada = (titulo, campos = []) => {
+        if (!isSecaoDependente(titulo)) return false;
+
+        const campoDataFim = campos.find((campo) => isDataFimDependente(campo.key));
+        if (!campoDataFim?.value) return false;
+
+        return isDataFimDependenciaExpirada(campoDataFim.value);
     };
 
     const normalizarValorDependente = (campo, valor) => {
@@ -302,6 +469,54 @@ export default function SolicitacaoApiDataFields({ dadosFormulario = {}, onRevie
         return 'Dados Pessoais';
     };
 
+    const normalizarCodigoOpcao = (value) => {
+        const texto = String(value ?? '').trim();
+        if (!texto) return '';
+        return texto;
+    };
+
+    const isSecaoDadosPessoais = (secao = '') => secao === 'Dados Pessoais';
+    const isSecaoDependentePorNome = (secao = '') => secao === 'Dependentes' || secao.startsWith('Dependente ');
+    const isSecaoResponsavelLegalPorNome = (secao = '') => secao === 'Responsável Legal' || secao.startsWith('Responsável Legal ');
+
+    const getSelectOptionsByCampo = (key = '', secao = '') => {
+        const ultimaChave = obterUltimaChaveNormalizada(key);
+
+        if (ultimaChave === 'ESTADO_CIVIL' && (isSecaoDadosPessoais(secao) || isSecaoResponsavelLegalPorNome(secao))) {
+            return estadoCivilOptions;
+        }
+
+        if (ultimaChave === 'RACA_COR' && isSecaoDadosPessoais(secao)) {
+            return racaCorOptions;
+        }
+
+        if (ultimaChave === 'CAPACIDADE' && (isSecaoDadosPessoais(secao) || isSecaoDependentePorNome(secao))) {
+            return capacidadeCodigoOptions;
+        }
+
+        if (ultimaChave === 'VINCULO' && isSecaoDependentePorNome(secao)) {
+            return vinculoCodigoOptions;
+        }
+
+        return null;
+    };
+
+    const formatarValorParaExibicaoPorOpcoes = (valor, options) => {
+        if (!options || options.length === 0) {
+            return formatInputValue(valor);
+        }
+
+        const codigo = normalizarCodigoOpcao(valor);
+        const opcao = options.find((item) => item.value === codigo);
+
+        return opcao ? opcao.label : formatInputValue(valor);
+    };
+
+    const getValorExibicaoCampo = (campo, valor) => {
+        const options = getSelectOptionsByCampo(campo.key, campo.secao || '');
+        return formatarValorParaExibicaoPorOpcoes(valor, options);
+    };
+
     const isCampoOcultavel = (key, value) => {
         const keyUpper = key.toUpperCase();
         const valor = value || '';
@@ -319,7 +534,7 @@ export default function SolicitacaoApiDataFields({ dadosFormulario = {}, onRevie
     };
 
     const camposApiPorSecao = useMemo(() => {
-        const campos = flattenApiData(dadosFormulario || {});
+        const campos = flattenApiData(filtrarDependentesAtivos(dadosFormulario || {}));
         const secoes = {}; // ← dinâmico, sem chaves fixas
 
         campos.forEach((campo) => {
@@ -338,13 +553,20 @@ export default function SolicitacaoApiDataFields({ dadosFormulario = {}, onRevie
                 secao === 'Responsável Legal' && /^(RESPONSAVEIS?_LEGAIS?|RESPONSAVEL(?:_LEGAL)?)$/.test(chaveNormalizada);
             const ehCampoForaDaListaDadosPessoais =
                 secao === 'Dados Pessoais' && !camposPermitidosDadosPessoais.has(ultimaChaveNormalizada);
+            const ehCampoOcultoResponsavelLegal = isCampoBloqueadoResponsavelLegal(campo.key);
 
-            if (ehCampoContainerDependentes || ehCampoContainerResponsavelLegal || ehCampoForaDaListaDadosPessoais) {
+            if (
+                ehCampoContainerDependentes ||
+                ehCampoContainerResponsavelLegal ||
+                ehCampoForaDaListaDadosPessoais ||
+                ehCampoOcultoResponsavelLegal
+            ) {
                 return;
             }
 
             const item = {
                 ...campo,
+                secao,
                 label: labelFromKey(campo.key),
                 ocultavel: isCampoOcultavel(campo.key, campo.value),
             };
@@ -354,6 +576,12 @@ export default function SolicitacaoApiDataFields({ dadosFormulario = {}, onRevie
             }
 
             secoes[secao].push(item);
+        });
+
+        Object.keys(secoes).forEach((secao) => {
+            if (isSecaoDependenteExpirada(secao, secoes[secao])) {
+                delete secoes[secao];
+            }
         });
 
         const temDadosDependente = Object.keys(secoes).some(
@@ -377,7 +605,7 @@ export default function SolicitacaoApiDataFields({ dadosFormulario = {}, onRevie
 
     const valoresOriginaisPorChave = useMemo(() => {
         const mapa = {};
-        flattenApiData(dadosFormulario || {}).forEach((item) => {
+        flattenApiData(filtrarDependentesAtivos(dadosFormulario || {})).forEach((item) => {
             mapa[item.key] = item.value;
         });
 
@@ -536,7 +764,6 @@ export default function SolicitacaoApiDataFields({ dadosFormulario = {}, onRevie
         return camposEditados[campo.key] !== campo.value;
     };
 
-    const isSecaoDependente = (titulo) => titulo === 'Dependentes' || titulo.startsWith('Dependente ');
     const isSecaoDependenteIndividual = (titulo) => titulo.startsWith('Dependente ');
     const isSecaoResponsavelLegal = (titulo) => titulo === 'Responsável Legal' || titulo.startsWith('Responsável Legal ');
 
@@ -677,9 +904,14 @@ export default function SolicitacaoApiDataFields({ dadosFormulario = {}, onRevie
     const isCampoSexoNoModal = Boolean(
         campoSelecionado && String(campoSelecionado.key || '').toUpperCase().split('.').pop() === 'SEXO'
     );
+    const opcoesCampoSelecionadoNoModal = useMemo(() => {
+        if (!campoSelecionado) return null;
+        return getSelectOptionsByCampo(campoSelecionado.key, campoSelecionado.secao || '');
+    }, [campoSelecionado]);
+    const isCampoComSelectNoModal = Boolean(opcoesCampoSelecionadoNoModal?.length);
 
     useEffect(() => {
-        if (!modalAberto || isCampoSexoNoModal) {
+        if (!modalAberto || isCampoSexoNoModal || isCampoComSelectNoModal) {
             return;
         }
 
@@ -694,7 +926,7 @@ export default function SolicitacaoApiDataFields({ dadosFormulario = {}, onRevie
             const length = String(target.value || '').length;
             target.setSelectionRange(length, length);
         }
-    }, [modalAberto, isCampoSexoNoModal, usarCampoTextoSimplesNoModal, valorModal]);
+    }, [modalAberto, isCampoSexoNoModal, isCampoComSelectNoModal, usarCampoTextoSimplesNoModal, valorModal]);
 
     if (!temCampos) return null;
 
@@ -711,7 +943,7 @@ export default function SolicitacaoApiDataFields({ dadosFormulario = {}, onRevie
 
                     <div className="flex flex-wrap items-center gap-2">
                         {novosDependentes.length > 0 && (
-                            <div className="rounded-full bg-amber-400/20 px-4 py-2 text-sm font-semibold text-amber-100 ring-1 ring-amber-200/50">
+                            <div className="rounded-md bg-amber-400/20 px-4 py-2 text-sm font-semibold text-amber-100 ring-1 ring-amber-200/50">
                                 {novosDependentes.length} novos dependentes vao ser adicionados
                             </div>
                         )}
@@ -720,7 +952,7 @@ export default function SolicitacaoApiDataFields({ dadosFormulario = {}, onRevie
                                 Remover {Object.values(dependentesParaRemover).filter(Boolean).length} dependente(s)
                             </div>
                         )}
-                        <div className="rounded-full bg-white/15 px-4 py-2 text-sm font-semibold text-white ring-1 ring-white/20">
+                        <div className="rounded-md bg-white/15 px-4 py-2 text-sm font-semibold text-white ring-1 ring-white/20">
                             Passo {passoAtual + 1} de {passos.length}
                         </div>
                     </div>
@@ -763,7 +995,7 @@ export default function SolicitacaoApiDataFields({ dadosFormulario = {}, onRevie
                                                         <button
                                                             type="button"
                                                             onClick={abrirModalNovoDependente}
-                                                            className="rounded-lg border border-emerald-200/50 bg-emerald-400/15 px-4 py-2 text-sm font-bold text-emerald-100 transition hover:bg-emerald-400/30"
+                                                            className="rounded-lg border border-emerald-200/50 bg-white/90 px-4 py-2 text-sm font-bold text-emerald-700 transition hover:bg-emerald-400/30 hover:text-white"
                                                         >
                                                             Adicionar dependentes
                                                         </button>
@@ -773,8 +1005,8 @@ export default function SolicitacaoApiDataFields({ dadosFormulario = {}, onRevie
                                                             type="button"
                                                             onClick={() => passo.ehNovoDependente ? removerNovoDependente(passo.novoDependenteId) : alternarRemocaoDependente(passo.titulo)}
                                                             className={`rounded-lg border px-4 py-2 text-sm font-bold transition ${dependentesParaRemover[passo.titulo] && !passo.ehNovoDependente
-                                                                ? 'border-rose-200/70 bg-rose-400/30 text-rose-50'
-                                                                : 'border-rose-200/50 bg-rose-400/15 text-rose-100 hover:bg-rose-400/30'
+                                                                ? 'border-rose-200/70 bg-white/90 text-rose-700 hover:text-white'
+                                                                : 'border-rose-200/50 bg-white/90 text-rose-700 hover:bg-rose-400/30 hover:text-white'
                                                                 }`}
                                                         >
                                                             {passo.ehNovoDependente
@@ -800,7 +1032,7 @@ export default function SolicitacaoApiDataFields({ dadosFormulario = {}, onRevie
                                                     type="text"
                                                     readOnly
                                                     onClick={() => abrirModalCampo(campo)}
-                                                    value={valorCampoAtual(campo)}
+                                                    value={getValorExibicaoCampo(campo, valorCampoAtual(campo))}
                                                     className={`w-full cursor-pointer rounded-lg border px-3 py-2 text-base text-white focus:outline-none ${isCampoAlterado(campo)
                                                         ? 'border-amber-300 bg-amber-300/15 ring-1 ring-amber-200/70'
                                                         : 'border-white/20 bg-white/10'
@@ -902,6 +1134,20 @@ export default function SolicitacaoApiDataFields({ dadosFormulario = {}, onRevie
                                     <option value="">SEXO</option>
                                     <option value="M">MASCULINO</option>
                                     <option value="F">FEMININO</option>
+                                </select>
+                            ) : isCampoComSelectNoModal ? (
+                                <select
+                                    value={valorModal}
+                                    onChange={(event) => setValorModal(event.target.value)}
+                                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-200"
+                                >
+                                    <option value="">{String(campoSelecionado.label || '').toUpperCase()}</option>
+                                    {String(valorModal || '').trim() !== '' && !opcoesCampoSelecionadoNoModal.some((opcao) => opcao.value === String(valorModal)) && (
+                                        <option value={String(valorModal)}>{String(valorModal)}</option>
+                                    )}
+                                    {opcoesCampoSelecionadoNoModal.map((opcao) => (
+                                        <option key={opcao.value} value={opcao.value}>{opcao.label}</option>
+                                    ))}
                                 </select>
                             ) : usarCampoTextoSimplesNoModal ? (
                                 <input
