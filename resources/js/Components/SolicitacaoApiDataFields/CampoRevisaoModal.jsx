@@ -34,7 +34,7 @@ export default function CampoRevisaoModal({
                         onChange={(event) => setValorModal(event.target.value)}
                         className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-200"
                     >
-                        <option value="">SEXO</option>
+                        <option value="" disabled>SELECIONE</option>
                         <option value="M">MASCULINO</option>
                         <option value="F">FEMININO</option>
                     </select>
@@ -44,7 +44,7 @@ export default function CampoRevisaoModal({
                         onChange={(event) => setValorModal(event.target.value)}
                         className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-200"
                     >
-                        <option value="">{String(campoSelecionado.label || '').toUpperCase()}</option>
+                        <option value="" disabled>SELECIONE</option>
                         {String(valorModal || '').trim() !== '' && !opcoesCampoSelecionadoNoModal.some((opcao) => opcao.value === String(valorModal)) && (
                             <option value={String(valorModal)}>{String(valorModal)}</option>
                         )}

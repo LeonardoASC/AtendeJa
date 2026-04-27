@@ -1,10 +1,8 @@
 export const capacidadeOptions = ['VALIDO', 'INVALIDO'];
 
 export const estadoCivilOptions = [
-    { value: '1', label: 'Nao Informado' },
     { value: '2', label: 'CASADO (A)' },
     { value: '3', label: 'DIVORCIADO (A)' },
-    { value: '4', label: 'Nao Informado' },
     { value: '5', label: 'SEPARADO (A) JUDICIALMENTE' },
     { value: '6', label: 'SOLTEIRO (A)' },
     { value: '7', label: 'UNIAO ESTAVEL' },
@@ -17,7 +15,6 @@ export const racaCorOptions = [
     { value: '4', label: 'Preta' },
     { value: '6', label: 'Amarela' },
     { value: '8', label: 'Parda' },
-    { value: '9', label: 'Nao Informado' },
 ];
 
 export const capacidadeCodigoOptions = [
@@ -120,8 +117,10 @@ export const camposPermitidosDadosPessoais = new Set([
 export const camposBloqueadosResponsavelLegal = new Set([
     'GRAU_INSTRUCAO',
     'RG',
-    'ORGAO_EXPEDIDOR',
+    'ORG_EXPEDIDOR',
+    "CARTEIRA_IDENTIDADE",
     'UF_RG',
+    'UF_IDENT',
     'DATA_EXP',
     'RESP_LEGAL_TIPO',
     'RESP_LEGAL_RECEBIMENTOS',

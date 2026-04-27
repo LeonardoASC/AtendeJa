@@ -69,7 +69,7 @@ export default function NovoDependenteModal({
                             onBlur={() => tocarCampoNovoDependente('SEXO')}
                             className={`w-full rounded-xl border bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-200 ${errosNovoDependente.SEXO ? 'border-rose-400 ring-1 ring-rose-300/70' : 'border-slate-200'}`}
                         >
-                            <option value="">SEXO</option>
+                            <option value="" disabled>SELECIONE</option>
                             <option value="M">MASCULINO</option>
                             <option value="F">FEMININO</option>
                         </select>
@@ -97,7 +97,7 @@ export default function NovoDependenteModal({
                             onBlur={() => tocarCampoNovoDependente('CAPACIDADE')}
                             className={`w-full rounded-xl border bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-200 ${errosNovoDependente.CAPACIDADE ? 'border-rose-400 ring-1 ring-rose-300/70' : 'border-slate-200'}`}
                         >
-                            <option value="">CAPACIDADE</option>
+                            <option value="" disabled>SELECIONE</option>
                             {capacidadeOptions.map((opcao) => (
                                 <option key={opcao} value={opcao}>{opcao}</option>
                             ))}
@@ -112,7 +112,7 @@ export default function NovoDependenteModal({
                             onBlur={() => tocarCampoNovoDependente('VINCULO')}
                             className={`w-full rounded-xl border bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-200 ${errosNovoDependente.VINCULO ? 'border-rose-400 ring-1 ring-rose-300/70' : 'border-slate-200'}`}
                         >
-                            <option className="text-slate-500" value="">VINCULO</option>
+                            <option className="text-slate-500" value="" disabled>SELECIONE</option>
                             {vinculoOptions.map((opcao) => (
                                 <option key={opcao} value={opcao}>{opcao}</option>
                             ))}
