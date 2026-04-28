@@ -283,9 +283,31 @@ class SolicitacaoController extends Controller
 
             OpenOneDocProtocolJob::dispatch($solicitacao->id);
 
+            // Envio de email para ambos os emails (antigo e novo) se for recadastramento
+            $emailsParaEnviar = [];
             if (!empty($solicitacao->email)) {
+                $emailsParaEnviar[] = $solicitacao->email;
+            }
+            if ($isRecadastramento && !empty($dadosSolicitacao['recadastramento']['alteracoesCampos'])) {
+                foreach ($dadosSolicitacao['recadastramento']['alteracoesCampos'] as $alteracao) {
+                    if (
+                        isset($alteracao['chave']) &&
+                        (strtoupper($alteracao['chave']) === 'EMAIL' || preg_match('/EMAIL$/i', $alteracao['chave'])) &&
+                        !empty($alteracao['valorNovo'])
+                    ) {
+                        $novoEmail = $alteracao['valorNovo'];
+                        if (filter_var($novoEmail, FILTER_VALIDATE_EMAIL) && !in_array($novoEmail, $emailsParaEnviar)) {
+                            $emailsParaEnviar[] = $novoEmail;
+                        }
+                    }
+                }
+            }
+
+            if (!empty($emailsParaEnviar)) {
                 $solicitacao->load('tipoAtendimento');
-                Mail::to($solicitacao->email)->send(new SolicitacaoConfirmadaMail($solicitacao));
+                foreach ($emailsParaEnviar as $emailDestino) {
+                    Mail::to($emailDestino)->send(new SolicitacaoConfirmadaMail($solicitacao));
+                }
             }
 
             session()->forget('dados_solicitacao');
