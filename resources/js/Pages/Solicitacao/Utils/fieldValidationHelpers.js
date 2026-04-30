@@ -1,4 +1,4 @@
-import { capacidadeOptions, vinculoOptions } from './fieldData';
+import { capacidadeOptions, vinculoCodigoOptions } from './fieldData';
 import { isDataBrValida, somenteDigitos } from './fieldHelpers';
 
 export const validarNovoDependente = (dependente) => {
@@ -69,7 +69,7 @@ export const validarCampoNovoDependente = (campo, valor, dependente) => {
         return 'Selecione a capacidade.';
     }
 
-    if (campo === 'VINCULO' && !vinculoOptions.includes(texto)) {
+    if (campo === 'VINCULO' && !vinculoCodigoOptions.some(o => o.label === texto)) {
         return 'Selecione o vinculo.';
     }
 

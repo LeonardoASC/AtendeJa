@@ -11,7 +11,7 @@ export default function NovoDependenteModal({
     possuiErrosNovoDependente,
     salvarNovoDependente,
     tocarCampoNovoDependente,
-    vinculoOptions,
+    vinculoCodigoOptions,
 }) {
     if (!modalNovoDependenteAberto || !novoDependenteDraft) return null;
 
@@ -113,8 +113,8 @@ export default function NovoDependenteModal({
                             className={`w-full rounded-xl border bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-200 ${errosNovoDependente.VINCULO ? 'border-rose-400 ring-1 ring-rose-300/70' : 'border-slate-200'}`}
                         >
                             <option className="text-slate-500" value="" disabled>SELECIONE</option>
-                            {vinculoOptions.map((opcao) => (
-                                <option key={opcao} value={opcao}>{opcao}</option>
+                            {vinculoCodigoOptions.map((opcao) => (
+                                <option key={opcao.value} value={opcao.label}>{opcao.label}</option>
                             ))}
                         </select>
                         {errosNovoDependente.VINCULO && <p className="mt-1 text-xs text-rose-600">{errosNovoDependente.VINCULO}</p>}

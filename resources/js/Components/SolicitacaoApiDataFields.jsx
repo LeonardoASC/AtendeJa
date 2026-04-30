@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import {
     capacidadeOptions,
     templateDependente,
-    vinculoOptions,
+    vinculoCodigoOptions,
 } from '../Pages/Solicitacao/Utils/fieldData';
 import {
     formatarCpf,
@@ -496,7 +496,7 @@ export default function SolicitacaoApiDataFields({ dadosFormulario = {}, onRevie
                 possuiErrosNovoDependente={possuiErrosNovoDependente}
                 salvarNovoDependente={salvarNovoDependente}
                 tocarCampoNovoDependente={tocarCampoNovoDependente}
-                vinculoOptions={vinculoOptions}
+                vinculoCodigoOptions={vinculoCodigoOptions}
             />
         </div>
     );
