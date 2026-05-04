@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
     capacidadeCodigoOptions,
+    capacidadeOptions,
     estadoCivilOptions,
     templateDependente,
     vinculoCodigoOptions,
@@ -52,7 +53,6 @@ export default function SolicitacaoApiDataFields({ dadosFormulario = {}, onRevie
         onReviewDataChangeRef.current = onReviewDataChange;
     }, [onReviewDataChange]);
 
-    // Mapeia IDs para labels de campos com opções
     const getSelectOptionLabel = (fieldName, id) => {
         const optionsMap = {
             'RACA_COR': racaCorOptions,
@@ -68,7 +68,6 @@ export default function SolicitacaoApiDataFields({ dadosFormulario = {}, onRevie
         return option ? option.label : id;
     };
 
-    // Converte valor para label baseado no campo
     const converterValorParaLabel = (key, value) => {
         const chaveFinal = obterUltimaChaveNormalizada(key);
         const camposComOpcoes = ['RACA_COR', 'ESTADO_CIVIL', 'CAPACIDADE', 'VINCULO'];
