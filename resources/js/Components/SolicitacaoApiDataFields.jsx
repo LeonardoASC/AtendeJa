@@ -1,9 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
-    capacidadeOptions,
+    capacidadeCodigoOptions,
+    estadoCivilOptions,
     templateDependente,
     vinculoCodigoOptions,
+    racaCorOptions,
 } from '../Pages/Solicitacao/Utils/fieldData';
 import {
     formatarCpf,
@@ -50,6 +52,36 @@ export default function SolicitacaoApiDataFields({ dadosFormulario = {}, onRevie
         onReviewDataChangeRef.current = onReviewDataChange;
     }, [onReviewDataChange]);
 
+    // Mapeia IDs para labels de campos com opções
+    const getSelectOptionLabel = (fieldName, id) => {
+        const optionsMap = {
+            'RACA_COR': racaCorOptions,
+            'ESTADO_CIVIL': estadoCivilOptions,
+            'CAPACIDADE': capacidadeCodigoOptions,
+            'VINCULO': vinculoCodigoOptions,
+        };
+
+        const options = optionsMap[fieldName];
+        if (!options) return id;
+
+        const option = options.find(o => o.value === String(id));
+        return option ? option.label : id;
+    };
+
+    // Converte valor para label baseado no campo
+    const converterValorParaLabel = (key, value) => {
+        const chaveFinal = obterUltimaChaveNormalizada(key);
+        const camposComOpcoes = ['RACA_COR', 'ESTADO_CIVIL', 'CAPACIDADE', 'VINCULO'];
+
+        if (camposComOpcoes.includes(chaveFinal)) {
+            return getSelectOptionLabel(chaveFinal, value);
+        }
+
+        return value;
+    };
+
+
+
     const camposApiPorSecao = useMemo(() => {
         return montarCamposApiPorSecao(dadosFormulario || {});
     }, [dadosFormulario]);
@@ -87,7 +119,9 @@ export default function SolicitacaoApiDataFields({ dadosFormulario = {}, onRevie
 
     const abrirModalCampo = (campo) => {
         setCampoSelecionado(campo);
-        setValorModal(valorCampoAtual(campo));
+        const valorAtual = valorCampoAtual(campo);
+        const valorExibido = converterValorParaLabel(campo.key, valorAtual);
+        setValorModal(valorExibido);
         setModalAberto(true);
     };
 
@@ -101,6 +135,11 @@ export default function SolicitacaoApiDataFields({ dadosFormulario = {}, onRevie
 
         if (['TEL_CELULAR', 'TEL_OUTRO', 'TEL_RESIDENCIAL'].includes(chaveFinal)) {
             setValorModal(formatarTelefone(value));
+            return;
+        }
+
+        if (['RACA_COR', 'ESTADO_CIVIL', 'CAPACIDADE', 'VINCULO'].includes(chaveFinal)) {
+            setValorModal(getSelectOptionLabel(chaveFinal, value));
             return;
         }
 
