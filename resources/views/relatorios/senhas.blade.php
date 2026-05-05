@@ -48,12 +48,12 @@
                 <tr>
                     <td>{{ $senha->codigo }}</td>
                     <td>{{ $senha->cpf }}</td>
-                    <td>{{ $senha->tipoAtendimento->nome ?? '' }}</td>
+                    <td>{{ $senha->tipoAtendimento?->nome ?? '-' }}</td>
                     <td>{{ $senha->status }}</td>
-                    <td>{{ $senha->guiche_id ?? '-' }}</td>
-                    <td>{{ $senha->atendente_nome ?? 'Atendente' }}</td>
-                    <td>{{ $senha->created_at->format('d/m/Y H:i') }}</td>
-                    <td>{{ $senha->tempo_atendimento }}</td>
+                    <td>{{ $senha->guiche?->nome ?? '-' }}</td>
+                    <td>{{ $senha->atendente_nome ?? '-' }}</td>
+                    <td>{{ $senha->created_at?->format('d/m/Y H:i') ?? '-' }}</td>
+                    <td>{{ $senha->tempo_atendimento ?? '-' }}</td>
                 </tr>
             @endforeach
         </tbody>
