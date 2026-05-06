@@ -2,6 +2,7 @@ import React from 'react';
 import { Head, Link } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import { CheckCircleIcon, HomeIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
+import { StarIcon } from 'lucide-react';
 
 export default function Sucesso({ solicitacao }) {
     return (
@@ -114,16 +115,27 @@ export default function Sucesso({ solicitacao }) {
                                         </div>
                                     </div>
                                 </div>
-                                <Link
-                                    href={route('senhas.index')}
-                                    className="w-full max-w-sm py-8 px-6 rounded-2xl bg-white border-4 border-double border-sky-700 font-bold text-teal-700 text-2xl hover:bg-teal-600 hover:text-white hover:border-white transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-white/40 shadow-2xl hover:shadow-3xl transform hover:scale-105"
-                                >
-                                    <div className="flex flex-col items-center gap-3">
-                                        <HomeIcon className="w-16 h-16" />
-                                        <span>Voltar para o Início</span>
-                                    </div>
-                                </Link>
+                                <div className='flex gap-2'>
+                                    <Link
+                                        href={route('senhas.index')}
+                                        className="w-full max-w-sm py-6 px-4 rounded-2xl bg-white border-4 border-double border-sky-700 font-bold text-teal-700 text-2xl hover:bg-teal-600 hover:text-white hover:border-white transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-white/40 shadow-2xl hover:shadow-3xl transform hover:scale-105"
+                                    >
+                                        <div className="flex flex-col items-center gap-3 text-center">
+                                            <HomeIcon className="w-16 h-16" />
+                                            <span>Voltar para o Início</span>
+                                        </div>
+                                    </Link>
+                                    <Link
+                                        href='/admin/avaliar/autoatendimento'
+                                        className="w-full max-w-sm py-6 px-4 rounded-2xl bg-yellow-400 border-4 border-double border-sky-700 font-bold text-white text-2xl hover:bg-teal-600 hover:text-white hover:border-white transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-white/40 shadow-2xl hover:shadow-3xl transform hover:scale-105"
+                                    >
+                                        <div className="flex flex-col items-center gap-3 text-center">
+                                            <StarIcon className="w-16 h-16" />
+                                            <span>Avaliar Autoatendimento</span>
+                                        </div>
+                                    </Link>
 
+                                </div>
                                 <p className="text-white/70 text-center text-sm mt-4 max-w-sm">
                                     Obrigado por utilizar nossos serviços! Sua solicitação é muito importante para nós.
                                 </p>
