@@ -304,9 +304,17 @@ class SolicitacaoController extends Controller
             }
 
             if (!empty($emailsParaEnviar)) {
-                $solicitacao->load('tipoAtendimento');
-                foreach ($emailsParaEnviar as $emailDestino) {
-                    Mail::to($emailDestino)->send(new SolicitacaoConfirmadaMail($solicitacao));
+                try {
+                    $solicitacao->load('tipoAtendimento');
+                    foreach ($emailsParaEnviar as $emailDestino) {
+                        Mail::to($emailDestino)->send(new SolicitacaoConfirmadaMail($solicitacao));
+                    }
+                } catch (\Throwable $e) {
+                    Log::warning('Falha ao enviar email de confirmação da solicitação', [
+                        'solicitacao_id' => $solicitacao->id,
+                        'emails' => $emailsParaEnviar,
+                        'error' => $e->getMessage(),
+                    ]);
                 }
             }
 

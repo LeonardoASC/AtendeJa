@@ -36,10 +36,10 @@ class SiteController extends Controller
                 'corpo'        => $res->json() ?? $res->body(),
             ];
 
-            Log::info("Consulta CPF:\n" . json_encode(
-                $logConsultaCpf,
-                JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
-            ));
+            // Log::info("Consulta CPF:\n" . json_encode(
+            //     $logConsultaCpf,
+            //     JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+            // ));
 
             if (!$res->successful()) {
                 return response()->json([
@@ -69,6 +69,11 @@ class SiteController extends Controller
 
             return response()->json(['data' => $data], 200);
         } catch (\Throwable $e) {
+            Log::error('Erro ao consultar CPF', [
+                'cpf' => $cpf,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             return response()->json([
                 'data'  => [],
                 'error' => ['message' => $e->getMessage()],
