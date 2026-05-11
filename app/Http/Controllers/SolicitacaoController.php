@@ -178,7 +178,7 @@ class SolicitacaoController extends Controller
         return preg_replace('/[^A-Z0-9]+/', '', $normalizado) ?? '';
     }
 
-    public function assinarForm(Request $request)
+    public function assinarForm()
     {
         $dadosSolicitacao = session('dados_solicitacao');
 
@@ -198,7 +198,7 @@ class SolicitacaoController extends Controller
     /**
      * Exibe a página de foto
      */
-    public function fotoForm(Request $request)
+    public function fotoForm()
     {
         $dadosSolicitacao = session('dados_solicitacao');
 
@@ -220,7 +220,7 @@ class SolicitacaoController extends Controller
      */
     public function fotoStore(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'foto' => 'required|file|image|max:5120',
         ]);
 
@@ -243,7 +243,7 @@ class SolicitacaoController extends Controller
     /**
      * Finaliza a solicitação criando no banco
      */
-    public function finalizar(Request $request)
+    public function finalizar()
     {
         $dadosSolicitacao = session('dados_solicitacao');
 
@@ -560,9 +560,10 @@ class SolicitacaoController extends Controller
         if (!is_array($dadosFormulario)) {
             $dadosFormulario = [];
         }
-        $alteracoesClassificadas = $this->classificarAlteracoesRecadastramento(
+        $alteracoesCampos = $this->normalizarAlteracoesRecadastramentoParaPdf(
             is_array($alteracoesCampos) ? $alteracoesCampos : []
         );
+        $alteracoesClassificadas = $this->classificarAlteracoesRecadastramento($alteracoesCampos);
         $alteracoesDependentesAgrupadas = $this->agruparAlteracoesDependentes(
             $alteracoesClassificadas['dependentes'],
             $dadosFormulario
@@ -577,9 +578,7 @@ class SolicitacaoController extends Controller
                 'telefone' => $dados['telefone'] ?? '',
                 'matricula' => $dados['matricula'] ?? '',
             ],
-            'alteracoesCampos' => is_array($alteracoesCampos) ? $alteracoesCampos : [],
             'alteracoesDadosPessoais' => $alteracoesClassificadas['dadosPessoais'],
-            'alteracoesDependentes' => $alteracoesClassificadas['dependentes'],
             'alteracoesDependentesAgrupadas' => $alteracoesDependentesAgrupadas,
             'novosDependentes' => is_array($novosDependentes) ? $novosDependentes : [],
             'dependentesParaRemover' => is_array($dependentesParaRemover) ? $dependentesParaRemover : [],
@@ -602,6 +601,86 @@ class SolicitacaoController extends Controller
     {
         $atuais = session('dados_solicitacao', []);
         session(['dados_solicitacao' => array_merge($atuais, $dados)]);
+    }
+
+    private function normalizarAlteracoesRecadastramentoParaPdf(array $alteracoesCampos): array
+    {
+        return array_map(function ($alteracao) {
+            if (!is_array($alteracao)) {
+                return $alteracao;
+            }
+
+            $chaveFinal = $this->extrairUltimoSegmentoChave(
+                Str::upper((string) ($alteracao['chave'] ?? ''))
+            );
+
+            foreach (['valorAnterior', 'valorNovo'] as $campoValor) {
+                if (array_key_exists($campoValor, $alteracao)) {
+                    $alteracao[$campoValor] = $this->formatarValorRecadastramentoParaPdf(
+                        $chaveFinal,
+                        $alteracao[$campoValor]
+                    );
+                }
+            }
+
+            return $alteracao;
+        }, $alteracoesCampos);
+    }
+
+    private function formatarValorRecadastramentoParaPdf(string $campo, mixed $valor): mixed
+    {
+        if (!is_scalar($valor)) {
+            return $valor;
+        }
+
+        $texto = trim((string) $valor);
+        if ($texto === '') {
+            return $valor;
+        }
+
+        $opcoes = $this->carregarOpcoesRecadastramentoParaPdf();
+
+        return $opcoes[$campo][$texto] ?? $valor;
+    }
+
+    private function carregarOpcoesRecadastramentoParaPdf(): array
+    {
+        static $opcoes = null;
+
+        if ($opcoes !== null) {
+            return $opcoes;
+        }
+
+        $path = base_path('resources/js/Pages/Solicitacao/Utils/fieldOptions.json');
+        $fieldOptions = is_file($path) ? json_decode((string) file_get_contents($path), true) : [];
+
+        if (!is_array($fieldOptions)) {
+            $fieldOptions = [];
+        }
+
+        $opcoes = [
+            'RACA_COR' => $this->mapearOpcoesPorValor($fieldOptions['racaCorOptions'] ?? []),
+            'ESTADO_CIVIL' => $this->mapearOpcoesPorValor($fieldOptions['estadoCivilOptions'] ?? []),
+            'CAPACIDADE' => $this->mapearOpcoesPorValor($fieldOptions['capacidadeCodigoOptions'] ?? []),
+            'VINCULO' => $this->mapearOpcoesPorValor($fieldOptions['vinculoCodigoOptions'] ?? []),
+        ];
+
+        return $opcoes;
+    }
+
+    private function mapearOpcoesPorValor(array $opcoes): array
+    {
+        $mapa = [];
+
+        foreach ($opcoes as $opcao) {
+            if (!is_array($opcao) || !array_key_exists('value', $opcao) || !array_key_exists('label', $opcao)) {
+                continue;
+            }
+
+            $mapa[(string) $opcao['value']] = (string) $opcao['label'];
+        }
+
+        return $mapa;
     }
 
     private function classificarAlteracoesRecadastramento(array $alteracoesCampos): array
