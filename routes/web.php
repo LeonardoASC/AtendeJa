@@ -45,9 +45,9 @@ Route::middleware(['auth:admin', 'verified'])->prefix('admin')->group(function (
     Route::resource('admins', AdminController::class)->middleware('permission:ver-admin');
     Route::resource('roles', RoleController::class)->middleware('permission:ver-cargos');
     Route::get('/avaliacoes', [AvaliacaoController::class, 'index'])->name('avaliacoes.index')->middleware('permission:ver-avaliacoes');
-    Route::post('/avaliacoes', [AvaliacaoController::class, 'store'])->name('avaliacoes.store')->middleware('permission:ver-avaliacoes');
-    Route::put('/avaliacoes/{servicoAvaliacao}', [AvaliacaoController::class, 'update'])->name('avaliacoes.update')->middleware('permission:ver-avaliacoes');
-    Route::delete('/avaliacoes/{servicoAvaliacao}', [AvaliacaoController::class, 'destroy'])->name('avaliacoes.destroy')->middleware('permission:ver-avaliacoes');
+    Route::post('/avaliacoes', [AvaliacaoController::class, 'store'])->name('avaliacoes.store')->middleware('permission:criar-avaliacoes');
+    Route::put('/avaliacoes/{servicoAvaliacao}', [AvaliacaoController::class, 'update'])->name('avaliacoes.update')->middleware('permission:editar-avaliacoes');
+    Route::delete('/avaliacoes/{servicoAvaliacao}', [AvaliacaoController::class, 'destroy'])->name('avaliacoes.destroy')->middleware('permission:excluir-avaliacoes');
     Route::post('/avaliacoes/reordenar', [AvaliacaoController::class, 'reordenar'])->name('avaliacoes.reordenar')->middleware('permission:ver-avaliacoes');
 
     Route::resource('senhas', SenhaController::class)->middleware('permission:ver-senhas');
