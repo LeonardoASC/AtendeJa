@@ -27,17 +27,45 @@ const NIVEL_NOTA = {
     5: 'Otimo',
 }
 
+const CORES_NOTA = {
+    1: 'bg-rose-500/15 text-rose-200 ring-rose-300/20',
+    2: 'bg-orange-500/15 text-orange-200 ring-orange-300/20',
+    3: 'bg-sky-500/15 text-sky-200 ring-sky-300/20',
+    4: 'bg-emerald-500/15 text-emerald-200 ring-emerald-300/20',
+    5: 'bg-amber-400/15 text-amber-200 ring-amber-300/20',
+}
+
+const CORES_TEXTO_NOTA = {
+    1: 'text-rose-200',
+    2: 'text-orange-200',
+    3: 'text-sky-200',
+    4: 'text-emerald-200',
+    5: 'text-amber-200',
+}
+
+const CORES_BARRA_NOTA = {
+    1: 'bg-rose-400',
+    2: 'bg-orange-400',
+    3: 'bg-sky-400',
+    4: 'bg-emerald-400',
+    5: 'bg-amber-300',
+}
+
 export default function Index() {
     const {
         servicos = [],
+        filtros = {},
         resumoNotas = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
-        ultimasAvaliacoes = [],
+        ultimasAvaliacoes = { data: [] },
     } = usePage().props || {}
     const [openCreate, setOpenCreate] = useState(false)
     const [openEdit, setOpenEdit] = useState(false)
     const [editing, setEditing] = useState(null)
     const [confirming, setConfirming] = useState(null)
     const [servicosOrdenados, setServicosOrdenados] = useState(servicos)
+    const [servicoFiltro, setServicoFiltro] = useState(filtros.servico_id || '')
+    const [dataInicioFiltro, setDataInicioFiltro] = useState(filtros.data_inicio || '')
+    const [dataFimFiltro, setDataFimFiltro] = useState(filtros.data_fim || '')
 
     useEffect(() => {
         setServicosOrdenados(servicos)
@@ -51,17 +79,23 @@ export default function Index() {
         })
     )
 
-    const totalAvaliacoes = useMemo(() => Object.values(resumoNotas).reduce((acc, item) => acc + Number(item || 0), 0), [resumoNotas])
+    const avaliacoesRecentes = Array.isArray(ultimasAvaliacoes) ? ultimasAvaliacoes : ultimasAvaliacoes.data || []
+
+    const totalDistribuicao = useMemo(() => Object.values(resumoNotas).reduce((acc, item) => acc + Number(item || 0), 0), [resumoNotas])
+
+    const totalAvaliacoes = useMemo(() => {
+        return servicos.reduce((acc, item) => acc + Number(item.avaliacoes_count || 0), 0)
+    }, [servicos])
 
     const mediaGeral = useMemo(() => {
         if (!totalAvaliacoes) return 0
 
-        const totalPonderado = Object.entries(resumoNotas).reduce((acc, [nota, qtd]) => {
-            return acc + Number(nota) * Number(qtd || 0)
+        const totalPonderado = servicos.reduce((acc, item) => {
+            return acc + Number(item.avaliacoes_avg_nota || 0) * Number(item.avaliacoes_count || 0)
         }, 0)
 
         return Number(totalPonderado / totalAvaliacoes)
-    }, [resumoNotas, totalAvaliacoes])
+    }, [servicos, totalAvaliacoes])
 
     const onCreate = () => setOpenCreate(true)
     const onEdit = (item) => {
@@ -69,6 +103,60 @@ export default function Index() {
         setOpenEdit(true)
     }
     const onDelete = (item) => setConfirming(item)
+
+    const aplicarFiltros = ({
+        servicoId = servicoFiltro,
+        dataInicio = dataInicioFiltro,
+        dataFim = dataFimFiltro,
+    } = {}) => {
+        router.get(route('avaliacoes.index'), {
+            servico_id: servicoId || undefined,
+            data_inicio: dataInicio || undefined,
+            data_fim: dataFim || undefined,
+        }, {
+            preserveScroll: true,
+            preserveState: true,
+            replace: true,
+        })
+    }
+
+    const onFiltrarServico = (servicoId) => {
+        setServicoFiltro(servicoId)
+        aplicarFiltros({ servicoId })
+    }
+
+    const limparFiltros = () => {
+        setServicoFiltro('')
+        setDataInicioFiltro('')
+        setDataFimFiltro('')
+
+        router.get(route('avaliacoes.index'), {}, {
+            preserveScroll: true,
+            preserveState: true,
+            replace: true,
+        })
+    }
+
+    const onPageChange = (url) => {
+        if (!url) return
+
+        router.get(url, {}, {
+            preserveScroll: true,
+            preserveState: true,
+        })
+    }
+
+    const formatarData = (valor) => {
+        if (!valor) return null
+
+        return new Date(valor).toLocaleString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        })
+    }
 
     const doDelete = () => {
         if (!confirming) return
@@ -154,33 +242,136 @@ export default function Index() {
                             </table>
                         </div>
 
-                        <div className="mt-5 grid gap-4 lg:grid-cols-2">
-                            <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                                <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-300">Distribuicao por nota</h3>
-                                <div className="mt-3 space-y-2">
-                                    {Object.entries(resumoNotas).map(([nota, quantidade]) => (
-                                        <div key={nota} className="flex items-center justify-between text-sm">
-                                            <span className="text-slate-200">{nota} - {NIVEL_NOTA[Number(nota)]}</span>
-                                            <span className="font-semibold text-white">{quantidade}</span>
-                                        </div>
-                                    ))}
+                        <div className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4">
+                            <div className="flex flex-wrap items-end justify-between gap-3">
+                                <div>
+                                    <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-300">Distribuicao por nota</h3>
+                                    <p className="mt-1 text-xs text-slate-400">
+                                        {totalDistribuicao} {totalDistribuicao === 1 ? 'avaliacao encontrada' : 'avaliacoes encontradas'}
+                                    </p>
+                                </div>
+
+                                <div className="grid w-full gap-2 sm:w-auto sm:grid-cols-[minmax(220px,1fr)_150px_150px_auto_auto]">
+                                    <select
+                                        value={servicoFiltro}
+                                        onChange={(event) => onFiltrarServico(event.target.value)}
+                                        className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white focus:border-cyan-400/60 focus:outline-none"
+                                       
+                                    >
+                                        <option style={{background: '#313131'}}  value="">Todos os servicos</option>
+                                        {servicos.map((servico) => (
+                                            <option style={{background: '#313131'}} key={servico.id} value={servico.id}>{servico.nome}</option>
+                                        ))}
+                                    </select>
+
+                                    <input
+                                        type="date"
+                                        value={dataInicioFiltro}
+                                        onChange={(event) => setDataInicioFiltro(event.target.value)}
+                                        className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white focus:border-cyan-400/60 focus:outline-none"
+                                    />
+
+                                    <input
+                                        type="date"
+                                        value={dataFimFiltro}
+                                        onChange={(event) => setDataFimFiltro(event.target.value)}
+                                        className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white focus:border-cyan-400/60 focus:outline-none"
+                                    />
+
+                                    <button
+                                        type="button"
+                                        onClick={() => aplicarFiltros()}
+                                        className="rounded-xl bg-white/10 px-4 py-2 text-sm font-medium text-white ring-1 ring-white/15 hover:bg-white/15"
+                                    >
+                                        Filtrar
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={limparFiltros}
+                                        className="rounded-xl px-4 py-2 text-sm font-medium bg-white/10 text-slate-300 ring-1 ring-white/15 hover:bg-white/20"
+                                    >
+                                        Limpar
+                                    </button>
                                 </div>
                             </div>
 
-                            <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                                <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-300">Ultimas avaliacoes</h3>
-                                <div className="mt-3 max-h-48 space-y-2 overflow-auto pr-1">
-                                    {ultimasAvaliacoes.length === 0 ? (
-                                        <p className="text-sm text-slate-300">Ainda nao ha avaliacoes registradas.</p>
-                                    ) : ultimasAvaliacoes.map((item) => (
-                                        <div key={item.id} className="rounded-xl border border-white/10 bg-white/5 p-2 text-sm text-slate-100">
-                                            <p className="font-medium">{item.servico_avaliacao?.nome || 'Servico removido'}</p>
-                                            <p className="text-xs text-slate-300">Nota {item.nota} - {NIVEL_NOTA[item.nota]}</p>
-                                            {item.comentario ? <p className="mt-1 text-xs text-slate-300">"{item.comentario}"</p> : null}
-                                        </div>
-                                    ))}
-                                </div>
+                            <div className="mt-4 grid gap-3 sm:grid-cols-5">
+                                {Object.entries(resumoNotas).map(([nota, quantidade]) => (
+                                    <div key={nota} className="rounded-xl border border-white/10 bg-white/5 p-3">
+                                        <p className="text-xs uppercase tracking-wide text-slate-400">Nota {nota}</p>
+                                        <p className="mt-1 text-sm font-medium text-slate-200">{NIVEL_NOTA[Number(nota)]}</p>
+                                        <p className="mt-3 text-2xl font-bold text-white">{quantidade}</p>
+                                    </div>
+                                ))}
                             </div>
+                        </div>
+
+                        <div className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4">
+                            <div className="flex flex-wrap items-center justify-between gap-3">
+                                <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-300">Ultimas avaliacoes</h3>
+                                {ultimasAvaliacoes.total ? (
+                                    <p className="text-xs text-slate-400">
+                                        Mostrando {ultimasAvaliacoes.from || 0} ate {ultimasAvaliacoes.to || 0} de {ultimasAvaliacoes.total}
+                                    </p>
+                                ) : null}
+                            </div>
+
+                            <div className="mt-3 space-y-2">
+                                {avaliacoesRecentes.length === 0 ? (
+                                    <p className="text-sm text-slate-300">Ainda nao ha avaliacoes registradas.</p>
+                                ) : avaliacoesRecentes.map((item) => (
+                                    <article key={item.id} className="relative overflow-hidden rounded-xl border border-white/10 bg-white/[0.04] p-4 pl-5 text-sm text-slate-100 transition hover:bg-white/[0.07]">
+                                        <span className={`absolute inset-y-0 left-0 w-1 ${CORES_BARRA_NOTA[item.nota] || CORES_BARRA_NOTA[3]}`} />
+
+                                        <div className="flex flex-wrap items-start justify-between gap-3">
+                                            <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ring-1 ${CORES_NOTA[item.nota] || CORES_NOTA[3]}`}>
+                                                <span>Nota {item.nota}</span>
+                                                <span className="opacity-60">-</span>
+                                                <span className={CORES_TEXTO_NOTA[item.nota] || CORES_TEXTO_NOTA[3]}>{NIVEL_NOTA[item.nota]}</span>
+                                            </span>
+                                            <div className="min-w-0">
+                                                <p className="truncate text-sm font-semibold text-white">{item.servico_avaliacao?.nome || 'Servico removido'}</p>
+                                                {formatarData(item.created_at) ? (
+                                                    <p className="mt-0.5 text-xs text-slate-500">{formatarData(item.created_at)}</p>
+                                                ) : null}
+                                            </div>
+                                        </div>
+
+                                        <p className={`mt-3 rounded-lg border border-white/10 bg-black/15 px-3 py-2 leading-relaxed ${item.comentario ? 'text-slate-200' : 'italic text-slate-400'}`}>
+                                            {item.comentario || 'Sem comentario registrado.'}
+                                        </p>
+                                    </article>
+                                ))}
+                            </div>
+
+                            {ultimasAvaliacoes.links && ultimasAvaliacoes.links.length > 3 && (
+                                <div className="mt-4 flex flex-wrap items-center justify-end gap-1 border-t border-white/10 pt-4">
+                                    {ultimasAvaliacoes.links.map((link, index) => {
+                                        const label = index === 0
+                                            ? 'Anterior'
+                                            : index === ultimasAvaliacoes.links.length - 1
+                                                ? 'Proximo'
+                                                : link.label
+
+                                        return (
+                                            <button
+                                                key={index}
+                                                type="button"
+                                                onClick={() => onPageChange(link.url)}
+                                                disabled={!link.url || link.active}
+                                                className={`rounded-lg px-3 py-1.5 text-sm transition-all ${link.active
+                                                    ? 'bg-blue-500 text-white'
+                                                    : !link.url
+                                                        ? 'cursor-not-allowed text-neutral-600'
+                                                        : 'text-neutral-300 hover:bg-white/10 hover:text-white'
+                                                    }`}
+                                                dangerouslySetInnerHTML={{ __html: label }}
+                                            />
+                                        )
+                                    })}
+                                </div>
+                            )}
                         </div>
                     </section>
                 </div>

@@ -12,8 +12,25 @@ use Inertia\Inertia;
 
 class AvaliacaoController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $filtros = $request->validate([
+            'servico_id' => ['nullable', 'integer', 'exists:servicos_avaliacao,id'],
+            'data_inicio' => ['nullable', 'date'],
+            'data_fim' => ['nullable', 'date'],
+        ]);
+
+        $servicoFiltro = $filtros['servico_id'] ?? null;
+        $dataInicio = $filtros['data_inicio'] ?? null;
+        $dataFim = $filtros['data_fim'] ?? null;
+
+        $aplicarFiltros = function ($query) use ($servicoFiltro, $dataInicio, $dataFim) {
+            return $query
+                ->when($servicoFiltro, fn ($query) => $query->where('servico_avaliacao_id', $servicoFiltro))
+                ->when($dataInicio, fn ($query) => $query->whereDate('created_at', '>=', $dataInicio))
+                ->when($dataFim, fn ($query) => $query->whereDate('created_at', '<=', $dataFim));
+        };
+
         $servicos = ServicoAvaliacao::query()
             ->withCount('avaliacoes')
             ->withAvg('avaliacoes', 'nota')
@@ -21,20 +38,25 @@ class AvaliacaoController extends Controller
             ->orderBy('nome')
             ->get();
 
-        $resumoNotas = Avaliacao::query()
+        $resumoNotas = $aplicarFiltros(Avaliacao::query())
             ->selectRaw('nota, COUNT(*) as quantidade')
             ->groupBy('nota')
             ->orderBy('nota')
             ->pluck('quantidade', 'nota');
 
-        $ultimasAvaliacoes = Avaliacao::query()
+        $ultimasAvaliacoes = $aplicarFiltros(Avaliacao::query())
             ->with('servicoAvaliacao:id,nome,slug')
             ->latest()
-            ->take(20)
-            ->get();
+            ->paginate(10)
+            ->withQueryString();
 
         return Inertia::render('Autenticado/Avaliacoes/Index', [
             'servicos' => $servicos,
+            'filtros' => [
+                'servico_id' => $servicoFiltro,
+                'data_inicio' => $dataInicio,
+                'data_fim' => $dataFim,
+            ],
             'resumoNotas' => [
                 1 => (int) ($resumoNotas[1] ?? 0),
                 2 => (int) ($resumoNotas[2] ?? 0),
