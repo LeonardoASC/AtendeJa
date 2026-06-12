@@ -24,16 +24,6 @@ Route::get('/', [SiteController::class, 'index'])->name('site.index');
 
 Route::get('/senhas/{token}/ticket-virtual', [SenhaController::class, 'ticketVirtual'])->name('senhas.ticket-virtual')->whereUlid('token');
 
-Route::match(['GET', 'HEAD'], '/onedoc/anexos/{solicitacao}/{expires}/{token}/{filename}', [SolicitacaoController::class, 'visualizarAnexoOneDoc'])
-    ->whereNumber('expires')
-    ->withoutMiddleware([
-        \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-        \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
-        \Illuminate\Session\Middleware\StartSession::class,
-        \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-    ])
-    ->name('onedoc.anexos.show');
-
 Route::middleware(['auth:admin', 'verified'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('permission:ver-dashboard');
     Route::get('/ranking', [DashboardController::class, 'ranking'])->name('dashboard.ranking')->middleware('permission:ver-dashboard');
