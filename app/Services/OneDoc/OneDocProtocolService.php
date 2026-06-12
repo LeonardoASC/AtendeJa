@@ -222,6 +222,7 @@ class OneDocProtocolService
             'path' => $path,
             'disk' => $diskName,
             'expires_at' => $expiresAt->toDateTimeString(),
+            'url_original' => $url,
         ]);
 
         return [

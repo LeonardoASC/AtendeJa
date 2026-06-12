@@ -78,13 +78,14 @@ class OneDocClient
 
         $response = $this->httpMultipart->post($path, $fields);
 
-        // Log::info('OneDoc API Response [POST MULTIPART]', [
-        //     'path' => $path,
-        //     'status' => $response->status(),
-        //     'body' => $response->body(),
-        //     'json' => $response->json(),
-        //     'headers' => $response->headers(),
-        // ]);
+        if ($response->failed()) {
+            Log::error('OneDoc API Response [POST MULTIPART]', [
+                'path' => $path,
+                'status' => $response->status(),
+                'body' => $response->body(),
+                'json' => $response->json(),
+            ]);
+        }
 
         return $response->throw()->json();
     }
