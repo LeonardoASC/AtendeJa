@@ -112,6 +112,60 @@ export default function Index() {
         window.open(route('solicitacoes.visualizar-pdf', id), '_blank')
     }
 
+    const formatFormularioLabel = (key) => {
+        return String(key)
+            .replace(/^_/, '')
+            .replace(/_/g, ' ')
+    }
+
+    const renderFormularioValor = (value) => {
+        if (value === null || value === undefined || value === '') {
+            return <p className="text-sm text-white">-</p>
+        }
+
+        if (Array.isArray(value)) {
+            if (value.length === 0) {
+                return <p className="text-sm text-white">-</p>
+            }
+
+            return (
+                <div className="space-y-2">
+                    {value.map((item, index) => (
+                        <div key={index} className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
+                            <p className="mb-2 text-xs font-medium uppercase tracking-wider text-neutral-500">
+                                Item {index + 1}
+                            </p>
+                            {renderFormularioValor(item)}
+                        </div>
+                    ))}
+                </div>
+            )
+        }
+
+        if (typeof value === 'object') {
+            const entries = Object.entries(value)
+
+            if (entries.length === 0) {
+                return <p className="text-sm text-white">-</p>
+            }
+
+            return (
+                <div className="space-y-2 rounded-lg border border-white/10 bg-white/[0.03] p-3">
+                    {entries.map(([childKey, childValue]) => (
+                        <div key={childKey} className="space-y-1">
+                            <label className="text-xs font-medium uppercase tracking-wider text-neutral-500">
+                                {formatFormularioLabel(childKey)}
+                            </label>
+                            {renderFormularioValor(childValue)}
+                        </div>
+                    ))}
+                </div>
+            )
+        }
+
+        return <p className="text-sm text-white break-words">{String(value)}</p>
+    }
+
     return (
         <AuthenticatedLayout>
             <Head title="Atender Solicitações" />
@@ -530,9 +584,9 @@ export default function Index() {
                                     {Object.entries(selectedSolicitacao.dados_formulario).map(([key, value]) => (
                                         <div key={key} className="space-y-1">
                                             <label className="text-xs font-medium text-neutral-500 uppercase tracking-wider">
-                                                {key}
+                                                {formatFormularioLabel(key)}
                                             </label>
-                                            <p className="text-sm text-white">{value || '-'}</p>
+                                            {renderFormularioValor(value)}
                                         </div>
                                     ))}
                                 </div>
