@@ -6,7 +6,7 @@ use App\Models\Solicitacao;
 use App\Models\TipoAtendimento;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\URL;
 
 class OneDocProtocolService
 {
@@ -190,10 +190,9 @@ class OneDocProtocolService
     private function buildAnexos(Solicitacao $s): array
     {
         $anexos = [];
-        $publicBase = rtrim(config('onedoc.public_base_url'), '/');
 
         if (config('onedoc.enviar_anexo', true) && $s->anexo) {
-            $anexos[] = $this->makeAnexoFromStoragePath($s->anexo, $publicBase);
+            $anexos[] = $this->makeSignedAnexoFromStoragePath($s->anexo, $s->id);
         }
 
         return array_values(array_filter($anexos, function ($a) {
@@ -201,18 +200,43 @@ class OneDocProtocolService
         }));
     }
 
-    private function makeAnexoFromStoragePath(string $path, string $publicBase): array
+    private function makeSignedAnexoFromStoragePath(string $path, int $solicitacaoId): array
     {
-        $url = Storage::url($path);
-        if (Str::startsWith($url, '/')) {
-            $url = $publicBase . $url;
+        $diskName = $this->resolveAnexoDisk($path);
+
+        if (!$diskName) {
+            throw new \RuntimeException("Anexo da solicitacao [$solicitacaoId] nao encontrado no storage: {$path}");
         }
+
+        $expiresAt = now()->addHours(max(1, (int) config('onedoc.anexo_url_expira_horas', 24)));
+        $url = URL::temporarySignedRoute('onedoc.anexos.show', $expiresAt, [
+            'solicitacao' => $solicitacaoId,
+        ]);
+
+        Log::info('OneDoc anexo preparado', [
+            'solicitacao_id' => $solicitacaoId,
+            'arquivo' => basename($path),
+            'path' => $path,
+            'disk' => $diskName,
+            'expires_at' => $expiresAt->toDateTimeString(),
+        ]);
 
         return [
             'arquivo' => basename($path),
             'tipo' => $this->guessMimeType($path),
             'url_original' => $url,
         ];
+    }
+
+    private function resolveAnexoDisk(string $path): ?string
+    {
+        foreach (['local', 'public'] as $diskName) {
+            if (Storage::disk($diskName)->exists($path)) {
+                return $diskName;
+            }
+        }
+
+        return null;
     }
 
     private function guessMimeType(string $path): string

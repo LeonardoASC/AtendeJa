@@ -501,11 +501,60 @@ class SolicitacaoController extends Controller
      */
     public function visualizarPdf(Solicitacao $solicitacao)
     {
-        if (!$solicitacao->anexo || !Storage::disk('public')->exists($solicitacao->anexo)) {
+        $diskName = $this->resolveAnexoStorageDisk($solicitacao);
+
+        if (!$diskName) {
             abort(404, 'PDF não encontrado');
         }
 
-        return response()->file(Storage::disk('public')->path($solicitacao->anexo));
+        return response()->file(Storage::disk($diskName)->path($solicitacao->anexo));
+    }
+
+    public function visualizarAnexoOneDoc(Solicitacao $solicitacao)
+    {
+        if (!$this->podeBaixarAnexoOneDoc($solicitacao)) {
+            abort(403, 'Anexo indisponivel');
+        }
+
+        $diskName = $this->resolveAnexoStorageDisk($solicitacao);
+
+        if (!$diskName) {
+            abort(404, 'PDF nao encontrado');
+        }
+
+        return response()->file(Storage::disk($diskName)->path($solicitacao->anexo), [
+            'Content-Type' => 'application/pdf',
+        ]);
+    }
+
+    private function podeBaixarAnexoOneDoc(Solicitacao $solicitacao): bool
+    {
+        if ($solicitacao->status !== 'enviado') {
+            return true;
+        }
+
+        if (!$solicitacao->onedoc_opened_at) {
+            return false;
+        }
+
+        $graceMinutes = max(0, (int) config('onedoc.anexo_download_grace_minutes', 30));
+
+        return $solicitacao->onedoc_opened_at->greaterThanOrEqualTo(now()->subMinutes($graceMinutes));
+    }
+
+    private function resolveAnexoStorageDisk(Solicitacao $solicitacao): ?string
+    {
+        if (!$solicitacao->anexo) {
+            return null;
+        }
+
+        foreach (['local', 'public'] as $diskName) {
+            if (Storage::disk($diskName)->exists($solicitacao->anexo)) {
+                return $diskName;
+            }
+        }
+
+        return null;
     }
 
     private function gerarPdfAnexo(array $dados)
@@ -541,7 +590,7 @@ class SolicitacaoController extends Controller
         $filename = 'solicitacao-' . time() . '-' . uniqid() . '.pdf';
         $path = 'SolicitacaoAnexos/' . $filename;
 
-        Storage::disk('public')->put($path, $pdf->output());
+        Storage::disk('local')->put($path, $pdf->output());
 
         return $path;
     }
@@ -592,7 +641,7 @@ class SolicitacaoController extends Controller
         $filename = 'solicitacao-recadastramento-' . time() . '-' . uniqid() . '.pdf';
         $path = 'SolicitacaoAnexos/' . $filename;
 
-        Storage::disk('public')->put($path, $pdf->output());
+        Storage::disk('local')->put($path, $pdf->output());
 
         return $path;
     }

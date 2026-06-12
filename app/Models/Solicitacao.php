@@ -39,6 +39,7 @@ class Solicitacao extends Model
         'one_doc_id_emissao' => 'integer',
         'one_doc_numero' => 'integer',
         'one_doc_synced_at' => 'datetime',
+        'onedoc_opened_at' => 'datetime',
     ];
 
     /**

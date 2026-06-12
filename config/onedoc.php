@@ -8,6 +8,9 @@ return [
 
     'enviar_anexo' => filter_var(env('ONEDOC_ENVIAR_ANEXO', true), FILTER_VALIDATE_BOOLEAN),
 
+    'anexo_url_expira_horas' => (int) env('ONEDOC_ANEXO_URL_EXPIRA_HORAS', 24),
+    'anexo_download_grace_minutes' => (int) env('ONEDOC_ANEXO_DOWNLOAD_GRACE_MINUTES', 30),
+
     'campos_padrao' => [
         [
             'campo' => 'entrada',
