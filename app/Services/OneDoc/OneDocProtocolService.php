@@ -209,8 +209,11 @@ class OneDocProtocolService
         }
 
         $expiresAt = now()->addHours(max(1, (int) config('onedoc.anexo_url_expira_horas', 24)));
-        $url = URL::temporarySignedRoute('onedoc.anexos.show', $expiresAt, [
+        $expires = $expiresAt->getTimestamp();
+        $url = URL::route('onedoc.anexos.show', [
             'solicitacao' => $solicitacaoId,
+            'expires' => $expires,
+            'token' => $this->makeAnexoToken($solicitacaoId, $expires),
         ]);
 
         Log::info('OneDoc anexo preparado', [
@@ -237,6 +240,11 @@ class OneDocProtocolService
         }
 
         return null;
+    }
+
+    private function makeAnexoToken(int $solicitacaoId, int $expires): string
+    {
+        return hash_hmac('sha256', "{$solicitacaoId}|{$expires}", (string) config('app.key'));
     }
 
     private function guessMimeType(string $path): string

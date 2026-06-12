@@ -510,21 +510,65 @@ class SolicitacaoController extends Controller
         return response()->file(Storage::disk($diskName)->path($solicitacao->anexo));
     }
 
-    public function visualizarAnexoOneDoc(Solicitacao $solicitacao)
+    public function visualizarAnexoOneDoc(Request $request, Solicitacao $solicitacao)
     {
+        if (!$this->validarTokenAnexoOneDoc($request, $solicitacao)) {
+            Log::warning('OneDoc anexo bloqueado por token invalido', [
+                'solicitacao_id' => $solicitacao->id,
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+                'expires' => $request->query('expires'),
+            ]);
+
+            abort(403, 'Link invalido');
+        }
+
         if (!$this->podeBaixarAnexoOneDoc($solicitacao)) {
+            Log::warning('OneDoc anexo bloqueado por status', [
+                'solicitacao_id' => $solicitacao->id,
+                'status' => $solicitacao->status,
+                'onedoc_opened_at' => optional($solicitacao->onedoc_opened_at)->toDateTimeString(),
+            ]);
+
             abort(403, 'Anexo indisponivel');
         }
 
         $diskName = $this->resolveAnexoStorageDisk($solicitacao);
 
         if (!$diskName) {
+            Log::warning('OneDoc anexo nao encontrado', [
+                'solicitacao_id' => $solicitacao->id,
+                'path' => $solicitacao->anexo,
+            ]);
+
             abort(404, 'PDF nao encontrado');
         }
+
+        Log::info('OneDoc anexo acessado', [
+            'solicitacao_id' => $solicitacao->id,
+            'disk' => $diskName,
+            'path' => $solicitacao->anexo,
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
 
         return response()->file(Storage::disk($diskName)->path($solicitacao->anexo), [
             'Content-Type' => 'application/pdf',
         ]);
+    }
+
+    private function validarTokenAnexoOneDoc(Request $request, Solicitacao $solicitacao): bool
+    {
+        $expires = (int) $request->query('expires', 0);
+        $token = (string) $request->query('token', '');
+
+        if ($expires <= 0 || $token === '' || $expires < now()->getTimestamp()) {
+            return false;
+        }
+
+        $expected = hash_hmac('sha256', "{$solicitacao->id}|{$expires}", (string) config('app.key'));
+
+        return hash_equals($expected, $token);
     }
 
     private function podeBaixarAnexoOneDoc(Solicitacao $solicitacao): bool
