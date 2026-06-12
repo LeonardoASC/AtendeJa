@@ -24,7 +24,8 @@ Route::get('/', [SiteController::class, 'index'])->name('site.index');
 
 Route::get('/senhas/{token}/ticket-virtual', [SenhaController::class, 'ticketVirtual'])->name('senhas.ticket-virtual')->whereUlid('token');
 
-Route::get('/onedoc/anexos/{solicitacao}', [SolicitacaoController::class, 'visualizarAnexoOneDoc'])
+Route::match(['GET', 'HEAD'], '/onedoc/anexos/{solicitacao}/{expires}/{token}/{filename}', [SolicitacaoController::class, 'visualizarAnexoOneDoc'])
+    ->whereNumber('expires')
     ->name('onedoc.anexos.show');
 
 Route::middleware(['auth:admin', 'verified'])->prefix('admin')->group(function () {

@@ -214,6 +214,7 @@ class OneDocProtocolService
             'solicitacao' => $solicitacaoId,
             'expires' => $expires,
             'token' => $this->makeAnexoToken($solicitacaoId, $expires),
+            'filename' => basename($path),
         ]);
 
         Log::info('OneDoc anexo preparado', [

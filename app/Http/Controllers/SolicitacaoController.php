@@ -510,14 +510,15 @@ class SolicitacaoController extends Controller
         return response()->file(Storage::disk($diskName)->path($solicitacao->anexo));
     }
 
-    public function visualizarAnexoOneDoc(Request $request, Solicitacao $solicitacao)
+    public function visualizarAnexoOneDoc(Request $request, Solicitacao $solicitacao, ?int $expires = null, ?string $token = null, ?string $filename = null)
     {
-        if (!$this->validarTokenAnexoOneDoc($request, $solicitacao)) {
+        if (!$this->validarTokenAnexoOneDoc($request, $solicitacao, $expires, $token)) {
             Log::warning('OneDoc anexo bloqueado por token invalido', [
                 'solicitacao_id' => $solicitacao->id,
                 'ip' => $request->ip(),
                 'user_agent' => $request->userAgent(),
-                'expires' => $request->query('expires'),
+                'expires' => $expires ?? $request->query('expires'),
+                'filename' => $filename,
             ]);
 
             abort(403, 'Link invalido');
@@ -557,10 +558,10 @@ class SolicitacaoController extends Controller
         ]);
     }
 
-    private function validarTokenAnexoOneDoc(Request $request, Solicitacao $solicitacao): bool
+    private function validarTokenAnexoOneDoc(Request $request, Solicitacao $solicitacao, ?int $routeExpires = null, ?string $routeToken = null): bool
     {
-        $expires = (int) $request->query('expires', 0);
-        $token = (string) $request->query('token', '');
+        $expires = $routeExpires ?? (int) $request->query('expires', 0);
+        $token = $routeToken ?? (string) $request->query('token', '');
 
         if ($expires <= 0 || $token === '' || $expires < now()->getTimestamp()) {
             return false;
