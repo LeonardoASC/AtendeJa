@@ -40,12 +40,12 @@ class OpenOneDocProtocolJob implements ShouldQueue
         $solicitacao = Solicitacao::find($this->solicitacaoId);
 
         if (!$solicitacao) {
-            Log::warning('OpenOneDocProtocolJob: solicitacao não encontrada', ['id' => $this->solicitacaoId]);
+            // Log::warning('OpenOneDocProtocolJob: solicitacao não encontrada', ['id' => $this->solicitacaoId]);
             return;
         }
 
         if ($solicitacao->onedoc_hash) {
-            Log::info('OpenOneDocProtocolJob: já possui hash, pulando', ['id' => $this->solicitacaoId]);
+            // Log::info('OpenOneDocProtocolJob: já possui hash, pulando', ['id' => $this->solicitacaoId]);
             return;
         }
 
@@ -54,10 +54,10 @@ class OpenOneDocProtocolJob implements ShouldQueue
             $solicitacao->status = 'enviado';
             $solicitacao->save();
 
-            Log::info('OpenOneDocProtocolJob: Protocolo aberto com sucesso', [
-                'solicitacao_id' => $solicitacao->id,
-                'onedoc_numero' => $solicitacao->onedoc_numero,
-            ]);
+            // Log::info('OpenOneDocProtocolJob: Protocolo aberto com sucesso', [
+            //     'solicitacao_id' => $solicitacao->id,
+            //     'onedoc_numero' => $solicitacao->onedoc_numero,
+            // ]);
         } catch (Throwable $e) {
             $solicitacao->onedoc_status = 'erro';
             $solicitacao->onedoc_error = $e->getMessage();

@@ -30,15 +30,15 @@ class OneDocProtocolService
      */
     public function openProtocolFromSolicitacao(Solicitacao $solicitacao): array
     {
-        Log::info('=== INÍCIO ABERTURA PROTOCOLO ONEDOC ===', [
-            'solicitacao_id' => $solicitacao->id,
-            'tipo_atendimento_id' => $solicitacao->tipo_atendimento_id,
-        ]);
+        // Log::info('=== INÍCIO ABERTURA PROTOCOLO ONEDOC ===', [
+        //     'solicitacao_id' => $solicitacao->id,
+        //     'tipo_atendimento_id' => $solicitacao->tipo_atendimento_id,
+        // ]);
 
         $tipoAtendimento = $this->resolveTipoAtendimentoForSolicitacao($solicitacao);
 
         if (!$tipoAtendimento || !$tipoAtendimento->onedoc_enabled) {
-            Log::warning('Protocolo SKIPPED - Nenhuma config encontrada');
+            // Log::warning('Protocolo SKIPPED - Nenhuma config encontrada');
             return [
                 'skipped' => true,
                 'reason' => 'OneDoc desabilitado para esse tipo_atendimento_id.',
@@ -47,7 +47,7 @@ class OneDocProtocolService
 
         $protocolName = (string) ($tipoAtendimento->nome ?? 'desconhecido');
 
-        Log::info('Protocolo resolvido', ['protocol_name' => $protocolName]);
+        // Log::info('Protocolo resolvido', ['protocol_name' => $protocolName]);
 
         $destinoIdSetor = (int) ($tipoAtendimento->onedoc_destino_id_setor ?? 0);
         $idAssunto = (int) ($tipoAtendimento->onedoc_id_assunto ?? 0);
@@ -56,10 +56,10 @@ class OneDocProtocolService
             throw new \RuntimeException("Config do 1Doc incompleta para [$protocolName]. Verifique destino_id_setor e id_assunto.");
         }
 
-        Log::info('Configuração validada', [
-            'destino_id_setor' => $destinoIdSetor,
-            'id_assunto' => $idAssunto,
-        ]);
+        // Log::info('Configuração validada', [
+        //     'destino_id_setor' => $destinoIdSetor,
+        //     'id_assunto' => $idAssunto,
+        // ]);
 
         $now = now();
 
@@ -73,10 +73,10 @@ class OneDocProtocolService
 
         $anexos = $this->buildAnexos($solicitacao);
 
-        Log::info('Anexos construídos', [
-            'count' => count($anexos),
-            'anexos' => $anexos,
-        ]);
+        // Log::info('Anexos construídos', [
+        //     'count' => count($anexos),
+        //     'anexos' => $anexos,
+        // ]);
 
         $fields = [
             'solicitante[nome]' => $solicitacao->nome,
@@ -105,19 +105,19 @@ class OneDocProtocolService
             $fields["anexos[$i][url_original]"] = (string) ($anexo['url_original'] ?? '');
         }
 
-        Log::info('OneDoc payload (multipart fields) pronto', [
-            'protocol_name' => $protocolName,
-            'fields' => $fields,
-        ]);
+        // Log::info('OneDoc payload (multipart fields) pronto', [
+        //     'protocol_name' => $protocolName,
+        //     'fields' => $fields,
+        // ]);
 
-        Log::info('>>> CHAMANDO API ONEDOC <<<');
+        // Log::info('>>> CHAMANDO API ONEDOC <<<');
 
         try {
             $response = $this->client->postMultipart('/protocolos', $fields);
 
-            Log::info('=== SUCESSO: Protocolo criado ===', [
-                'response' => $response,
-            ]);
+            // Log::info('=== SUCESSO: Protocolo criado ===', [
+            //     'response' => $response,
+            // ]);
         } catch (\Exception $e) {
             Log::error('=== ERRO: Falha ao criar protocolo ===', [
                 'error' => $e->getMessage(),

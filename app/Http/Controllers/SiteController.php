@@ -36,10 +36,10 @@ class SiteController extends Controller
                 'corpo'        => $res->json() ?? $res->body(),
             ];
 
-            Log::info("Consulta CPF:\n" . json_encode(
-                $logConsultaCpf,
-                JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
-            ));
+            // Log::info("Consulta CPF:\n" . json_encode(
+            //     $logConsultaCpf,
+            //     JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+            // ));
 
             if (!$res->successful()) {
                 return response()->json([

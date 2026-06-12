@@ -63,25 +63,25 @@ class RelatorioController extends Controller
     public function senhasPdf(Request $request)
     {
         try {
-            Log::info('=== Iniciando geração de PDF ===');
+            // Log::info('=== Iniciando geração de PDF ===');
 
             $from = $request->date('from');
             $to   = $request->date('to');
 
             // Validar se há filtro de data
             if (!$from || !$to) {
-                Log::warning('Tentativa de download sem filtro de data');
+                // Log::warning('Tentativa de download sem filtro de data');
                 return back()->with('error', 'É obrigatório filtrar por período (De e Até)');
             }
 
             // Limitar a máximo 90 dias (3 meses)
             $days = $to->diffInDays($from);
             if ($days > 90) {
-                Log::warning('Período solicitado maior que 90 dias', ['days' => $days]);
+                // Log::warning('Período solicitado maior que 90 dias', ['days' => $days]);
                 return back()->with('error', 'Máximo 3 meses por relatório. Filtre um período menor.');
             }
 
-            Log::info('Filtros:', ['from' => $from, 'to' => $to, 'dias' => $days]);
+            // Log::info('Filtros:', ['from' => $from, 'to' => $to, 'dias' => $days]);
 
             $query = Senha::query()
                 ->with(['tipoAtendimento:id,nome', 'guiche:id,nome'])
@@ -90,24 +90,24 @@ class RelatorioController extends Controller
                 ->latest('created_at')
                 ->limit(1000);
 
-            Log::info('Query SQL:', ['sql' => $query->toSql()]);
+            // Log::info('Query SQL:', ['sql' => $query->toSql()]);
 
             $senhas = $query->get();
 
-            Log::info('Senhas carregadas:', ['total' => $senhas->count(), 'memory' => memory_get_usage(true) / 1024 / 1024 . 'MB']);
+            // Log::info('Senhas carregadas:', ['total' => $senhas->count(), 'memory' => memory_get_usage(true) / 1024 / 1024 . 'MB']);
 
             if ($senhas->isEmpty()) {
                 return back()->with('warning', 'Nenhuma senha encontrada neste período');
             }
 
-            Log::info('Carregando view para PDF');
+            // Log::info('Carregando view para PDF');
             $pdf = Pdf::loadView('relatorios.senhas', compact('senhas'))
                 ->setPaper('a4', 'portrait')
                 ->setOptions(['defaultFont' => 'sans-serif', 'isRemoteEnabled' => false]);
 
-            Log::info('PDF gerado com sucesso, preparando download');
+            // Log::info('PDF gerado com sucesso, preparando download');
             $filename = 'relatorio_senhas_' . now()->format('Y-m-d_H-i-s') . '.pdf';
-            Log::info('Iniciando download:', ['filename' => $filename]);
+            // Log::info('Iniciando download:', ['filename' => $filename]);
 
             return $pdf->download($filename);
         } catch (\Exception $e) {

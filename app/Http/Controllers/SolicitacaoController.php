@@ -545,13 +545,13 @@ class SolicitacaoController extends Controller
             abort(404, 'PDF nao encontrado');
         }
 
-        Log::info('OneDoc anexo acessado', [
-            'solicitacao_id' => $solicitacao->id,
-            'disk' => $diskName,
-            'path' => $solicitacao->anexo,
-            'ip' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-        ]);
+        // Log::info('OneDoc anexo acessado', [
+        //     'solicitacao_id' => $solicitacao->id,
+        //     'disk' => $diskName,
+        //     'path' => $solicitacao->anexo,
+        //     'ip' => $request->ip(),
+        //     'user_agent' => $request->userAgent(),
+        // ]);
 
         return response()->file(Storage::disk($diskName)->path($solicitacao->anexo), [
             'Content-Type' => 'application/pdf',
