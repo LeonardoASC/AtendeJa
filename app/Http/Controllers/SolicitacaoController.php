@@ -567,7 +567,7 @@ class SolicitacaoController extends Controller
             return false;
         }
 
-        $expected = hash_hmac('sha256', "{$solicitacao->id}|{$expires}", (string) config('app.key'));
+        $expected = substr(hash_hmac('sha256', "{$solicitacao->id}|{$expires}", (string) config('app.key')), 0, 32);
 
         return hash_equals($expected, $token);
     }

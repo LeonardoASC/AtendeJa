@@ -246,7 +246,7 @@ class OneDocProtocolService
 
     private function makeAnexoToken(int $solicitacaoId, int $expires): string
     {
-        return hash_hmac('sha256', "{$solicitacaoId}|{$expires}", (string) config('app.key'));
+        return substr(hash_hmac('sha256', "{$solicitacaoId}|{$expires}", (string) config('app.key')), 0, 32);
     }
 
     private function guessMimeType(string $path): string
