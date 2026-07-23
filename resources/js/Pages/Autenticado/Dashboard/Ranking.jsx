@@ -1,15 +1,29 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import React from "react";
+import React, { useState } from "react";
 import { Head, router, usePage } from "@inertiajs/react";
 import Svg1Podium from "./SVG/svg1";
 
-export default function Ranking({ rankingAtendentes, period, label, totalNaoAtendidas, estatisticas }) {
-    const ranking = rankingAtendentes ?? [];
+export default function Ranking({ rankingAtendentes, top3, demaisAtendentes, period, label, totalNaoAtendidas, estatisticas }) {
+    const podiumList = top3 ?? rankingAtendentes ?? [];
     const stats = estatisticas || { total: 0, por_status: {} };
 
-    const gold = ranking[0] ?? null;
-    const silver = ranking[1] ?? null;
-    const bronze = ranking[2] ?? null;
+    const gold = podiumList[0] ?? null;
+    const silver = podiumList[1] ?? null;
+    const bronze = podiumList[2] ?? null;
+    const maxAtendimentos = podiumList[0]?.total_atendimentos || 1;
+
+    const othersList = demaisAtendentes?.data ?? [];
+    const currentPage = demaisAtendentes?.current_page ?? 1;
+    const perPage = demaisAtendentes?.per_page ?? 5;
+
+    const goToUrl = (url) => {
+        if (!url) return;
+        router.get(
+            url,
+            {},
+            { preserveScroll: true, preserveState: true, replace: true }
+        );
+    };
 
     const avatarFor = (name) =>
         `https://ui-avatars.com/api/?name=${encodeURIComponent(name || "")}&background=1f1f1f&color=fff&size=400`;
@@ -186,6 +200,98 @@ export default function Ranking({ rankingAtendentes, period, label, totalNaoAten
                     </div>
 
                     <div className="mt-6 h-px bg-gradient-to-r from-transparent via-neutral-700/40 to-transparent" />
+
+                    {othersList.length > 0 && (
+                        <div className="mt-10 max-w-2xl mx-auto">
+                            <div className="flex items-center justify-between mb-4 px-1">
+                                <h3 className="text-base sm:text-lg font-semibold text-neutral-200 flex items-center gap-2">
+                                    <span>Demais Colocações</span>
+                                    <span className="bg-neutral-800 border border-neutral-700 text-neutral-400 text-xs px-2.5 py-0.5 rounded-full font-normal">
+                                        {demaisAtendentes?.total ?? othersList.length} {demaisAtendentes?.total === 1 ? 'atendente' : 'atendentes'}
+                                    </span>
+                                </h3>
+                            </div>
+
+                            <div className="space-y-2.5">
+                                {othersList.map((item, index) => {
+                                    const position = 3 + (currentPage - 1) * perPage + index + 1;
+                                    const percentage = Math.round((item.total_atendimentos / maxAtendimentos) * 100);
+
+                                    return (
+                                        <div
+                                            key={item.atendente_nome || index}
+                                            className="bg-neutral-800/40 backdrop-blur border border-neutral-700/50 hover:border-neutral-600 transition-all rounded-xl p-3.5 flex items-center justify-between gap-4"
+                                        >
+                                            <div className="flex items-center gap-3 min-w-0">
+                                                <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-neutral-900/80 border border-neutral-700/60 flex items-center justify-center text-xs sm:text-sm font-bold text-neutral-400">
+                                                    #{position}
+                                                </span>
+                                                <img
+                                                    src={avatarFor(item.atendente_nome)}
+                                                    alt={item.atendente_nome || "Atendente"}
+                                                    className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border border-neutral-700/60 flex-shrink-0"
+                                                />
+                                                <div className="min-w-0">
+                                                    <p className="text-sm sm:text-base font-medium text-neutral-100 truncate">
+                                                        {item.atendente_nome || "Sem nome"}
+                                                    </p>
+                                                    <div className="flex items-center gap-2 mt-1">
+                                                        <div className="w-24 sm:w-32 bg-neutral-900 rounded-full h-1.5 overflow-hidden">
+                                                            <div
+                                                                className="bg-neutral-400 h-full rounded-full transition-all duration-300"
+                                                                style={{ width: `${percentage}%` }}
+                                                            />
+                                                        </div>
+                                                        <span className="text-[10px] text-neutral-500 font-mono">
+                                                            {percentage}%
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="text-right flex-shrink-0">
+                                                <span className="text-sm sm:text-base font-bold text-neutral-200 block">
+                                                    {item.total_atendimentos}
+                                                </span>
+                                                <span className="text-[11px] text-neutral-400">
+                                                    {item.total_atendimentos === 1 ? 'atendimento' : 'atendimentos'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            {demaisAtendentes?.last_page > 1 && (
+                                <div className="flex flex-wrap items-center justify-center gap-1.5 mt-6 pt-4 border-t border-neutral-700/40">
+                                    {demaisAtendentes.links.map((link, key) => {
+                                        if (!link.url) {
+                                            return (
+                                                <span
+                                                    key={key}
+                                                    className="px-3 py-1.5 rounded-lg text-xs font-medium text-neutral-600 bg-neutral-900/40 cursor-not-allowed select-none"
+                                                    dangerouslySetInnerHTML={{ __html: link.label }}
+                                                />
+                                            );
+                                        }
+                                        return (
+                                            <button
+                                                key={key}
+                                                onClick={() => goToUrl(link.url)}
+                                                className={[
+                                                    "px-3 py-1.5 rounded-lg text-xs font-medium transition",
+                                                    link.active
+                                                        ? "bg-neutral-100 text-neutral-900 font-bold shadow"
+                                                        : "bg-neutral-800/60 border border-neutral-700/60 text-neutral-300 hover:bg-neutral-700/60"
+                                                ].join(" ")}
+                                                dangerouslySetInnerHTML={{ __html: link.label }}
+                                            />
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
         </AuthenticatedLayout>

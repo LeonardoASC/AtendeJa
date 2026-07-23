@@ -112,11 +112,25 @@ class DashboardController extends Controller
                 ->where('created_at', '<=', $end->format('Y-m-d H:i:s'));
         }
 
-        $rankingAtendentes = $query
+        $top3 = (clone $query)
             ->groupBy('atendente_nome')
             ->orderByDesc('total_atendimentos')
-            ->limit(10)
+            ->limit(3)
             ->get();
+
+        $top3Names = $top3->pluck('atendente_nome')->filter()->toArray();
+
+        $demaisQuery = (clone $query)
+            ->groupBy('atendente_nome')
+            ->orderByDesc('total_atendimentos');
+
+        if (!empty($top3Names)) {
+            $demaisQuery->whereNotIn('atendente_nome', $top3Names);
+        }
+
+        $demaisAtendentes = $demaisQuery
+            ->paginate(5)
+            ->withQueryString();
 
         $queryNaoAtendidas = Senha::query()
             ->where('status', '!=', 'atendida');
@@ -147,7 +161,9 @@ class DashboardController extends Controller
             ->pluck('total', 'status');
 
         return Inertia::render('Autenticado/Dashboard/Ranking', [
-            'rankingAtendentes' => $rankingAtendentes,
+            'rankingAtendentes' => $top3,
+            'top3'              => $top3,
+            'demaisAtendentes'  => $demaisAtendentes,
             'period'           => $period,
             'label'            => $label,
             'generated_at'     => $now->toDateTimeString(),
