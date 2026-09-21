@@ -18,6 +18,7 @@ use App\Http\Controllers\GuicheController;
 use App\Http\Controllers\RelatorioController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\SolicitacaoController;
+use App\Http\Controllers\HistoricoAtendimentoController;
 
 Route::get('/', [SiteController::class, 'index'])->name('site.index');
 // Route::get('/senhas/{codigo}/ticket-virtual', [SenhaController::class, 'ticketVirtual'])->name('senhas.ticket-virtual');
@@ -76,6 +77,7 @@ Route::middleware(['auth:admin', 'verified'])->prefix('admin')->group(function (
 
     Route::get('/select-guiche', [GuicheController::class, 'selectGuiche'])->name('guiche.select')->middleware('permission:ver-guiche');
     Route::get('/select-guiche/{guiche:slug}', [GuicheController::class, 'guichePanel'])->name('guiche.panel')->middleware('permission:ver-guiche');
+    Route::get('/historico-atendimentos', [HistoricoAtendimentoController::class, 'index'])->name('historico-atendimentos.index')->middleware('permission:ver-guiche|ver-senhas');
 
     Route::resource('guiches', GuicheController::class)->parameters(['guiches' => 'guiche'])->middleware('permission:ver-guiche');
 

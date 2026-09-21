@@ -3,7 +3,7 @@ import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
-import { Cog8ToothIcon, UserCircleIcon, XMarkIcon, Bars3Icon, HomeIcon, DocumentTextIcon, NewspaperIcon } from '@heroicons/react/24/outline';
+import { Cog8ToothIcon, UserCircleIcon, XMarkIcon, Bars3Icon, HomeIcon, DocumentTextIcon, NewspaperIcon, ClockIcon } from '@heroicons/react/24/outline';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -17,6 +17,7 @@ const NAVIGATION_LINK = [
     { route: 'dashboard', label: 'Dashboard', perms: ['ver-dashboard'], icon: HomeIcon },
     { route: 'dashboard.ranking', label: 'Ranking', perms: ['ver-dashboard'], icon: HomeIcon },
     { route: 'guiche.select', label: 'Guichês', perms: ['ver-guiche'], icon: HomeIcon },
+    { route: 'historico-atendimentos.index', label: 'Histórico', perms: ['ver-guiche', 'ver-senhas'], icon: ClockIcon },
     { route: 'senhas.index', label: 'Senhas', perms: ['ver-senhas'], icon: DocumentTextIcon },
     { route: 'senhas.telao', label: 'Telão', perms: ['ver-telao'], icon: HomeIcon },
     { route: 'atender.solicitacao', label: 'Solicitações', perms: ['ver-solicitacoes'], icon: HomeIcon },
