@@ -3,7 +3,7 @@ import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
-import { Cog8ToothIcon, UserCircleIcon, XMarkIcon, Bars3Icon, HomeIcon, DocumentTextIcon, NewspaperIcon, ClockIcon } from '@heroicons/react/24/outline';
+import { UserCircleIcon, XMarkIcon, Bars3Icon, HomeIcon, DocumentTextIcon, NewspaperIcon, ClockIcon } from '@heroicons/react/24/outline';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -26,9 +26,6 @@ const NAVIGATION_LINK = [
     { route: 'avaliacoes.index', label: 'Avaliacoes', perms: ['ver-avaliacoes'], icon: NewspaperIcon },
     { route: 'guiches.index', label: 'Gerenciar Guichês', perms: ['ver-gerenciarGuiche'], icon: HomeIcon },
     { route: 'vouchers.index', label: 'Vouchers', perms: ['ver-voucher'], icon: DocumentTextIcon },
-    { route: 'admins.index', label: 'Administradores', perms: ['ver-admin'], icon: UserCircleIcon },
-    { route: 'users.index', label: 'Usuários', perms: ['ver-usuarios'], icon: UserCircleIcon },
-    { route: 'roles.index', label: 'Cargos', perms: ['ver-cargos'], icon: UserCircleIcon },
 ];
 
 
@@ -88,45 +85,7 @@ export default function AuthenticatedLayout({ header, children }) {
                         </div>
 
                         <div className="hidden sm:flex sm:items-center">
-                            <div className="relative  flex ">
-                                {hasAnyPermission(auth.permissions, ['admin.index', 'users.index', 'roles.index']) && (
-                                    <Dropdown>
-                                        <Dropdown.Trigger>
-                                            <button
-                                                type="button"
-                                                className="inline-flex items-center rounded-full p-3 text-sm font-medium leading-4 text-gray-500 bg-white hover:bg-gray-100 hover:text-gray-700 transition"
-                                            >
-                                                <Cog8ToothIcon className="h-6 w-6 text-gray-500" />
-                                            </button>
-                                        </Dropdown.Trigger>
-
-                                        <Dropdown.Content>
-                                            <div className="bg-gray-50 px-4 py-2 border-b border-gray-200">
-                                                <div className="text-base font-medium text-gray-800">
-                                                    Configurações
-                                                </div>
-                                                <div className="text-xs font-medium text-gray-500">
-                                                    Gerencie as configurações do sistema
-                                                </div>
-                                            </div>
-                                            <Dropdown.Link
-                                                href={route('admins.index')}
-                                            >
-                                                Administradores
-                                            </Dropdown.Link>
-                                            <Dropdown.Link
-                                                href={route('users.index')}
-                                            >
-                                                Usuarios
-                                            </Dropdown.Link>
-                                            <Dropdown.Link
-                                                href={route('roles.index')}
-                                            >
-                                                Cargos
-                                            </Dropdown.Link>
-                                        </Dropdown.Content>
-                                    </Dropdown>
-                                )}
+                            <div className="relative flex">
                                 <Dropdown>
                                     <Dropdown.Trigger>
                                         <span className="inline-flex rounded-md">
@@ -144,10 +103,28 @@ export default function AuthenticatedLayout({ header, children }) {
                                             <div className="text-base font-medium text-gray-800">
                                                 {user.name}
                                             </div>
-                                            <div className="text-xs  font-medium text-gray-500">
+                                            <div className="text-xs font-medium text-gray-500">
                                                 {user.email}
                                             </div>
                                         </div>
+                                        {hasAnyPermission(auth.permissions, ['ver-admin']) && (
+                                            <Dropdown.Link href={route('admins.index')}>
+                                                Administradores
+                                            </Dropdown.Link>
+                                        )}
+                                        {hasAnyPermission(auth.permissions, ['ver-usuarios']) && (
+                                            <Dropdown.Link href={route('users.index')}>
+                                                Usuários
+                                            </Dropdown.Link>
+                                        )}
+                                        {hasAnyPermission(auth.permissions, ['ver-cargos']) && (
+                                            <Dropdown.Link href={route('roles.index')}>
+                                                Cargos
+                                            </Dropdown.Link>
+                                        )}
+                                        {hasAnyPermission(auth.permissions, ['ver-admin', 'ver-usuarios', 'ver-cargos']) && (
+                                            <div className="border-t border-gray-100 my-1"></div>
+                                        )}
                                         <Dropdown.Link
                                             href={route('profile.edit')}
                                         >
@@ -209,6 +186,21 @@ export default function AuthenticatedLayout({ header, children }) {
                         </div>
 
                         <div className="mt-3 ml-4 space-y-1">
+                            {hasAnyPermission(auth.permissions, ['ver-admin']) && (
+                                <ResponsiveNavLink href={route('admins.index')}>
+                                    Administradores
+                                </ResponsiveNavLink>
+                            )}
+                            {hasAnyPermission(auth.permissions, ['ver-usuarios']) && (
+                                <ResponsiveNavLink href={route('users.index')}>
+                                    Usuários
+                                </ResponsiveNavLink>
+                            )}
+                            {hasAnyPermission(auth.permissions, ['ver-cargos']) && (
+                                <ResponsiveNavLink href={route('roles.index')}>
+                                    Cargos
+                                </ResponsiveNavLink>
+                            )}
                             <ResponsiveNavLink href={route('profile.edit')}>
                                 Profile
                             </ResponsiveNavLink>
