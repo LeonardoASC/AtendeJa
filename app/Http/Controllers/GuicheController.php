@@ -85,7 +85,81 @@ class GuicheController extends Controller
         $queue = Senha::whereIn('tipo_atendimento_id', $tipoIds)
             ->where('status', 'aguardando')
             ->orderBy('created_at')
-            ->get(['id', 'codigo', 'nome', 'cpf']);
+            ->get(['id', 'codigo', 'nome', 'cpf', 'avaliacao_cor', 'avaliacao_tag', 'comentario']);
+
+        // Mapear os CPFs envolvidos para buscar o último comentário/avaliação de cada cidadão
+        $cpfs = collect();
+        if ($current && !empty($current->cpf)) {
+            $cpfs->push((string) $current->cpf);
+            $clean = preg_replace('/\D/', '', (string) $current->cpf);
+            if (!empty($clean)) {
+                $cpfs->push($clean);
+            }
+        }
+
+        foreach ($queue as $q) {
+            if (!empty($q->cpf)) {
+                $cpfs->push((string) $q->cpf);
+                $clean = preg_replace('/\D/', '', (string) $q->cpf);
+                if (!empty($clean)) {
+                    $cpfs->push($clean);
+                }
+            }
+        }
+
+        $cpfs = $cpfs->filter()->unique()->values();
+
+        $avaliacoesPorCpf = [];
+        if ($cpfs->isNotEmpty()) {
+            $registros = Senha::whereIn('cpf', $cpfs)
+                ->where(function ($query) {
+                    $query->whereNotNull('avaliacao_cor')
+                          ->where('avaliacao_cor', '!=', '')
+                          ->orWhereNotNull('avaliacao_tag')
+                          ->where('avaliacao_tag', '!=', '')
+                          ->orWhereNotNull('comentario')
+                          ->where('comentario', '!=', '');
+                })
+                ->orderByRaw('COALESCE(avaliado_em, inicio_atendimento, created_at) DESC')
+                ->get(['id', 'cpf', 'avaliacao_cor', 'avaliacao_tag', 'comentario', 'avaliado_em', 'created_at']);
+
+            foreach ($registros as $reg) {
+                $cpfLimpo = preg_replace('/\D/', '', (string) $reg->cpf);
+                $cor = !empty($reg->avaliacao_cor) ? $reg->avaliacao_cor : '#0D9488';
+                $tag = $reg->avaliacao_tag ?: ($reg->comentario ? 'Comentário registrado' : null);
+                $comentario = $reg->comentario;
+
+                $dados = [
+                    'cor' => $cor,
+                    'tag' => $tag,
+                    'comentario' => $comentario,
+                ];
+
+                if (!empty($cpfLimpo) && !isset($avaliacoesPorCpf[$cpfLimpo])) {
+                    $avaliacoesPorCpf[$cpfLimpo] = $dados;
+                }
+                if (!empty($reg->cpf) && !isset($avaliacoesPorCpf[$reg->cpf])) {
+                    $avaliacoesPorCpf[$reg->cpf] = $dados;
+                }
+            }
+        }
+
+        if ($current) {
+            $cleanCurrent = preg_replace('/\D/', '', (string) $current->cpf);
+            $avaliacao = $avaliacoesPorCpf[$cleanCurrent] ?? $avaliacoesPorCpf[$current->cpf] ?? null;
+            $current->setAttribute('historico_cor', $current->avaliacao_cor ?: ($avaliacao['cor'] ?? null));
+            $current->setAttribute('historico_tag', $current->avaliacao_tag ?: ($avaliacao['tag'] ?? null));
+            $current->setAttribute('historico_comentario', $current->comentario ?: ($avaliacao['comentario'] ?? null));
+        }
+
+        $queue->transform(function ($item) use ($avaliacoesPorCpf) {
+            $clean = preg_replace('/\D/', '', (string) $item->cpf);
+            $avaliacao = $avaliacoesPorCpf[$clean] ?? $avaliacoesPorCpf[$item->cpf] ?? null;
+            $item->setAttribute('historico_cor', $item->avaliacao_cor ?: ($avaliacao['cor'] ?? null));
+            $item->setAttribute('historico_tag', $item->avaliacao_tag ?: ($avaliacao['tag'] ?? null));
+            $item->setAttribute('historico_comentario', $item->comentario ?: ($avaliacao['comentario'] ?? null));
+            return $item;
+        });
 
         $attended = Senha::where('guiche_id', $guiche->id)
             ->where('status', 'atendida')

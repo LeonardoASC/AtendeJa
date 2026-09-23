@@ -78,6 +78,8 @@ Route::middleware(['auth:admin', 'verified'])->prefix('admin')->group(function (
     Route::get('/select-guiche', [GuicheController::class, 'selectGuiche'])->name('guiche.select')->middleware('permission:ver-guiche');
     Route::get('/select-guiche/{guiche:slug}', [GuicheController::class, 'guichePanel'])->name('guiche.panel')->middleware('permission:ver-guiche');
     Route::get('/historico-atendimentos', [HistoricoAtendimentoController::class, 'index'])->name('historico-atendimentos.index')->middleware('permission:ver-guiche|ver-senhas');
+    Route::get('/historico-atendimentos/{senha}/historico-cidadao', [HistoricoAtendimentoController::class, 'historicoCidadao'])->name('historico-atendimentos.historico-cidadao')->middleware('permission:ver-guiche|ver-senhas');
+    Route::post('/historico-atendimentos/{senha}/avaliacao', [HistoricoAtendimentoController::class, 'salvarAvaliacao'])->name('historico-atendimentos.salvar-avaliacao')->middleware('permission:ver-guiche|ver-senhas');
 
     Route::resource('guiches', GuicheController::class)->parameters(['guiches' => 'guiche'])->middleware('permission:ver-guiche');
 

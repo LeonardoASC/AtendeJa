@@ -47,6 +47,72 @@ export default function Index({ tipoAtendimentos }) {
     const handleBackspace = () => setData('cpf', data.cpf.slice(0, -1));
     const handleClear = () => setData('cpf', '');
 
+    const aplicarCpf = (texto) => {
+        const limpo = String(texto || '').replace(/\D/g, '').slice(0, 11);
+        if (limpo) {
+            setData('cpf', limpo);
+        }
+    };
+
+    // Suporte a digitação via teclado físico (numérico/numpad) e copiar/colar sem alterar o visual
+    useEffect(() => {
+        if (step !== 2) return;
+
+        const handleKeyDown = (e) => {
+            if (showNomeModal) return;
+            if (['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return;
+
+            // Copiar CPF (Ctrl+C / Cmd+C)
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C')) {
+                if (data.cpf) {
+                    navigator.clipboard?.writeText(data.cpf);
+                }
+                return;
+            }
+
+            // Colar CPF (Ctrl+V / Cmd+V)
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'v' || e.key === 'V')) {
+                if (navigator.clipboard && navigator.clipboard.readText) {
+                    navigator.clipboard.readText().then((clipText) => {
+                        if (clipText) aplicarCpf(clipText);
+                    }).catch(() => {});
+                }
+                return;
+            }
+
+            // Teclas numéricas (0 a 9) e Numpad
+            if (/^[0-9]$/.test(e.key)) {
+                e.preventDefault();
+                handleDigit(e.key);
+            } else if (e.key === 'Backspace') {
+                e.preventDefault();
+                handleBackspace();
+            } else if (e.key === 'Delete' || e.key === 'Escape' || e.key === 'c' || e.key === 'C') {
+                e.preventDefault();
+                handleClear();
+            }
+        };
+
+        const handlePaste = (e) => {
+            if (showNomeModal) return;
+            if (['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return;
+
+            const text = (e.clipboardData || window.clipboardData)?.getData('text');
+            if (text) {
+                e.preventDefault();
+                aplicarCpf(text);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener('paste', handlePaste);
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+            window.removeEventListener('paste', handlePaste);
+        };
+    }, [step, showNomeModal, data.cpf]);
+
     useEffect(() => {
         if (step !== 2) return;
 

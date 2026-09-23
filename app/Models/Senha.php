@@ -26,11 +26,17 @@ class Senha extends Model
         'guiche_id',
         'atendente_nome',
         'inicio_atendimento',
-        'tempo_atendimento'
+        'tempo_atendimento',
+        'avaliacao_tag',
+        'avaliacao_cor',
+        'comentario',
+        'avaliacao_atendente_nome',
+        'avaliado_em',
     ];
 
     protected $casts = [
         'inicio_atendimento' => 'datetime',
+        'avaliado_em' => 'datetime',
     ];
 
     public function tipoAtendimento()
