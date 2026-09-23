@@ -108,6 +108,10 @@ class GuichePanelHistoricoCorTest extends TestCase
             ->where('queue.0.historico_tag', 'Pendência Cadastral')
             ->where('queue.1.id', $senhaFila2->id)
             ->where('queue.1.historico_cor', null)
+            ->has('comentariosCidadao', 1)
+            ->where('comentariosCidadao.0.codigo', 'ANT-001')
+            ->where('comentariosCidadao.0.avaliacao_tag', 'Pendência Cadastral')
+            ->where('comentariosCidadao.0.avaliacao_cor', '#EF4444')
         );
     }
 }

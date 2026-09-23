@@ -5,13 +5,13 @@ namespace Tests\Feature;
 use App\Models\Admin;
 use App\Models\Senha;
 use App\Models\TipoAtendimento;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Permission;
 use Tests\TestCase;
 
 class HistoricoAtendimentoTest extends TestCase
 {
-    use DatabaseTransactions;
+    use RefreshDatabase;
 
     protected function setUp(): void
     {

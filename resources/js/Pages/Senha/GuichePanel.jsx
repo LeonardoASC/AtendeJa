@@ -5,10 +5,23 @@ import {
     CheckCircleIcon,
     XCircleIcon,
 } from '@heroicons/react/24/solid';
-import { ArrowLeftCircleIcon } from '@heroicons/react/24/outline';
+import {
+    ArrowLeftCircleIcon,
+    ChatBubbleLeftRightIcon,
+    ChevronLeftIcon,
+    ChevronRightIcon,
+} from '@heroicons/react/24/outline';
 
-export default function GuichePanel({ guiche, initialSenha = null, queue = [], attended = [] }) {
+export default function GuichePanel({
+    guiche,
+    initialSenha = null,
+    queue = [],
+    attended = [],
+    comentariosCidadao = [],
+}) {
     const [current, setCurrent] = useState(initialSenha);
+    const [comentarios, setComentarios] = useState(comentariosCidadao);
+    const [minimizado, setMinimizado] = useState(true);
     const [loading, setLoading] = useState(false);
     const [elapsed, setElapsed] = useState('00:00');
     const [showModal, setShowModal] = useState(false);
@@ -36,6 +49,10 @@ export default function GuichePanel({ guiche, initialSenha = null, queue = [], a
     }, [initialSenha]);
 
     useEffect(() => {
+        setComentarios(comentariosCidadao);
+    }, [comentariosCidadao]);
+
+    useEffect(() => {
         if (!window.Echo) {
             console.error('Laravel Echo not found. Make sure it is initialized.');
             return;
@@ -48,7 +65,7 @@ export default function GuichePanel({ guiche, initialSenha = null, queue = [], a
 
         const chTelao = window.Echo.channel('senhas.telao')
             .listen('.SenhaAtualizada', (e) => {
-                router.reload({ only: ['initialSenha', 'queue', 'attended'] });
+                router.reload({ only: ['initialSenha', 'queue', 'attended', 'comentariosCidadao'] });
             });
 
         return () => {
@@ -59,7 +76,7 @@ export default function GuichePanel({ guiche, initialSenha = null, queue = [], a
 
     const chamar = () => {
         setLoading(true);
-        
+
         router.post(
             route('senhas.chamar'),
             { guiche },
@@ -125,8 +142,176 @@ export default function GuichePanel({ guiche, initialSenha = null, queue = [], a
                     </span>
                 </header>
 
-                <main className="flex-1 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-3 md:gap-4 p-3 md:p-4 w-full  mx-auto">
-                    <section className="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col overflow-hidden">
+                <main className={`flex-1 grid grid-cols-1 ${minimizado
+                        ? 'lg:grid-cols-[68px_1fr_290px] xl:grid-cols-[72px_1fr_300px]'
+                        : 'lg:grid-cols-[290px_1fr_290px] xl:grid-cols-[320px_1fr_300px]'
+                    } gap-3 md:gap-4 p-3 md:p-4 w-full mx-auto transition-all duration-300`}>
+                    {minimizado ? (
+                        <aside className="order-2 lg:order-1 bg-white rounded-xl shadow-sm border border-slate-200 flex flex-row lg:flex-col items-center p-2.5 lg:py-3  gap-2.5 transition-all duration-300 lg:max-h-[calc(100vh-7rem)] select-none">
+                            <button
+                                type="button"
+                                onClick={() => setMinimizado(false)}
+                                title="Expandir comentários"
+                                className="p-1.5 text-slate-500 hover:text-[#004B6E] hover:bg-slate-100 rounded-lg transition shrink-0"
+                            >
+                                <ChevronRightIcon className="w-5 h-5 hidden lg:block" />
+                                <ChevronLeftIcon className="w-5 h-5 block lg:hidden rotate-90" />
+                            </button>
+
+                            <span
+                                className="text-xs font-bold bg-[#004B6E] text-white rounded-full min-w-[1.75rem] h-7 px-2 flex items-center justify-center shadow-xs shrink-0 cursor-pointer"
+                                onClick={() => setMinimizado(false)}
+                                title={`${comentarios.length} comentário(s) anterior(es) - clique para expandir`}
+                            >
+                                {comentarios.length}
+                            </span>
+
+                            <div className="hidden lg:block w-8 border-t border-slate-200 my-0.5" />
+
+                            <div className="flex-1 flex flex-row lg:flex-col items-center gap-2 overflow-x-auto lg:overflow-y-auto max-w-full lg:w-full py-1 px-1">
+                                {comentarios.map((coment, idx) => {
+                                    const cor = coment.avaliacao_cor || '#0D9488';
+                                    const tooltip = [
+                                        coment.codigo,
+                                        coment.avaliacao_tag,
+                                        coment.comentario ? `"${coment.comentario}"` : null,
+                                    ]
+                                        .filter(Boolean)
+                                        .join(' - ');
+
+                                    return (
+                                        <button
+                                            key={coment.id || idx}
+                                            type="button"
+                                            onClick={() => setMinimizado(false)}
+                                            className="w-4 h-4 rounded-full border-2 border-white ring-1 ring-slate-300 shadow-xs cursor-pointer hover:scale-125 transition-transform shrink-0"
+                                            style={{ backgroundColor: cor }}
+                                            title={tooltip || 'Avaliação anterior'}
+                                        />
+                                    );
+                                })}
+
+                                {comentarios.length === 0 && (
+                                    <span className="text-[11px] text-slate-400 text-center">
+                                        -
+                                    </span>
+                                )}
+                            </div>
+                        </aside>
+                    ) : (
+                        <aside className="order-2 lg:order-1 bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col overflow-hidden transition-all duration-300 lg:max-h-[calc(100vh-7rem)]">
+                            <div className="flex items-center justify-between px-4 py-2.5 border-b border-slate-100">
+                                <div className="flex items-center gap-2">
+                                    <ChatBubbleLeftRightIcon className="w-4 h-4 text-[#004B6E]" />
+                                    <h2 className="text-sm font-semibold text-slate-800">Comentários anteriores</h2>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-xs font-bold bg-[#004B6E] text-white rounded-full min-w-[1.5rem] text-center px-2 py-0.5">
+                                        {comentarios.length}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={() => setMinimizado(true)}
+                                        title="Minimizar comentários"
+                                        className="p-1 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-600 transition"
+                                    >
+                                        <ChevronLeftIcon className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="flex-1 overflow-y-auto p-2.5 space-y-2">
+                                {comentarios.map((coment) => (
+                                    <div
+                                        key={coment.id}
+                                        className="rounded-lg border bg-slate-50/70 p-2.5 text-xs space-y-1.5 transition hover:bg-slate-50"
+                                        style={{
+                                            borderLeftWidth: '4px',
+                                            borderLeftColor: coment.avaliacao_cor || '#0D9488',
+                                        }}
+                                    >
+                                        <div className="flex items-center justify-between gap-1.5">
+                                            <span className="font-bold text-[#004B6E] tabular-nums">
+                                                {coment.codigo}
+                                            </span>
+                                            <span className="text-[10px] text-slate-400 tabular-nums">
+                                                {coment.avaliado_em
+                                                    ? new Date(coment.avaliado_em).toLocaleDateString('pt-BR', {
+                                                        day: '2-digit',
+                                                        month: '2-digit',
+                                                        year: '2-digit',
+                                                        hour: '2-digit',
+                                                        minute: '2-digit',
+                                                    })
+                                                    : coment.created_at
+                                                        ? new Date(coment.created_at).toLocaleDateString('pt-BR', {
+                                                            day: '2-digit',
+                                                            month: '2-digit',
+                                                            year: '2-digit',
+                                                            hour: '2-digit',
+                                                            minute: '2-digit',
+                                                        })
+                                                        : ''}
+                                            </span>
+                                        </div>
+
+                                        {coment.avaliacao_tag && (
+                                            <div className="flex items-center gap-1.5 flex-wrap">
+                                                <span
+                                                    className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold text-white shadow-xs"
+                                                    style={{ backgroundColor: coment.avaliacao_cor || '#0D9488' }}
+                                                >
+                                                    {coment.avaliacao_tag}
+                                                </span>
+                                                {coment.tipo_atendimento?.nome && (
+                                                    <span className="text-[10px] text-slate-500 font-medium truncate max-w-[150px]">
+                                                        {coment.tipo_atendimento.nome}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        )}
+
+                                        {coment.comentario && (
+                                            <p className="text-slate-700 leading-relaxed text-[11px] bg-white rounded p-2 border border-slate-100 shadow-2xs whitespace-pre-wrap break-words">
+                                                {coment.comentario}
+                                            </p>
+                                        )}
+
+                                        <div className="pt-1 border-t border-slate-200/60 flex items-center justify-between text-[10px] text-slate-400">
+                                            <span className="truncate">
+                                                Por: <strong className="text-slate-600">{coment.avaliacao_atendente_nome || coment.atendente_nome || 'Atendente'}</strong>
+                                            </span>
+                                            {coment.guiche?.nome && (
+                                                <span>Guichê {coment.guiche.nome}</span>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+
+                                {comentarios.length === 0 && (
+                                    <div className="text-center py-8 px-3 text-xs text-slate-400">
+                                        {current ? (
+                                            <>
+                                                <p className="font-medium text-slate-500">Nenhum comentário anterior</p>
+                                                <p className="text-[11px] mt-1 text-slate-400">
+                                                    Não há outros comentários registrados para este CPF.
+                                                </p>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <p className="font-medium text-slate-500">Guichê livre</p>
+                                                <p className="text-[11px] mt-1 text-slate-400">
+                                                    Ao chamar uma senha, o histórico de comentários do cidadão aparecerá aqui.
+                                                </p>
+                                            </>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        </aside>
+                    )}
+
+                    <section className="order-1 lg:order-2 bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col overflow-hidden">
                         {current ? (
                             <>
                                 <div className="flex items-center justify-between px-4 py-2.5 border-b border-slate-100">
@@ -134,13 +319,12 @@ export default function GuichePanel({ guiche, initialSenha = null, queue = [], a
                                         Senha em atendimento
                                     </p>
                                     <span
-                                        className={`text-xs font-mono font-semibold border rounded-full px-2.5 py-0.5 ${
-                                            parseInt(elapsed, 10) >= 20
+                                        className={`text-xs font-mono font-semibold border rounded-full px-2.5 py-0.5 ${parseInt(elapsed, 10) >= 20
                                                 ? 'bg-red-50 text-red-700 border-red-200'
                                                 : parseInt(elapsed, 10) >= 10
-                                                ? 'bg-amber-50 text-amber-700 border-amber-200'
-                                                : 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                                        }`}
+                                                    ? 'bg-amber-50 text-amber-700 border-amber-200'
+                                                    : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                            }`}
                                         title="Tempo de atendimento"
                                     >
                                         ⏱ {elapsed}
@@ -160,17 +344,15 @@ export default function GuichePanel({ guiche, initialSenha = null, queue = [], a
                                         ].map((item) => (
                                             <div
                                                 key={item.label}
-                                                className={`rounded-lg bg-slate-50 border border-slate-100 px-3 py-2 min-w-0 ${
-                                                    item.full ? 'md:col-span-2' : ''
-                                                }`}
+                                                className={`rounded-lg bg-slate-50 border border-slate-100 px-3 py-2 min-w-0 ${item.full ? 'md:col-span-2' : ''
+                                                    }`}
                                             >
                                                 <p className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">
                                                     {item.label}
                                                 </p>
                                                 <p
-                                                    className={`text-sm truncate ${
-                                                        item.value ? 'text-slate-800 font-semibold' : 'text-slate-400 italic'
-                                                    }`}
+                                                    className={`text-sm truncate ${item.value ? 'text-slate-800 font-semibold' : 'text-slate-400 italic'
+                                                        }`}
                                                 >
                                                     {item.value || 'Não informado'}
                                                 </p>
@@ -259,7 +441,7 @@ export default function GuichePanel({ guiche, initialSenha = null, queue = [], a
                         )}
                     </section>
 
-                    <aside className="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col overflow-hidden lg:max-h-[calc(100vh-7rem)]">
+                    <aside className="order-3 lg:order-3 bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col overflow-hidden lg:max-h-[calc(100vh-7rem)]">
                         <div className="flex items-center justify-between px-4 py-2.5 border-b border-slate-100">
                             <h2 className="text-sm font-semibold text-slate-800">Próximas senhas</h2>
                             <span className="text-xs font-bold bg-[#004B6E] text-white rounded-full min-w-[1.5rem] text-center px-2 py-0.5">
@@ -271,20 +453,18 @@ export default function GuichePanel({ guiche, initialSenha = null, queue = [], a
                             {queue.map((q, idx) => (
                                 <li key={q.id}>
                                     <button
-                                        className={`group w-full text-left flex items-center gap-2 rounded-lg px-2.5 py-1.5 border text-sm transition ${
-                                            idx === 0
+                                        className={`group w-full text-left flex items-center gap-2 rounded-lg px-2.5 py-1.5 border text-sm transition ${idx === 0
                                                 ? 'bg-[#004B6E]/5 border-[#004B6E]/20 hover:bg-[#004B6E]/10'
                                                 : 'bg-white border-transparent hover:bg-slate-50 hover:border-slate-200'
-                                        }`}
+                                            }`}
                                         onClick={() => {
                                             setSelectedId(q.id);
                                             setShowModal(true);
                                         }}
                                         title={
                                             q.historico_cor
-                                                ? `Avaliação/Comentário anterior: ${q.historico_tag || 'Comentário registrado'}${
-                                                      q.historico_comentario ? ` - ${q.historico_comentario}` : ''
-                                                  }`
+                                                ? `Avaliação/Comentário anterior: ${q.historico_tag || 'Comentário registrado'}${q.historico_comentario ? ` - ${q.historico_comentario}` : ''
+                                                }`
                                                 : 'Chamar fora da ordem'
                                         }
                                     >

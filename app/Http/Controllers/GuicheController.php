@@ -167,11 +167,50 @@ class GuicheController extends Controller
             ->take(5)
             ->pluck('codigo');
 
+        $comentariosCidadao = [];
+        if ($current && !empty($current->cpf)) {
+            $cleanCurrent = preg_replace('/\D/', '', (string) $current->cpf);
+            $cpfVariants = array_values(array_filter([(string) $current->cpf, $cleanCurrent]));
+
+            $comentariosCidadao = Senha::whereIn('cpf', $cpfVariants)
+                ->where(function ($q) {
+                    $q->where(function ($sq) {
+                        $sq->whereNotNull('comentario')
+                           ->where('comentario', '!=', '');
+                    })->orWhere(function ($sq) {
+                        $sq->whereNotNull('avaliacao_tag')
+                           ->where('avaliacao_tag', '!=', '');
+                    });
+                })
+                ->with([
+                    'tipoAtendimento:id,nome',
+                    'guiche:id,nome',
+                ])
+                ->orderByRaw('COALESCE(avaliado_em, inicio_atendimento, created_at) DESC')
+                ->limit(50)
+                ->get([
+                    'id',
+                    'codigo',
+                    'cpf',
+                    'nome',
+                    'avaliacao_tag',
+                    'avaliacao_cor',
+                    'comentario',
+                    'avaliacao_atendente_nome',
+                    'avaliado_em',
+                    'inicio_atendimento',
+                    'created_at',
+                    'tipo_atendimento_id',
+                    'guiche_id',
+                ]);
+        }
+
         return Inertia::render('Senha/GuichePanel', [
-            'guiche'       => $guiche->slug,
-            'initialSenha' => $current,
-            'queue'        => $queue,
-            'attended'     => $attended,
+            'guiche'              => $guiche->slug,
+            'initialSenha'        => $current,
+            'queue'               => $queue,
+            'attended'            => $attended,
+            'comentariosCidadao'  => $comentariosCidadao,
         ]);
     }
 }
