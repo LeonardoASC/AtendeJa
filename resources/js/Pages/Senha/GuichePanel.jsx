@@ -496,7 +496,7 @@ export default function GuichePanel({
                 </main>
 
 
-                <footer className="bg-white shadow-inner px-4  md:px-6 md:py-6 py-6 flex flex-col lg:flex-row gap-8 lg:gap-4 justify-between">
+                <footer className="bg-white shadow-inner px-4  md:px-6 md:py-3 flex flex-col lg:flex-row gap-8 lg:gap-4 justify-between">
                     <div className="flex-1 min-w-[220px]">
                         <h2 className="text-lg font-medium mb-2">Últimas finalizadas</h2>
                         <ul className="flex flex-wrap gap-2 text-gray-700 font-semibold text-base">
