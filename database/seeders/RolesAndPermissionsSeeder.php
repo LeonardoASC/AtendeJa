@@ -69,6 +69,10 @@ class RolesAndPermissionsSeeder extends Seeder
             'criar-avaliacoes',
             'editar-avaliacoes',
             'excluir-avaliacoes',
+            'ver-visitasTecnicas',
+            'criar-visitasTecnicas',
+            'editar-visitasTecnicas',
+            'excluir-visitasTecnicas',
         ];
 
 

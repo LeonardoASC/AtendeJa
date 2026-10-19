@@ -19,6 +19,7 @@ use App\Http\Controllers\RelatorioController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\SolicitacaoController;
 use App\Http\Controllers\HistoricoAtendimentoController;
+use App\Http\Controllers\VisitaTecnicaController;
 
 Route::get('/', [SiteController::class, 'index'])->name('site.index');
 // Route::get('/senhas/{codigo}/ticket-virtual', [SenhaController::class, 'ticketVirtual'])->name('senhas.ticket-virtual');
@@ -74,6 +75,9 @@ Route::middleware(['auth:admin', 'verified'])->prefix('admin')->group(function (
     Route::post('/solicitacoes/{solicitacao}/marcar-enviado', [SolicitacaoController::class, 'marcarEnviado'])->name('solicitacoes.marcar-enviado')->middleware('permission:editar-solicitacoes');
     Route::get('/solicitacoes/{solicitacao}/pdf', [SolicitacaoController::class, 'gerarPdf'])->name('solicitacoes.pdf')->middleware('permission:ver-solicitacoes');
     Route::get('/solicitacoes/{solicitacao}/visualizar-pdf', [SolicitacaoController::class, 'visualizarPdf'])->name('solicitacoes.visualizar-pdf')->middleware('permission:ver-solicitacoes');
+
+    Route::get('/visitas-tecnicas', [VisitaTecnicaController::class, 'index'])->name('visitas-tecnicas.index')->middleware('permission:ver-visitasTecnicas');
+    Route::get('/visitas-tecnicas/{visitaTecnica}', [VisitaTecnicaController::class, 'show'])->name('visitas-tecnicas.show')->middleware('permission:ver-visitasTecnicas');
 
     Route::get('/select-guiche', [GuicheController::class, 'selectGuiche'])->name('guiche.select')->middleware('permission:ver-guiche');
     Route::get('/select-guiche/{guiche:slug}', [GuicheController::class, 'guichePanel'])->name('guiche.panel')->middleware('permission:ver-guiche');

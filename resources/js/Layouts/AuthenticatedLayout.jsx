@@ -21,6 +21,7 @@ const NAVIGATION_LINK = [
     { route: 'senhas.index', label: 'Senhas', perms: ['ver-senhas'], icon: DocumentTextIcon },
     { route: 'senhas.telao', label: 'Telão', perms: ['ver-telao'], icon: HomeIcon },
     { route: 'atender.solicitacao', label: 'Solicitações', perms: ['ver-solicitacoes'], icon: HomeIcon },
+    { route: 'visitas-tecnicas.index', label: 'Visitas Técnicas', perms: ['ver-visitasTecnicas'], icon: HomeIcon },
     { route: 'relatorio.index', label: 'Relatórios', perms: ['ver-relatorios'], icon: NewspaperIcon },
     { route: 'tipo-atendimentos.index', label: 'Tipos de Atendimento', perms: ['ver-tipoAtendimento'], icon: NewspaperIcon },
     { route: 'avaliacoes.index', label: 'Avaliacoes', perms: ['ver-avaliacoes'], icon: NewspaperIcon },
