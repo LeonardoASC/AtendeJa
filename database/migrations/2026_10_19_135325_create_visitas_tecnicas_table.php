@@ -53,7 +53,8 @@ return new class extends Migration
             $table->timestamp('realizada_em')->nullable();
             $table->boolean('condicao_constatada')->nullable();
             $table->text('observacoes')->nullable();
-            $table->foreignId('admin_id')->nullable()->constrained('admins')->nullOnDelete();
+            // Sem FK: a tabela admins em produção não aceita a constraint (errno 150).
+            $table->unsignedBigInteger('admin_id')->nullable()->index();
 
             $table->string('ip_address', 45)->nullable();
             $table->string('user_agent', 255)->nullable();
