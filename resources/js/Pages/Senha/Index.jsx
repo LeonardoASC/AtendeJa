@@ -24,10 +24,13 @@ const isNomeCompletoValido = (nome) => {
     return alpha.test(first) && alpha.test(last);
 };
 
+const isEmailValido = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && email.length <= 255;
+
 export default function Index({ tipoAtendimentos }) {
     const [step, setStep] = useState(0);
     const [buscando, setBuscando] = useState(false);
     const [lookupError, setLookupError] = useState(null);
+    const [emailAviso, setEmailAviso] = useState(null);
     const [pessoa, setPessoa] = useState(null);
     const [showNomeInput, setShowNomeInput] = useState(false);
     const [showNomeModal, setShowNomeModal] = useState(false);
@@ -135,7 +138,14 @@ export default function Index({ tipoAtendimentos }) {
 
                         setData('nome', first.NOME || '');
                         setData('matricula', first.MATRICULA || '');
-                        setData('email', first.EMAIL ? String(first.EMAIL).toLowerCase() : '');
+                        const email = first.EMAIL ? String(first.EMAIL).trim().toLowerCase() : '';
+                        if (email && !isEmailValido(email)) {
+                            setData('email', '');
+                            setEmailAviso(`O e-mail cadastrado para este CPF é inválido (${email}). A senha será gerada sem e-mail.`);
+                        } else {
+                            setData('email', email);
+                            setEmailAviso(null);
+                        }
 
                         setShowNomeInput(false);
                     } else {
@@ -167,6 +177,7 @@ export default function Index({ tipoAtendimentos }) {
             setData('email', '');
             setShowNomeInput(false);
             setLookupError(null);
+            setEmailAviso(null);
         }
     }, [data.cpf, step]);
 
@@ -409,6 +420,16 @@ export default function Index({ tipoAtendimentos }) {
 
                                 <LoadingModal open={buscando} message="Consultando CPF…" />
                                 {lookupError && <p className="text-sm text-yellow-200">{lookupError}</p>}
+                                {emailAviso && (
+                                    <div className="mx-auto max-w-2xl rounded-lg bg-yellow-400/20 ring-1 ring-yellow-300/50 px-4 py-2 text-sm text-yellow-100">
+                                        ⚠️ {emailAviso}
+                                    </div>
+                                )}
+                                {Object.entries(errors).filter(([campo]) => campo !== 'cpf').map(([campo, msg]) => (
+                                    <div key={campo} className="mx-auto max-w-2xl rounded-lg bg-red-500/20 ring-1 ring-red-300/50 px-4 py-2 text-sm text-red-100">
+                                        {msg}
+                                    </div>
+                                ))}
 
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
                                     <div className="flex items-center justify-center w-full">
