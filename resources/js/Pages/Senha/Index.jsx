@@ -420,11 +420,6 @@ export default function Index({ tipoAtendimentos }) {
 
                                 <LoadingModal open={buscando} message="Consultando CPF…" />
                                 {lookupError && <p className="text-sm text-yellow-200">{lookupError}</p>}
-                                {emailAviso && (
-                                    <div className="mx-auto max-w-2xl rounded-lg bg-yellow-400/20 ring-1 ring-yellow-300/50 px-4 py-2 text-sm text-yellow-100">
-                                        ⚠️ {emailAviso}
-                                    </div>
-                                )}
                                 {Object.entries(errors).filter(([campo]) => campo !== 'cpf').map(([campo, msg]) => (
                                     <div key={campo} className="mx-auto max-w-2xl rounded-lg bg-red-500/20 ring-1 ring-red-300/50 px-4 py-2 text-sm text-red-100">
                                         {msg}
@@ -444,7 +439,11 @@ export default function Index({ tipoAtendimentos }) {
                                                                 <span className="font-medium">Matrícula:</span> {pessoa.MATRICULA}
                                                             </p>
                                                         )}
-                                                        {pessoa.EMAIL && (
+                                                        {emailAviso ? (
+                                                            <div className="rounded-lg bg-yellow-400/20 ring-1 ring-yellow-300/50 px-3 py-2 text-yellow-100">
+                                                                ⚠️ {emailAviso}
+                                                            </div>
+                                                        ) : pessoa.EMAIL && (
                                                             <p>
                                                                 <span className="font-medium">E-mail:</span> {String(pessoa.EMAIL).toLowerCase()}
                                                             </p>
